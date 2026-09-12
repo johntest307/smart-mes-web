@@ -1,0 +1,252 @@
+﻿{
+  "app": { "brand": "Smart MES", "brandHighlight": "Trình diễn" },
+  "nav": {
+    "home": "Trang chủ", "modules": "Mô-đun", "video": "Tr\u00ecnh di\u1ec5n quy tr\u00ecnh",
+    "dashboard": "Kỹ năng", "monitor": "Giám sát", "yield": "Năng suất",
+    "cost": "Chi ph\u00ed", "guide": "H\u01b0\u1edbng d\u1eabn", "line": "5M1E", "org": "T\u1ed5 ch\u1ee9c",
+    "mva": "Ph\u00e2n t\u00edch MVA", "pc": "Ki\u1ec3m tra PC", "performance": "Hi\u1ec7u su\u1ea5t",
+    "tempHumidity": "Nhiệt Độ & Độ Ẩm",
+    "security": "An Ninh",
+    "qrcode": "QR Code",
+    "qualityTracking": "Theo dõi chất lượng",
+    "bapm": "Phân tích điểm đau",
+    "bapmAnalysis": "Phân tích XLSX điểm đau",
+    "logout": "\u0110\u0103ng xu\u1ea5t"
+  },
+  "footer": { "brand": "Smart MES Trình diễn", "techStack": "Stack: React 18 + Vite + Tailwind + Framer Motion" },
+  "chart": {
+    "realtime": "Thời gian thực", "60min": "60 phút", "12h": "12 giờ",
+    "week": "Tuần", "month": "Tháng", "records": "bản ghi",
+    "enlarge": "Phóng to", "export": "Xuất XLSX"
+  },
+  "splash": { "clickToPlay": "Chạm để phát · Mở âm thanh", "skip": "Bỏ qua ▸" },
+  "monitor": {
+    "title": "Giám sát MES trực tiếp", "subtitle": "20 trạm · Dữ liệu làm mới mỗi 2s",
+    "lastUpdate": "Cập nhật cuối", "stationOverview": "Tổng quan dây chuyền", "alertPanel": "Bảng cảnh báo",
+    "stationModel": "Model", "operator": "Công nhân", "output": "Sản lượng",
+    "temperature": "Nhiệt độ", "torque": "Mô-men", "cycleTime": "Thời gian chu kỳ",
+    "statusRunning": "Đang chạy", "statusWaiting": "Chờ", "statusError": "Lỗi", "statusOffline": "Ngoại tuyến",
+    "critical": "Nghiêm trọng", "warning": "Cảnh báo", "info": "Thông tin",
+    "tabAlerts": "Cảnh báo MES", "tabEvents": "Sự kiện hệ thống",
+    "clickToAcknowledge": "Nhấp để xác nhận"
+  },
+  "yield": {
+    "title": "Phân tích năng suất", "subtitle": "Phân tích năng suất — Phân bổ lỗi & Xu hướng",
+    "kpi": "KPI sản xuất", "productionProgress": "Tiến độ", "defectSummary": "Tổng hợp lỗi",
+    "paretoChart": "Biểu đồ Pareto lỗi", "defectPie": "Tỷ lệ lỗi", "yieldTrend": "Xu hướng năng suất",
+    "torqueChart": "Xu hướng mô-men", "stationDefectRate": "Tỷ lệ lỗi theo trạm",
+    "operatorErrorRank": "Xếp hạng lỗi công nhân",
+    "totalOutput": "Sản lượng", "running": "Đang chạy", "error": "Lỗi", "fpy": "FPY",
+    "onlineWorkers": "Trực tuyến", "alertCount": "Cảnh báo", "torquePass": "Mô-men đạt",
+    "defectCount": "Tổng lỗi", "currentFpy": "FPY hiện tại",
+    "mainDefect": "Lỗi chính", "defectStation": "Trạm tệ nhất",
+    "totalErrors": "Tổng lỗi", "errorCauses": "Nguyên nhân lỗi",
+    "defectNumber": "Số lỗi", "cumPercent": "Tích lũy %", "errorCount": "Số lần lỗi",
+    "target95": "Mục tiêu 95%", "warning90": "Cảnh báo 90%",
+    "ok": "Đạt", "over": "Vượt", "under": "Thiếu",
+    "station": "Trạm", "time": "Thời gian", "status": "Trạng thái",
+    "target": "Mục tiêu", "completed": "Hoàn thành", "progress": "Tiến độ",
+    "dailyTarget": "Mục tiêu hàng ngày", "dailyEffectiveOutput": "Sản lượng thực tế hàng ngày",
+    "estimatedCompletion": "Dự kiến hoàn thành",
+    "early": "Sớm", "onTime": "Đúng giờ", "delayed": "Trễ",
+    "stationsSuffix": " trạm", "peopleSuffix": " người", "timesSuffix": " lần"
+  },
+  "home": {
+    "heroTitle": "Sản xuất thông minh",
+    "heroHighlight": "Trình diễn",
+    "heroDesc": "Tích hợp <bold>6 Mô-đun Tối ưu hóa MES</bold>, bao gồm thị giác AI, quản lý mô-men thông minh, ma trận kỹ năng số và SOP đa ngôn ngữ cho nâng cấp số toàn diện dây chuyền sản xuất máy chủ.",
+    "kpiFpy": "Cải thiện FPY",
+    "kpiChangeover": "Giảm thời gian chuyển đổi",
+    "kpiTraceability": "Tốc độ truy xuất",
+    "kpiPokayoke": "Giảm lỗi Poka-Yoke"
+  },
+  "modules": {
+    "sectionTitle": "6 Mô-đun Tối ưu hóa",
+    "sectionDesc": "Từ khóa liên kết trình độ nhân viên đến truy xuất số toàn trình, nâng cấp toàn diện quản lý lao động nước ngoài và chất lượng dây chuyền sản xuất.",
+    "modulePrefix": "Mô-đun",
+    "viewDetail": "Xem chi tiết"
+  },
+  "arch": {
+    "title": "Toàn cảnh nhà máy thông minh",
+    "subtitle": "Kiến trúc IoT ba lớp: từ cảm biến đến dữ liệu, hỗ trợ truy xuất số toàn trình.",
+    "perception": "Lớp cảm biến",
+    "execution": "Lớp thực thi",
+    "data": "Lớp dữ liệu",
+    "items": [
+      "RFID / Máy quét mã vạch",
+      "Camera thị giác AI",
+      "Máy vặn mô-men Bluetooth",
+      "Cảm biến LED PTL",
+      "MES Core (Khóa liên kết trình độ)",
+      "Bảng E-SOP (Đa ngôn ngữ)",
+      "Khóa liên kết (Kiểm soát cổng)",
+      "Bộ điều khiển AGV",
+      "CSDL nhật ký IoT",
+      "Ảnh chụp kiểm tra AI",
+      "Hồ sơ đường cong mô-men",
+      "Ghi nhận FQA / Vận hành"
+    ]
+  },
+  "video": {
+    "title": "Trình diễn quy trình",
+    "subtitle": "Chọn chương để xem trình diễn mô-đun",
+    "chapterMenu": "Chương",
+    "total": "Tổng",
+    "chapters": "chương",
+    "pendingUpload": "Chờ tải lên",
+    "pendingMount": "MP4 đang chờ — điền đường dẫn src",
+    "ch0Label": "Giới thiệu thương hiệu MaTBC",
+    "ch0Desc": "Triết lý thương hiệu máy chủ MaTBC & tổng quan dòng sản phẩm",
+    "ch1Label": "Chuẩn bị đế & bo mạch chủ",
+    "ch1Desc": "Lắp đế máy chủ và tiền lắp bo mạch chủ",
+    "ch2Label": "Cấu hình bộ nhớ & lưu trữ tốc độ cao",
+    "ch2Desc": "Lắp module bộ nhớ và thiết bị lưu trữ NVMe",
+    "ch3Label": "Quạt tản nhiệt & ống dẫn khí",
+    "ch3Desc": "Lắp module quạt hệ thống và ống dẫn khí",
+    "ch4Label": "Bảng tăng tốc AI & lắp GPU",
+    "ch4Desc": "Lắp thẻ tăng tốc AI và khe mở rộng GPU",
+    "ch5Label": "Phân phối điện & đi dây tốc độ cao",
+    "ch5Desc": "Lắp nguồn và quản lý đi dây cáp",
+    "ch6Label": "Mở rộng thẻ giao diện & module mạng",
+    "ch6Desc": "Lắp thẻ PCIe và module mạng 10GbE",
+    "ch7Label": "Lắp ráp máy chủ & kiểm tra",
+    "ch7Desc": "Các điểm kiểm tra trực quan sau lắp ráp",
+    "ch8Label": "Kiểm thử tự động & chuẩn bị xuất hàng",
+    "ch8Desc": "Kiểm tra burn-in và kiểm tra cuối trước xuất hàng",
+    "moduleAll": "Tất cả",
+    "module": "Mô-đun"
+  },
+  "guide": {
+    "title": "Hướng dẫn khởi động nhanh",
+    "subtitle": "Tất cả công thức, ngưỡng biểu đồ và logic tạo dữ liệu — tham khảo bất kỳ lúc nào",
+    "sections": ["Trang chủ KPI", "Mô-đun giải pháp", "Trang Video", "Tiến độ sản xuất", "Công thức giám sát", "Phân tích năng suất", "Ma trận kỹ năng", "Ngưỡng biểu đồ", "Quy tắc thông báo", "Ước tính chi phí", "Dữ liệu mô phỏng", "Kiến trúc container"],
+    "sectionTitles": {
+      "landing-page": "Trang chủ — Hero KPI & Kiến trúc Hệ thống",
+      "solution-modules": "Mô-đun Giải pháp — KPI 6 Mô-đun",
+      "video-page": "Trang Video — Trình phát & Chương",
+      "production-progress": "Bảng Tiến độ Sản xuất — Thiết kế & Tính toán",
+      "monitor-page": "Trang Giám sát — Tất cả Công thức",
+      "yield-analysis": "Trang Phân tích Năng suất — Tất cả Công thức",
+      "skill-matrix": "Trang Ma trận Kỹ năng — Tất cả Công thức",
+      "chart-thresholds": "Ngưỡng Biểu đồ & Thành phần",
+      "critical-rules": "Quy tắc Thông báo LINE + Gmail",
+      "cost-estimation": "Trang Ước tính Chi phí — Công thức Đầy đủ",
+      "data-generation": "Tạo Dữ liệu Mô phỏng — Công thức Đầy đủ",
+      "data-sources": "Kiến trúc Container & Điểm cuối API"
+    }
+  },
+  "moduleDetail": {
+    "notFound": "Không tìm thấy mô-đun",
+    "backHome": "Về trang chủ",
+    "modulePrefix": "Mô-đun",
+    "problemLabel": "Vấn đề",
+    "solutionLabel": "Giải pháp",
+    "benefits": "Lợi ích",
+    "process": "Quy trình",
+    "relatedModules": "Mô-đun liên quan"
+  },
+  "md": {
+    "m1": {
+      "title": "Ma trận kỹ năng Gating",
+      "shortDesc": "ID kỹ thuật số nhân viên & khóa liên kết trình độ trạm",
+      "problem": "Công nhân không được ủy quyền vận hành trạm rủi ro cao gây lỗi lắp ráp và vi phạm an toàn",
+      "solution": "Thẻ RFID → MES truy vấn CSDL trình độ → khóa liên kết cổng mở/từ chối",
+      "kpis": ["Lỗi trình độ", "Hiệu quả đào tạo", "Tỷ lệ tuân thủ"],
+      "steps": ["Quẹt thẻ", "Xác minh", "Đạt/Từ chối", "Ghi nhật ký"]
+    },
+    "m2": {
+      "title": "SOP đa ngôn ngữ động",
+      "shortDesc": "Hướng dẫn động bằng tiếng mẹ đẻ",
+      "problem": "Công nhân nước ngoài không đọc được SOP tiếng Trung, phụ thuộc vào hướng dẫn bằng lời nói dẫn đến sai sót thao tác",
+      "solution": "Tự động phát hiện ngôn ngữ ưa thích, chuyển đổi ngôn ngữ bảng động (TW/CN/VN/TH/ID)",
+      "kpis": ["Lỗi thao tác", "Thời gian đào tạo", "Phạm vi ngôn ngữ"],
+      "steps": ["Đăng nhập", "Phát hiện ngôn ngữ", "Hiển thị SOP", "Xác nhận bước"]
+    },
+    "m3": {
+      "title": "AI Poka-Yoke hành động",
+      "shortDesc": "Giám sát chuỗi hành động & thiếu linh kiện bằng AI",
+      "problem": "Kiểm tra thủ công không thể phát hiện sai sót tinh vi như thiếu ốc vít hoặc lắp ráp sai theo thời gian thực",
+      "solution": "Camera thị giác AI + mô hình chuỗi hành động, phát hiện thời gian thực với cảnh báo âm thanh/hình ảnh",
+      "kpis": ["Tỷ lệ thiếu linh kiện", "Phản hồi cảnh báo", "Tỷ lệ báo động giả"],
+      "steps": ["Chụp camera", "Suy luận AI", "So sánh tiêu chuẩn", "Cảnh báo/Cho phép"]
+    },
+    "m4": {
+      "title": "Công cụ mô-men thông minh",
+      "shortDesc": "Quản lý kết nối máy vặn mô-men kỹ thuật số Bluetooth",
+      "problem": "Giá trị mô-men không được ghi lại kỹ thuật số, gây khó truy xuất các vấn đề mô-men quá cao/thấp",
+      "solution": "Máy vặn mô-men Bluetooth tải đường cong mô-men theo thời gian thực; MES tự động xác minh đạt/không đạt",
+      "kpis": ["Tỷ lệ ghi mô-men", "Tỷ lệ làm lại", "Sử dụng công cụ"],
+      "steps": ["Kết nối máy vặn", "Bắt đầu thao tác", "Phản hồi mô-men", "Đánh giá", "Gắn SN"]
+    },
+    "m5": {
+      "title": "PTL Pick to Light",
+      "shortDesc": "Hệ thống picking vật liệu bằng nhãn điện tử thông minh",
+      "problem": "Tra cứu linh kiện thủ công kém hiệu quả; sai sót picking gây dừng chuyền",
+      "solution": "Hướng dẫn LED nhãn điện tử, xác minh đếm tự động sau khi xác nhận pick",
+      "kpis": ["Lỗi picking", "Thời gian picking", "Số lần dừng chuyền"],
+      "steps": ["Bắt đầu SN", "Yêu cầu vật liệu", "LED bật", "Xác nhận pick", "LED tắt"]
+    },
+    "m6": {
+      "title": "Truy xuất số toàn trình",
+      "shortDesc": "Liên kết & theo dõi dữ liệu IoT toàn trình",
+      "problem": "Khiếu nại khách hàng cần xem xét hồ sơ giấy thủ công, tốn thời gian và không đầy đủ",
+      "solution": "Tất cả thao tác trạm tự động liên kết bằng chỉ mục SN; truy xuất hoàn chỉnh một chạm",
+      "kpis": ["Thời gian truy xuất", "Mức đầy đủ hồ sơ"],
+      "steps": ["Nhập SN", "Truy vấn IoT DB", "Hiển thị dòng thời gian", "Tải xuống báo cáo"]
+    }
+  },
+  "cost": {
+    "title": "Ước tính chi phí",
+    "subtitle": "Tổn thất dừng máy thời gian thực · NTD · 6 khía cạnh chi phí",
+    "summary": "Tổng hợp chi phí", "costStructure": "Cơ cấu chi phí (7 mục)",
+    "categoryCost": "Chi phí theo danh mục", "dailyTrend": "Xu hướng chi phí hàng ngày",
+    "oeeVsCost": "OEE vs Chi phí", "top10Operator": "Top 10 chi phí công nhân",
+    "top10Machine": "Top 10 chi phí máy móc", "stationCostRank": "Chi phí theo trạm",
+    "twoWeekForecast": "Dự báo 2 tuần", "roiSimulator": "Mô phỏng ROI",
+    "costEventTable": "Chi tiết sự kiện chi phí", "llmAnalysis": "Phân tích LLM & Đề xuất",
+    "todayLoss": "Hôm nay", "weekLoss": "Tuần này", "monthLoss": "Tháng này",
+    "activeErrors": "Lỗi đang hoạt động", "exportAllXlsx": "Xuất tất cả XLSX",
+    "clickDownload": "Nhấp để tải xuống",
+    "time": "Thời gian", "station": "Trạm", "operator": "Công nhân",
+    "category": "Danh mục", "duration": "Thời lượng", "total": "Tổng",
+    "all": "Tất cả", "noData": "Không có dữ liệu", "showing": "Hiển thị", "records": " bản ghi",
+    "dailyCost": "Chi phí hàng ngày", "oeePercent": "OEE %",
+    "optimistic": "Lạc quan", "expected": "Dự kiến", "pessimistic": "Bi quan",
+    "roiTitle": "Mô phỏng ROI", "targetCategory": "Danh mục mục tiêu",
+    "reductionRatio": "Giảm", "categoryTotalCost": "Tổng chi phí danh mục",
+    "savings": "Tiết kiệm", "annualSavings": "Tiết kiệm hàng năm",
+    "llmWaiting": "Đang chờ dữ liệu…",
+    "llmError": "Phân tích LLM không khả dụng. Vui lòng kiểm tra API Key.",
+    "llmNoResult": "Không thể lấy kết quả phân tích.",
+    "machine": "Máy móc", "human": "Nhân công", "material": "Vật liệu", "other": "Khác"
+  },
+  "voiceIntro": {
+    "home": "Trang chủ. Tổng quan nền tảng với sáu mô-đun MES và kiến trúc hệ thống.",
+    "modules": "Mô-đun. Giới thiệu sáu mô-đun MES với tính năng và hướng dẫn chi tiết.",
+    "video": "Trình diễn quy trình. Video quy trình lắp ráp server từ chuẩn bị linh kiện đến kiểm tra xuất hàng.",
+    "dashboard": "Ma trận kỹ năng. Bản đồ nhiệt kỹ năng và quản lý trình độ công nhân.",
+    "monitor": "Giám sát. Giám sát dây chuyền hai mươi trạm với cảnh báo thời gian thực.",
+    "yield": "Phân tích năng suất. Xu hướng năng suất, phân tích Pareto và biểu đồ mô-men.",
+    "cost": "Chi phí. Phân tích chi phí sáu chiều, OEE và mô phỏng ROI.",
+    "guide": "H\u01b0\u1edbng d\u1eabn. C\u00f4ng th\u1ee9c, ng\u01b0\u1ee1ng bi\u1ec3u \u0111\u1ed3 v\u00e0 h\u01b0\u1edbng d\u1eabn tham kh\u1ea3o."
+  },
+  "linePage": {
+    "title": "Qu\u1ea3n l\u00fd 5M1E",
+    "subtitle": "Khung 5M1E \u2014 Ph\u00e2n t\u00edch \u0111\u1ed1i chi\u1ebfu QA vs S\u1ea3n xu\u1ea5t",
+    "tabs": { "overview": "T\u1ed5ng quan", "man": "Ng\u01b0\u1eddi", "machine": "M\u00e1y", "method": "Ph\u01b0\u01a1ng ph\u00e1p", "environment": "M\u00f4i tr\u01b0\u1eddng" },
+    "overview": { "title": "4 y\u1ebfu t\u1ed1 5M1E", "desc": "5M1E l\u00e0 khung c\u1ed1t l\u1ed7i \u0111\u1ec3 qu\u1ea3n l\u00fd d\u00e2y chuy\u1ec1n v\u00e0 ph\u00e2n t\u00edch ngu\u1ea9n g\u1ed1c (RCA). QA t\u00ecm kh\u00f4ng khi\u1ebfm, S\u1ea3n xu\u1ea5t t\u00ecm OEE." },
+    "roles": { "qa": "QA/QC", "prod": "\u0110\u1ed9i tr\u01b0\u1edfng SX", "conflict": "\u0110i\u1ec3m m\u00eau thu\u1eabn", "evidence": "Ph\u01b0\u01a1ng ph\u00e1p ch\u1ee9ng minh" },
+    "cases": { "title": "Tr\u01b0\u1eddng h\u1ee3p th\u1ef1c t\u1ebf",
+      "c1": { "name": "Tranh lu\u1eadn t\u1ef7 l\u1ec7 n\u1eb1m SMT", "tag": "M\u00e1y" },
+      "c2": { "name": "AI d\u1eebng ch\u1ea1y v\u00ec l\u1ee1 \u0111\u0129nh", "tag": "Ng\u01b0\u1eddi/PP" },
+      "c3": { "name": "ICT overkill", "tag": "PP" },
+      "c4": { "name": "Mi\u1ec5n \u0111\u1ed9 MSD", "tag": "M\u00f4i tr\u01b0\u1eddng" },
+      "c5": { "name": "ECN firmware kh\u00f4ng \u0111\u00f4ng b\u1ed9", "tag": "PP/M\u00e1y" }
+    },
+    "escalation": { "title": "C\u1ea5p 3 m\u1ee2c \u0111\u1ec3n quy\u1ebft \u0111\u1ecbnh",
+      "level1": "Hi\u1ec7n tr\u01b0\u1eddng: QC Leader \u2194 Prod Leader",
+      "level2": "K\u1ef9 thu\u1eadt: QA Mgr + MFG Mgr + PE",
+      "level3": "Cu\u1ed1i c\u00f9ng: T\u1ed5ng gi\u00e1m \u0111\u1ed1c / VP V\u1eadn h\u00e0nh"
+    }
+  }
+}

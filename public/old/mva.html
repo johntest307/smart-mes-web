@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MVA 智慧戰情室</title>
+  <link rel="stylesheet" href="mva-styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <nav class="topbar">
+      <div class="brand">
+        <span class="brand-mark">MVA</span>
+        <div>
+          <p>智慧製造戰情室</p>
+          <strong>製造附加價值儀表板</strong>
+        </div>
+      </div>
+      <div class="top-links">
+        <a href="#warroom">戰情室</a>
+        <a href="#lines">產線</a>
+        <a href="#insights">洞察</a>
+      </div>
+    </nav>
+
+    <header class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">智慧製造戰情室</p>
+        <h1>製造附加價值 & ROI 即時面板</h1>
+        <p>整合 MVA、ROI、OEE 與品質指標，為 SMT、組裝與測試包裝產線提供即時成本、良率與停機洞察。</p>
+      </div>
+      <div class="hero-status">
+        <div class="hero-status-heading">
+          <strong>MVA 即時總覽</strong>
+          <span>成本、回收、效率與品質</span>
+        </div>
+        <div class="hero-status-grid">
+          <div class="hero-card accent">
+            <p class="label">MVA 差異</p>
+            <p class="value" id="hero-mva-variance">-</p>
+            <span class="subtext">總成本偏差</span>
+            <span class="metric-standard">標準：大於 0</span>
+          </div>
+          <div class="hero-card success">
+            <p class="label">ROI 進度</p>
+            <p class="value" id="hero-roi-percent">-</p>
+            <span class="subtext">年度回收率</span>
+            <span class="metric-standard">標準：大於 0%</span>
+          </div>
+          <div class="hero-card warning">
+            <p class="label">OEE 估計</p>
+            <p class="value" id="hero-oee">-</p>
+            <span class="subtext">整體設備效率</span>
+            <span class="metric-standard">標準：OEE 目標 85%</span>
+          </div>
+          <div class="hero-card">
+            <p class="label">良率 / 不良率</p>
+            <p class="value" id="hero-fpy-improve">-</p>
+            <span class="subtext">品質合格率</span>
+            <span class="metric-standard">標準：FPY 目標 98%</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="section operational-pulse" id="operations">
+      <section class="operations-block">
+        <div class="section-head">
+          <h2>異常警示面板</h2>
+          <p>即時掌握最新 5 筆產線警戒事件，優先處理會直接影響 MVA 的風險。</p>
+        </div>
+        <div class="alert-panel" id="alert-panel">
+          <div class="line-empty">目前未偵測到警示。</div>
+        </div>
+        <div class="alert-pareto-block" id="actions">
+          <div class="section-head">
+            <h3>完整成本損失 Pareto</h3>
+            <p>依損失來源排序，聚焦最值得優先處理的成本項目。</p>
+          </div>
+          <div id="action-items"></div>
+        </div>
+      </section>
+
+      <section class="operations-block" id="lines">
+        <button class="detail-toggle performance-toggle" id="performance-toggle" type="button" aria-expanded="false" aria-controls="performance-content">
+          <span><strong>產線績效總覽</strong><small>點擊後查看 10 條產線的即時指標與目標／實際趨勢</small></span>
+          <span class="detail-toggle-icon" aria-hidden="true">＋</span>
+        </button>
+        <div id="performance-content" class="performance-content" hidden>
+          <div class="section-head">
+            <p>以 5 欄作業看板集中比較各線別的 MVA、OEE、良率與趨勢。</p>
+          </div>
+          <div class="line-list" id="line-list">
+            <div class="line-empty">讀取中，請稍候...</div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <section class="section" id="warroom">
+      <div class="section-head">
+        <h2>管理戰情室</h2>
+        <p>將 MVA 差異、ROI 效益、OEE 成本損失與品質損耗整合為可執行的管理洞察。</p>
+      </div>
+
+      <div class="toolbar">
+        <div class="toolbar-group">
+          <label>時間範圍</label>
+          <select id="time-range">
+            <option value="day">24H</option>
+            <option value="week">7天</option>
+            <option value="month">30天</option>
+          </select>
+        </div>
+        <div class="toolbar-group">
+          <label>視圖</label>
+          <select id="role-view">
+            <option value="ops">營運視圖</option>
+            <option value="finance">財務視圖</option>
+            <option value="exec">管理視圖</option>
+          </select>
+        </div>
+        <div class="toolbar-group">
+          <label>指標群組</label>
+          <select id="kpi-group">
+            <option value="mva">MVA / 成本</option>
+            <option value="roi">ROI</option>
+            <option value="oee">OEE / 產能</option>
+            <option value="downtime">停機損失</option>
+            <option value="energy">單位能耗</option>
+          </select>
+        </div>
+        <div class="toolbar-group">
+          <label>儲存檢視</label>
+          <div class="saved-view-row">
+            <select id="saved-view-select">
+              <option value="">載入儲存檢視</option>
+            </select>
+            <button id="save-view-button">儲存</button>
+          </div>
+        </div>
+        <div class="toolbar-live-group">
+          <label>即時狀態</label>
+          <div id="live-status" class="disconnected">斷線</div>
+        </div>
+      </div>
+
+      <div class="hero-strip" id="hero-strip">
+        <div class="hero-mini-card accent">
+          <span class="mini-label">ROI 走勢</span>
+          <strong id="hero-trend-value">-</strong>
+          <span class="metric-standard compact">標準：大於 0%</span>
+        </div>
+        <div class="hero-mini-card success">
+          <span class="mini-label">OEE 健康</span>
+          <strong id="hero-oee-value">-</strong>
+          <span class="metric-standard compact">標準：OEE 目標 85%</span>
+        </div>
+        <div class="hero-mini-card warning">
+          <span class="mini-label">警示密度</span>
+          <strong id="hero-alert-value">-</strong>
+          <span class="metric-standard compact">標準：0 則警示</span>
+        </div>
+        <div class="hero-mini-card">
+          <span class="mini-label">管理摘要</span>
+          <strong id="hero-summary-value">-</strong>
+          <span class="metric-standard compact">標準：無異常</span>
+        </div>
+      </div>
+
+      <div class="tab-bar" id="tab-bar">
+        <button class="tab active" data-tab="overview">總覽</button>
+        <button class="tab" data-tab="performance">效能</button>
+        <button class="tab" data-tab="roi">ROI 效益</button>
+      </div>
+
+      <div class="warroom-main">
+        <div class="warroom-grid">
+          <article class="panel card panel-wide tab-panel active" data-panel="overview">
+            <div class="panel-title-row">
+              <div>
+                <h3>管理摘要</h3>
+                <p class="panel-kicker">先看整體價值，再看需要決策的偏差</p>
+              </div>
+              <span class="pill">決策摘要</span>
+            </div>
+            <div class="warroom-list" id="overview-highlights"></div>
+            <div class="dashboard-chart-section" id="achievement-gauges"></div>
+            <div class="dashboard-chart-section" id="overview-charts"></div>
+          </article>
+
+          <article class="panel card tab-panel" data-panel="performance">
+            <div class="panel-title-row">
+              <h3>效能洞察</h3>
+              <span class="pill">KPI 表現</span>
+            </div>
+            <div class="summary-card performance-summary">
+              <h3>即時 KPI 總覽</h3>
+              <div class="summary-grid">
+                <div>
+                  <span class="kpi-label">平均 OEE</span>
+                  <strong id="summary-avg-oee">-</strong>
+                </div>
+                <div>
+                  <span class="kpi-label">平均良率</span>
+                  <strong id="summary-fpy">-</strong>
+                </div>
+                <div>
+                  <span class="kpi-label">總停機損失</span>
+                  <strong id="summary-downtime">-</strong>
+                </div>
+                <div>
+                  <span class="kpi-label">單位能耗</span>
+                  <strong id="summary-energy">-</strong>
+                </div>
+              </div>
+            </div>
+            <div class="warroom-list" id="performance-charts"></div>
+          </article>
+
+          <article class="panel card panel-wide tab-panel roi-panel" data-panel="roi">
+            <div class="panel-title-row">
+              <div>
+                <h3>MVA 儀錶板導入效益</h3>
+                <p class="panel-kicker">用 STAR 原則說清楚：為什麼導入、如何落地、帶來什麼價值</p>
+              </div>
+              <span class="pill">ROI 說明</span>
+            </div>
+            <div class="star-grid">
+              <article class="star-card situation">
+                <div class="star-label"><strong>Situation</strong><span>情境</span></div>
+                <p id="roi-star-situation">目前正在分析的產線資料，將以實際 OEE、FPY、停機與MVA 差異來確認哪裡正在消耗效益。</p>
+              </article>
+              <article class="star-card task">
+                <div class="star-label"><strong>Task</strong><span>任務</span></div>
+                <p id="roi-star-task">目標是把改善資源集中在已經出現異常的產線，並以實際資料確認哪些來源最值得優先處理。</p>
+              </article>
+              <article class="star-card action">
+                <div class="star-label"><strong>Action</strong><span>行動</span></div>
+                <p id="roi-star-action">依照目前線別的實際績效與貢獻值，排序出最需要介入的改善項目，並追蹤其對 ROI 的影響。</p>
+              </article>
+              <article class="star-card result">
+                <div class="star-label"><strong>Result</strong><span>成果</span></div>
+                <p id="roi-star-result">目前所呈現的效益金額與優先順序，會隨資料更新而即時反映最新的實際改善情況。</p>
+              </article>
+            </div>
+            <div class="roi-explanation">
+              <div class="roi-explanation-head">
+                <div>
+                  <h4>ROI 效益分析</h4>
+                  <p id="roi-analysis-summary">正在依據目前產線資料建立實際效益摘要。</p>
+                </div>
+                <strong id="roi-total-benefit">-</strong>
+              </div>
+              <div class="roi-benefit-grid">
+                <div class="roi-benefit"><span>品質改善</span><strong id="roi-quality-benefit">-</strong><small id="roi-quality-note">-</small></div>
+                <div class="roi-benefit"><span>停機回復</span><strong id="roi-downtime-benefit">-</strong><small id="roi-downtime-note">-</small></div>
+                <div class="roi-benefit"><span>能耗節約</span><strong id="roi-energy-benefit">-</strong><small id="roi-energy-note">-</small></div>
+                <div class="roi-benefit"><span>人工效率</span><strong id="roi-labor-benefit">-</strong><small id="roi-labor-note">-</small></div>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+  </div>
+  <script src="mva-app.js"></script>
+  <div id="detail-modal" class="modal" aria-hidden="true">
+    <div class="modal-panel">
+      <header class="modal-header">
+        <h3 id="modal-line-title">產線詳細</h3>
+        <button id="modal-close" aria-label="關閉">✕</button>
+      </header>
+      <div class="modal-body">
+        <div id="modal-chart" class="chart-card"></div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div id="modal-metrics" class="warroom-list"></div>
+          <div class="warroom-item" style="margin-top:8px;">
+            <div class="warroom-item-head"><strong>行動項目</strong><span class="warroom-badge">任務</span></div>
+            <div style="display:flex;flex-direction:column;gap:6px;padding-top:8px;">
+              <input id="modal-action-title" placeholder="行動標題" style="padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--text)" />
+              <textarea id="modal-action-note" placeholder="備註 / 指示" rows="3" style="padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--text)"></textarea>
+            </div>
+          </div>
+          <div class="warroom-item" style="margin-top:8px;" id="modal-comments-wrap">
+            <div class="warroom-item-head"><strong>討論註解</strong><span class="warroom-badge">對話</span></div>
+            <div style="display:flex;flex-direction:column;gap:8px;padding-top:8px;">
+              <input id="modal-comment-search" placeholder="搜尋註解" style="padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--text)" />
+              <div id="modal-comments" style="display:flex;flex-direction:column;gap:6px;max-height:240px;overflow:auto;">
+                <div class="comment-empty">載入註解中...</div>
+              </div>
+              <div style="display:flex;gap:6px;">
+                <input id="modal-comment-input" placeholder="輸入註解內容..." style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--text)" />
+                <button id="modal-comment-submit">發佈</button>
+                <button id="modal-comment-cancel" style="display:none;">取消回覆</button>
+              </div>
+              <button id="modal-comment-load-more" style="width: 100%; display:none;">載入更多註解</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer class="modal-footer">
+        <button id="modal-export">匯出 PDF</button>
+        <button id="modal-action">建立行動項目</button>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>

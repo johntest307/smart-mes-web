@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="js/xlsx.full.min.js"></script>
+</head>
+<body>
+<div id="result">Testing...</div>
+<script>
+var el = document.getElementById('result');
+if (typeof XLSX !== 'undefined') {
+  el.textContent = 'XLSX OK! version=' + XLSX.version;
+} else if (typeof window.XLSX !== 'undefined') {
+  el.textContent = 'window.XLSX OK! version=' + window.XLSX.version;
+} else {
+  el.textContent = 'XLSX NOT FOUND!';
+}
+</script>
+</body>
+</html>

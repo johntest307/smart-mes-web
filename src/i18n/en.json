@@ -1,0 +1,440 @@
+﻿{
+    "app":  {
+                "brand":  "Smart MES",
+                "brandHighlight":  "Showcase"
+            },
+    "nav":  {
+                "home":  "Home",
+                "modules":  "Modules",
+                "video":  "Process Showcase",
+                "dashboard":  "Skills",
+                "monitor":  "Monitor",
+                "yield":  "Yield",
+                "cost":  "Cost",
+                "guide":  "Guide",
+                "line":  "5M1E",
+                "org":  "Org Chart",
+                "mva":  "MVA",
+                "pc":  "PC Check",
+                "performance":  "Performance",
+                "logout":  "Logout",
+                "tempHumidity":  "Temp \u0026 Humidity",
+                "security":  "Security",
+                "qrcode":  "QR Code",
+                "qualityTracking":  "Quality Tracking",
+                "bapm":  "Pain Point Analysis",
+                "bapmAnalysis":  "Pain Point XLSX Analysis"
+            },
+    "footer":  {
+                   "brand":  "Smart MES Showcase",
+                   "techStack":  "Stack: React 18 + Vite + Tailwind + Framer Motion"
+               },
+    "chart":  {
+                  "realtime":  "Real-time",
+                  "60min":  "60 min",
+                  "12h":  "12 hrs",
+                  "week":  "Week",
+                  "month":  "Month",
+                  "records":  "records",
+                  "enlarge":  "Enlarge",
+                  "export":  "Export XLSX"
+              },
+    "splash":  {
+                   "clickToPlay":  "Tap to play · Unlock sound",
+                   "skip":  "Skip ▸"
+               },
+    "monitor":  {
+                    "title":  "MES Live Monitor",
+                    "subtitle":  "20 stations · Data refreshes every 2s",
+                    "lastUpdate":  "Last Update",
+                    "stationOverview":  "Line Overview",
+                    "alertPanel":  "Alert Panel",
+                    "stationModel":  "Model",
+                    "operator":  "Operator",
+                    "output":  "Output",
+                    "temperature":  "Temp",
+                    "torque":  "Torque",
+                    "cycleTime":  "Cycle Time",
+                    "statusRunning":  "Running",
+                    "statusWaiting":  "Waiting",
+                    "statusError":  "Error",
+                    "statusOffline":  "Offline",
+                    "critical":  "Critical",
+                    "warning":  "Warning",
+                    "info":  "Info",
+                    "tabAlerts":  "MES Alerts",
+                    "tabEvents":  "System Events",
+                    "clickToAcknowledge":  "Click to acknowledge"
+                },
+    "yield":  {
+                  "title":  "Yield Analysis",
+                  "subtitle":  "Yield Analysis — Defect Attribution \u0026 Trends",
+                  "kpi":  "Production KPI",
+                  "productionProgress":  "Progress",
+                  "defectSummary":  "Defect Summary",
+                  "paretoChart":  "Defect Pareto",
+                  "defectPie":  "Defect Ratio",
+                  "yieldTrend":  "Yield Trend",
+                  "torqueChart":  "Torque Trend",
+                  "stationDefectRate":  "Station Defect Rate",
+                  "operatorErrorRank":  "Operator Error Ranking",
+                  "totalOutput":  "Output",
+                  "running":  "Running",
+                  "error":  "Error",
+                  "fpy":  "FPY",
+                  "onlineWorkers":  "Online",
+                  "alertCount":  "Alerts",
+                  "torquePass":  "Torque Pass",
+                  "defectCount":  "Total Defects",
+                  "currentFpy":  "Current FPY",
+                  "mainDefect":  "Main Defect",
+                  "defectStation":  "Worst Station",
+                  "totalErrors":  "Total Errors",
+                  "errorCauses":  "Error Causes",
+                  "defectNumber":  "Defects",
+                  "cumPercent":  "Cumulative %",
+                  "errorCount":  "Error Count",
+                  "target95":  "Target 95%",
+                  "warning90":  "Warning 90%",
+                  "ok":  "Pass",
+                  "over":  "Over",
+                  "under":  "Under",
+                  "station":  "Station",
+                  "time":  "Time",
+                  "status":  "Status",
+                  "target":  "Target",
+                  "completed":  "Done",
+                  "progress":  "Progress",
+                  "dailyTarget":  "Daily Target",
+                  "dailyEffectiveOutput":  "Effective Daily",
+                  "estimatedCompletion":  "Est. Finish",
+                  "early":  "Early",
+                  "onTime":  "On Time",
+                  "delayed":  "Delayed",
+                  "stationsSuffix":  " stations",
+                  "peopleSuffix":  " people",
+                  "timesSuffix":  " times"
+              },
+    "home":  {
+                 "heroTitle":  "Smart Manufacturing",
+                 "heroHighlight":  "Showcase",
+                 "heroDesc":  "Integrates \u003cbold\u003e6 MES Optimization Modules\u003c/bold\u003e, covering AI vision, smart torque management, digital skill matrix, and multi-language SOP for a complete server production line digital upgrade.",
+                 "kpiFpy":  "FPY Improvement",
+                 "kpiChangeover":  "Changeover Reduction",
+                 "kpiTraceability":  "Traceability Speed",
+                 "kpiPokayoke":  "Poka-Yoke Reduction"
+             },
+    "modules":  {
+                    "sectionTitle":  "6 Optimization Modules",
+                    "sectionDesc":  "From employee qualification interlocking to full-process digital traceability, comprehensively upgrade foreign worker management and production line quality.",
+                    "modulePrefix":  "Module",
+                    "viewDetail":  "View Details"
+                },
+    "arch":  {
+                 "title":  "Smart Factory Panorama",
+                 "subtitle":  "Three-layer IoT architecture: from sensing to data, enabling full-process digital traceability.",
+                 "perception":  "Perception Layer",
+                 "execution":  "Execution Layer",
+                 "data":  "Data Layer",
+                 "items":  [
+                               "RFID / Barcode Scanner",
+                               "AI Vision Camera",
+                               "Bluetooth Torque Driver",
+                               "PTL LED Sensor",
+                               "MES Core (Qualification Interlock)",
+                               "E-SOP Board (Multi-language)",
+                               "Interlock (Gate Control)",
+                               "AGV Controller",
+                               "IoT Log DB",
+                               "AI Inspection Snapshots",
+                               "Torque Curve Records",
+                               "FQA / Operation Recording"
+                           ]
+             },
+    "video":  {
+                  "title":  "Process Showcase",
+                  "subtitle":  "Select a chapter to watch module walkthroughs",
+                  "chapterMenu":  "Chapters",
+                  "total":  "Total",
+                  "chapters":  "chapters",
+                  "pendingUpload":  "Pending",
+                  "pendingMount":  "MP4 pending ??fill in the src path",
+                  "ch0Label":  "MaTBC Brand Intro",
+                  "ch0Desc":  "MaTBC server brand philosophy \u0026 product line overview",
+                  "ch1Label":  "Chassis \u0026 Motherboard Prep",
+                  "ch1Desc":  "Server chassis setup and motherboard pre-installation",
+                  "ch2Label":  "Memory \u0026 High-Speed Storage",
+                  "ch2Desc":  "DIMM module and NVMe storage device installation",
+                  "ch3Label":  "Cooling Fans \u0026 Air Duct",
+                  "ch3Desc":  "System fan module and air duct assembly",
+                  "ch4Label":  "AI Accelerator \u0026 GPU Install",
+                  "ch4Desc":  "AI accelerator card and GPU expansion slot installation",
+                  "ch5Label":  "Power Distribution \u0026 Cabling",
+                  "ch5Desc":  "PSU installation and cable routing management",
+                  "ch6Label":  "Add-on Cards \u0026 Network Modules",
+                  "ch6Desc":  "PCIe add-on card and 10GbE network module installation",
+                  "ch7Label":  "Server Assembly \u0026 Inspection",
+                  "ch7Desc":  "Post-assembly visual inspection checklist",
+                  "ch8Label":  "Automated Test \u0026 Shipment Prep",
+                  "ch8Desc":  "Burn-in test and pre-shipment final inspection",
+                  "moduleAll":  "All",
+                  "module":  "Module"
+              },
+    "guide":  {
+                  "title":  "Quick Start Guide",
+                  "subtitle":  "All formulas, chart thresholds, and data generation logic ??reference anytime",
+                  "sections":  [
+                                   "Landing Page",
+                                   "Solution Modules",
+                                   "Video Page",
+                                   "Production Progress",
+                                   "Monitor Formulas",
+                                   "Yield Analysis",
+                                   "Skill Matrix",
+                                   "Chart Thresholds",
+                                   "Notification Rules",
+                                   "Cost Estimation",
+                                   "Simulated Data",
+                                   "Container Architecture"
+                               ],
+                  "sectionTitles":  {
+                                        "landing-page":  "Landing Page ??Hero KPIs \u0026 System Architecture",
+                                        "solution-modules":  "Solution Modules ??6 Module KPIs",
+                                        "video-page":  "Video Page ??Player \u0026 Chapters",
+                                        "production-progress":  "Production Progress Board ??Design \u0026 Calculation",
+                                        "monitor-page":  "Monitor Page ??All Formulas",
+                                        "yield-analysis":  "Yield Analysis Page ??All Formulas",
+                                        "skill-matrix":  "Skill Matrix Page ??All Formulas",
+                                        "chart-thresholds":  "Chart \u0026 Component Thresholds",
+                                        "critical-rules":  "LINE + Gmail Notification Rules",
+                                        "cost-estimation":  "Cost Estimation Page ??Full Formulas",
+                                        "data-generation":  "Simulated Data Generation ??Full Formulas",
+                                        "data-sources":  "Container Architecture \u0026 API Endpoints"
+                                    }
+              },
+    "moduleDetail":  {
+                         "notFound":  "Module not found",
+                         "backHome":  "Back to Home",
+                         "modulePrefix":  "Module",
+                         "problemLabel":  "Problem",
+                         "solutionLabel":  "Solution",
+                         "benefits":  "Benefits",
+                         "process":  "Process",
+                         "relatedModules":  "Related Modules"
+                     },
+    "md":  {
+               "m1":  {
+                          "title":  "Skill Matrix Gating",
+                          "shortDesc":  "Digital employee ID \u0026 station qualification interlock",
+                          "problem":  "Unauthorized operators on high-risk stations cause assembly errors and safety violations",
+                          "solution":  "RFID badge ??MES query qualification DB ??interlock gate open/deny",
+                          "kpis":  [
+                                       "Qualification Errors",
+                                       "Training Efficiency",
+                                       "Compliance Rate"
+                                   ],
+                          "steps":  [
+                                        "Swipe Card",
+                                        "Verify",
+                                        "Pass/Deny",
+                                        "Log Record"
+                                    ]
+                      },
+               "m2":  {
+                          "title":  "Dynamic Multi-language SOP",
+                          "shortDesc":  "Dynamic prompts in native language",
+                          "problem":  "Foreign workers cannot read Chinese SOPs, relying on verbal instructions leads to operational gaps",
+                          "solution":  "Auto-detect language preference, dynamically switch board language (TW/CN/VN/TH/ID)",
+                          "kpis":  [
+                                       "Operation Errors",
+                                       "Training Time",
+                                       "Language Coverage"
+                                   ],
+                          "steps":  [
+                                        "Login",
+                                        "Language Detection",
+                                        "SOP Render",
+                                        "Confirm Step"
+                                    ]
+                      },
+               "m3":  {
+                          "title":  "Action AI Poka-Yoke",
+                          "shortDesc":  "AI action sequence \u0026 missing part monitoring",
+                          "problem":  "Manual inspection cannot catch subtle misoperations like missed screws or wrong assembly in real time",
+                          "solution":  "AI vision camera + action sequence model, real-time detection with audible/visual alerts",
+                          "kpis":  [
+                                       "Missing Part Rate",
+                                       "Alert Response",
+                                       "False Alarm Rate"
+                                   ],
+                          "steps":  [
+                                        "Camera Capture",
+                                        "AI Inference",
+                                        "Compare Standard",
+                                        "Alert/Release"
+                                    ]
+                      },
+               "m4":  {
+                          "title":  "Smart Torque Tools",
+                          "shortDesc":  "Bluetooth digital torque driver connection management",
+                          "problem":  "Torque values are not digitally recorded, making over/under torque issues untraceable",
+                          "solution":  "Bluetooth torque driver uploads torque curve in real time; MES auto-verifies pass/fail",
+                          "kpis":  [
+                                       "Torque Record Rate",
+                                       "Rework Rate",
+                                       "Tool Utilization"
+                                   ],
+                          "steps":  [
+                                        "Connect Driver",
+                                        "Start Operation",
+                                        "Torque Feedback",
+                                        "Judge",
+                                        "Bind SN"
+                                    ]
+                      },
+               "m5":  {
+                          "title":  "PTL Pick to Light",
+                          "shortDesc":  "Smart e-label material picking system",
+                          "problem":  "Manual part lookup is inefficient; picking errors cause line stops",
+                          "solution":  "E-label LED guidance, auto-counting verification after pick confirmation",
+                          "kpis":  [
+                                       "Picking Errors",
+                                       "Picking Time",
+                                       "Line Stop Count"
+                                   ],
+                          "steps":  [
+                                        "SN Start",
+                                        "Material Request",
+                                        "LED On",
+                                        "Confirm Pick",
+                                        "LED Off"
+                                    ]
+                      },
+               "m6":  {
+                          "title":  "Full Digital Traceability",
+                          "shortDesc":  "Full-process IoT data binding \u0026 tracking",
+                          "problem":  "Customer complaints require manual paper record review, time-consuming and incomplete",
+                          "solution":  "All station operations auto-bound by SN index; one-click complete traceability",
+                          "kpis":  [
+                                       "Retrieval Time",
+                                       "Record Completeness"
+                                   ],
+                          "steps":  [
+                                        "Enter SN",
+                                        "Query IoT DB",
+                                        "Render Timeline",
+                                        "Download Report"
+                                    ]
+                      }
+           },
+    "cost":  {
+                 "title":  "Cost Estimation",
+                 "subtitle":  "Real-time downtime loss · NTD · 6 cost dimensions",
+                 "summary":  "Cost Summary",
+                 "costStructure":  "Cost Structure (7 items)",
+                 "categoryCost":  "Cost by Category",
+                 "dailyTrend":  "Daily Cost Trend",
+                 "oeeVsCost":  "OEE vs Cost",
+                 "top10Operator":  "Top 10 Operator Costs",
+                 "top10Machine":  "Top 10 Machine Costs",
+                 "stationCostRank":  "Cost by Station",
+                 "twoWeekForecast":  "2-Week Forecast",
+                 "roiSimulator":  "ROI Simulator",
+                 "costEventTable":  "Cost Event Details",
+                 "llmAnalysis":  "LLM Analysis \u0026 Suggestions",
+                 "todayLoss":  "Today",
+                 "weekLoss":  "This Week",
+                 "monthLoss":  "This Month",
+                 "activeErrors":  "Active Errors",
+                 "exportAllXlsx":  "Export All XLSX",
+                 "clickDownload":  "Click to Download",
+                 "time":  "Time",
+                 "station":  "Station",
+                 "operator":  "Operator",
+                 "category":  "Category",
+                 "duration":  "Duration",
+                 "total":  "Total",
+                 "all":  "All",
+                 "noData":  "No data",
+                 "showing":  "Showing",
+                 "records":  " records",
+                 "dailyCost":  "Daily Cost",
+                 "oeePercent":  "OEE %",
+                 "optimistic":  "Optimistic",
+                 "expected":  "Expected",
+                 "pessimistic":  "Pessimistic",
+                 "roiTitle":  "ROI Simulator",
+                 "targetCategory":  "Target Category",
+                 "reductionRatio":  "Reduction",
+                 "categoryTotalCost":  "Category Total",
+                 "savings":  "Savings",
+                 "annualSavings":  "Annual Savings",
+                 "llmWaiting":  "Waiting for data…",
+                 "llmError":  "LLM analysis unavailable. Please check your API Key.",
+                 "llmNoResult":  "Unable to retrieve analysis results.",
+                 "machine":  "Machine",
+                 "human":  "Human",
+                 "material":  "Material",
+                 "other":  "Other"
+             },
+    "voiceIntro":  {
+                       "home":  "Home page. Platform overview with six MES modules and system architecture.",
+                       "modules":  "Modules page. Six MES optimization modules with feature introduction and details.",
+                       "video":  "Process showcase. Server assembly process videos from parts preparation to shipping test.",
+                       "dashboard":  "Skill matrix. Employee skill heatmap and station qualification management.",
+                       "monitor":  "Live monitor. Real-time twenty-station production line monitoring with alerts.",
+                       "yield":  "Yield analysis. Yield trends, defect Pareto analysis and torque charts.",
+                       "cost":  "Cost estimation. Six-dimension cost analysis, OEE and ROI simulator.",
+                       "guide":  "Quick guide. Full platform formulas, chart thresholds and reference guide."
+                   },
+    "linePage":  {
+                     "title":  "5M1E Management",
+                     "subtitle":  "5M1E Framework ??QA vs Production comparison analysis",
+                     "tabs":  {
+                                  "overview":  "Overview",
+                                  "man":  "Man",
+                                  "machine":  "Machine",
+                                  "method":  "Method",
+                                  "environment":  "Environment"
+                              },
+                     "overview":  {
+                                      "title":  "4 Elements of 5M1E",
+                                      "desc":  "5M1E (Man, Machine, Material, Method, Environment) is the core framework for production line management and Root Cause Analysis (RCA). QA pursues zero defects while Production pursues OEE ??balancing both is critical."
+                                  },
+                     "roles":  {
+                                   "qa":  "QA/QC",
+                                   "prod":  "Production Supervisor",
+                                   "conflict":  "Conflict Point",
+                                   "evidence":  "Evidence Method"
+                               },
+                     "cases":  {
+                                   "title":  "Real Cases",
+                                   "c1":  {
+                                              "name":  "SMT Throw Rate Dispute",
+                                              "tag":  "Machine"
+                                          },
+                                   "c2":  {
+                                              "name":  "Missed Screw AI Stop",
+                                              "tag":  "Man/Method"
+                                          },
+                                   "c3":  {
+                                              "name":  "ICT Overkill",
+                                              "tag":  "Method"
+                                          },
+                                   "c4":  {
+                                              "name":  "Humidity MSD Exposure",
+                                              "tag":  "Environment"
+                                          },
+                                   "c5":  {
+                                              "name":  "ECN Firmware Mismatch",
+                                              "tag":  "Method/Machine"
+                                          }
+                               },
+                     "escalation":  {
+                                        "title":  "3-Level Escalation Protocol",
+                                        "level1":  "On-site: QC Supervisor ??Production Leader",
+                                        "level2":  "Engineering: QA Manager + MFG Manager + PE",
+                                        "level3":  "Final: Plant GM / Operations Director"
+                                    }
+                 }
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "timestamp": "2026-08-30T07:04:39.949790",
+    "subject": "⚠️ [嚴重] SEN-13 - ERR_BOTH_HIGH",
+    "recipients": [
+      "itsamliu2025@gmail.com"
+    ],
+    "status": "failed",
+    "error": "'cp950' codec can't encode character '\\u26a0' in position 14: illegal multibyte sequence"
+  },
+  {
+    "timestamp": "2026-08-30T07:07:18.590102",
+    "subject": "⚠️ [嚴重] SEN-13 - ERR_BOTH_HIGH",
+    "recipients": [
+      "itsamliu2025@gmail.com"
+    ],
+    "status": "failed",
+    "error": "'cp950' codec can't encode character '\\u26a0' in position 14: illegal multibyte sequence"
+  },
+  {
+    "timestamp": "2026-08-30T07:25:34.801272",
+    "subject": "⚠️ [警告] SEN-22 - ERR_TEMP_LOW",
+    "recipients": [
+      "itsamliu2025@gmail.com"
+    ],
+    "status": "failed",
+    "error": "'cp950' codec can't encode character '\\u26a0' in position 14: illegal multibyte sequence"
+  },
+  {
+    "timestamp": "2026-08-30T07:25:35.134428",
+    "subject": "⚠️ [警告] SEN-07 - ERR_HUMID_HIGH",
+    "recipients": [
+      "itsamliu2025@gmail.com"
+    ],
+    "status": "failed",
+    "error": "'cp950' codec can't encode character '\\u26a0' in position 14: illegal multibyte sequence"
+  }
+]

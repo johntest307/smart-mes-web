@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>跨部門痛點自動化 — 測試報告</title>
+<style>
+  :root {--bg:#0f172a;--card:#1e293b;--border:#334155;--text:#e2e8f0;--muted:#94a3b8;--green:#10b981;--blue:#3b82f6;--orange:#f59e0b;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;padding:24px;}
+  h1{font-size:1.8rem;margin-bottom:4px;}
+  .sub{color:var(--muted);font-size:.875rem;margin-bottom:32px;}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:32px;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;}
+  .card-label{font-size:.75rem;text-transform:uppercase;color:var(--muted);letter-spacing:.08em;}
+  .card-value{font-size:2rem;font-weight:700;margin-top:4px;}
+  .card-url{font-size:.8rem;color:var(--blue);word-break:break-all;margin-top:8px;}
+  .section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px;}
+  .section h2{font-size:1rem;font-weight:600;margin-bottom:16px;}
+  table{width:100%;border-collapse:collapse;font-size:.8rem;}
+  th{background:#0f172a;padding:10px 12px;text-align:left;color:var(--muted);font-weight:600;text-transform:uppercase;font-size:.7rem;letter-spacing:.05em;}
+  td{padding:10px 12px;border-bottom:1px solid var(--border);}
+  tr:last-child td{border-bottom:none;}
+  .link{color:var(--blue);}
+  .badge-ok{background:#052e16;color:#4ade80;border:1px solid #166534;padding:4px 10px;border-radius:6px;font-size:.75rem;}
+  ul{padding-left:20px;}
+  li{margin:4px 0;font-size:.875rem;}
+</style>
+</head>
+<body>
+<h1>🔗 跨部門痛點自動化</h1>
+<div class="sub">Cross-Functional Pain-Point Automation — 一鍵部署測試報告 | 2026-06-11T20:03:30.583826</div>
+
+<div class="cards">
+  <div class="card">
+    <div class="card-label">解析痛點總數</div>
+    <div class="card-value" style="color:var(--blue)">7</div>
+    <div class="card-url">Step 1: 文件解析完成</div>
+  </div>
+  <div class="card">
+    <div class="card-label">注入 AppFlowy</div>
+    <div class="card-value" style="color:var(--green)">7</div>
+    <div class="card-url"><a class="link" href="http://127.0.0.1:8001" target="_blank">http://127.0.0.1:8001</a></div>
+  </div>
+  <div class="card">
+    <div class="card-label">GitLab Issue 數</div>
+    <div class="card-value" style="color:var(--orange)">0</div>
+    <div class="card-url"><a class="link" href="http://127.0.0.1:8880" target="_blank">http://127.0.0.1:8880</a></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Draw.io 匯入檔</div>
+    <div class="card-value" style="color:#a855f7;font-size:1rem;margin-top:8px">pain_matrix_import.txt</div>
+    <div class="card-url">output/drawio_exports/pain_matrix_import.txt</div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>🔗 服務連結</h2>
+  <ul>
+    <li>AppFlowy Cloud: <a class="link" href="http://127.0.0.1:8001/console" target="_blank">http://127.0.0.1:8001/console</a></li>
+    <li>GitLab CE: <a class="link" href="http://127.0.0.1:8880" target="_blank">http://127.0.0.1:8880</a></li>
+    <li>GitLab Issues: <a class="link" href="http://127.0.0.1:8880/api/v4/projects/1/issues" target="_blank">查看所有 Issue</a></li>
+  </ul>
+</div>
+
+<div class="section">
+  <h2>📐 評分與欄位說明</h2>
+  <table>
+    <thead>
+      <tr><th>欄位</th><th>分數區間 / 取值</th><th>評斷標準</th><th>備註</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>影響度</strong></td>
+        <td style="text-align:center">1 – 10</td>
+        <td>痛點對營運、客戶、成本或風險的實際衝擊。1=幾乎無感，5=中等困擾，10=嚴重影響營收/客訴/合規。</td>
+        <td>由各部門文件中的「影響度」欄位解析；缺值預設 5。</td>
+      </tr>
+      <tr>
+        <td><strong>可行性</strong></td>
+        <td style="text-align:center">1 – 10</td>
+        <td>技術與資源上短期內可落地的程度。1=極難/需大型專案，5=需跨部門協調，10=可快速修復或已有解法。</td>
+        <td>由文件中的「可行性」或「技術可行性」解析；缺值預設 5。</td>
+      </tr>
+      <tr>
+        <td><strong>ROI 權重</strong></td>
+        <td style="text-align:center">1 – 100</td>
+        <td>自動計算：<code>ROI = 影響度 × 可行性</code>。數值越高代表「高影響且相對好做」的投資報酬潛力越大。</td>
+        <td>例：影響度 9 × 可行性 8 = ROI 72。</td>
+      </tr>
+      <tr>
+        <td><strong>優先級</strong></td>
+        <td style="text-align:center">P1 / P2 / P3</td>
+        <td>
+          <span style="background:#ef4444;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P1</span> ROI ≥ 56（立即處理）<br>
+          <span style="background:#f59e0b;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P2</span> ROI 30 – 55（排程處理）<br>
+          <span style="background:#6b7280;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P3</span> ROI &lt; 30（觀察/暫緩）
+        </td>
+        <td>規則定義於 <code>step1_parse/normalize.py</code>。</td>
+      </tr>
+      <tr>
+        <td><strong>狀態</strong></td>
+        <td style="text-align:center">待審 / 已核</td>
+        <td><strong>待審</strong>：剛解析注入，尚未確認執行。<strong>已核</strong>：跨部門會議或自動核准後，允許建立 GitLab Issue。</td>
+        <td>一鍵部署時 P1 會自動標為「已核」並開票。</td>
+      </tr>
+      <tr>
+        <td><strong>GitLab 連結</strong></td>
+        <td style="text-align:center">URL / -</td>
+        <td>整合面板免登入檢視頁：<code>/issue/{iid}</code>；GitLab 原站連結需 root 登入。</td>
+        <td>非 P1 或尚未核准時顯示「-」。</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="section">
+  <h2>📋 痛點清單（共 7 筆）</h2>
+  <table>
+    <thead>
+      <tr><th>痛點描述</th><th>部門</th><th>根本原因</th><th>影響</th><th>緊迫</th><th>可行</th><th>加權分</th><th>優先級</th><th>AI 修復建議</th><th>GitLab 連結</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>倉儲與電商系統之間的庫存數據不同步，導致超賣現象，進而引發客戶投訴</td>
+          <td>業務部</td>
+          <td>倉儲系統與電商系統之間缺乏實時數據同步機制，導致數據不一致</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">9</td>
+          <td style="text-align:center">6</td>
+          <td style="text-align:center">7.6</td>
+          <td style="text-align:center"><span style="background:#ef4444;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P1</span></td>
+          <td><small>實施倉儲與電商系統之間的實時數據同步機制，例如API整合或消息隊列，確保庫存數據的一致性</small></td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>訂單系統漏單問題</td>
+          <td>業務部</td>
+          <td>系統資料同步不完整或訂單處理流程缺陷</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">9</td>
+          <td style="text-align:center">6</td>
+          <td style="text-align:center">7.6</td>
+          <td style="text-align:center"><span style="background:#ef4444;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P1</span></td>
+          <td><small>檢查系統資料同步機制，優化訂單處理流程，實施自動化監控和報警機制</small></td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>登入服務回應延遲過高，導致使用者體驗不佳，可能影響業務流程和客戶滿意度</td>
+          <td>維運部</td>
+          <td>可能是由於伺服器效能不足、資料庫查詢效率低下、網路連線問題或程式碼優化不佳等原因引起</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">9</td>
+          <td style="text-align:center">6</td>
+          <td style="text-align:center">7.6</td>
+          <td style="text-align:center"><span style="background:#ef4444;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P1</span></td>
+          <td><small>優化登入服務的程式碼、升級伺服器硬體、改善資料庫查詢效率、進行網路連線優化和監控系統的實施</small></td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>虛擬主機磁碟空間不足，導致系統效能降低和資料儲存受限</td>
+          <td>維運部</td>
+          <td>虛擬主機磁碟空間配置不足或資料儲存管理不善</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">9</td>
+          <td style="text-align:center">6</td>
+          <td style="text-align:center">7.6</td>
+          <td style="text-align:center"><span style="background:#ef4444;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P1</span></td>
+          <td><small>增加虛擬主機磁碟空間、優化資料儲存管理、實施自動化監控和警報系統</small></td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>對帳系統缺乏自動化歐元轉換功能，導致人工手動計算和貼上數據，增加工作量和錯誤風險</td>
+          <td>財務部</td>
+          <td>系統設計缺陷和功能不足</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">5</td>
+          <td style="text-align:center">6</td>
+          <td style="text-align:center">6.8</td>
+          <td style="text-align:center"><span style="background:#f59e0b;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P2</span></td>
+          <td><small>開發和整合自動化歐元轉換功能，實現數據自動同步和計算，減少人工干預和錯誤風險</small></td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>發票批次下載速度極慢，導致業務流程效率低下和客戶滿意度降低</td>
+          <td>財務部/客服部</td>
+          <td>可能是由於伺服器資源不足、網路傳輸速度慢、資料庫查詢效率低或程式設計不佳等原因引起</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">7</td>
+          <td style="text-align:center">6</td>
+          <td style="text-align:center">7.2</td>
+          <td style="text-align:center"><span style="background:#f59e0b;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P2</span></td>
+          <td><small>優化伺服器資源配置、升級網路傳輸速度、改善資料庫查詢效率和程式設計，另外也可以考慮使用雲端服務或分散式系統來提高下載速度</small></td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>測試伺服器硬體規格不足導致CI/CD pipeline失敗</td>
+          <td>資訊部</td>
+          <td>測試伺服器硬體資源（CPU、記憶體、儲存空間等）不足以支撐CI/CD pipeline的運行需求</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">7</td>
+          <td style="text-align:center">6</td>
+          <td style="text-align:center">7.2</td>
+          <td style="text-align:center"><span style="background:#f59e0b;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P2</span></td>
+          <td><small>升級測試伺服器硬體或增加虛擬化資源，優化CI/CD pipeline的配置和執行效率</small></td>
+          <td>-</td>
+        </tr></tbody>
+  </table>
+</div>
+
+<div class="section">
+  <h2>⚙️ 執行狀態</h2>
+  <ul><li style='color:#10b981'>無錯誤</li></ul>
+</div>
+
+<div class="section">
+  <h2>📌 下一步操作</h2>
+  <ul>
+    <li>開啟 <strong>Draw.io</strong> → Arrange → Insert → Advanced → CSV → 貼入 <code>pain_matrix_import.txt</code> 內容 → Import</li>
+    <li>在 AppFlowy 中將確認的 P1 痛點 Status 改為「已核」，再執行 Step 4 推送 GitLab Issue。</li>
+    <li>使用 <code>stop.bat</code> 停止所有容器並清理資料。</li>
+  </ul>
+</div>
+</body>
+</html>

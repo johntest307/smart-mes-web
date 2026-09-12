@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>QR Code 全自動生成工具</title>
+<style>
+:root{--bg:#0a0e1a;--bg2:#111827;--bg3:#1a2236;--bg4:#212a42;--blue:#3b82f6;--blue-d:#2563eb;--blue-g:linear-gradient(135deg,#3b82f6,#2563eb);--green:#10b981;--green-d:#059669;--red:#ef4444;--purple:#8b5cf6;--t1:#f8fafc;--t2:#94a3b8;--tm:#64748b;--bdr:rgba(255,255,255,.08);--bdr2:rgba(255,255,255,.12);--shadow:0 20px 40px rgba(0,0,0,.4)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--t1);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.6;overflow-x:hidden}
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.01) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.01) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
+.ctn{max-width:1100px;margin:0 auto;padding:24px 20px;position:relative;z-index:1}
+.hdr{text-align:center;padding:48px 0 32px}
+.hdr-badge{display:inline-block;padding:6px 20px;background:var(--blue-g);color:#fff;font-size:11px;font-weight:700;border-radius:50px;letter-spacing:3px;margin-bottom:16px}
+.hdr h1{font-size:clamp(22px,3.5vw,32px);font-weight:800;background:linear-gradient(135deg,#f8fafc,#94a3b8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hdr-sub{color:var(--t2);font-size:14px;margin-top:6px}
+.tnav{display:flex;justify-content:center;gap:8px;margin-bottom:32px}
+.tbtn{padding:10px 22px;border:1px solid var(--bdr);background:var(--bg2);color:var(--t2);border-radius:12px;cursor:pointer;font-size:13px;font-weight:600;transition:all .3s;display:flex;align-items:center;gap:8px}
+.tbtn:hover{border-color:var(--blue);color:var(--t1);background:var(--bg3)}
+.tbtn.on{background:var(--blue-g);border-color:var(--blue);color:#fff;box-shadow:0 4px 16px rgba(59,130,246,.3)}
+.tdot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.td1{background:var(--blue)}.td2{background:var(--green)}
+.tc{display:none}.tc.on{display:block}
+.dv{height:1px;background:linear-gradient(90deg,transparent,var(--bdr),transparent);margin:32px 0}
+.sec{background:var(--bg2);border:1px solid var(--bdr2);border-radius:20px;padding:32px;position:relative;overflow:hidden}
+.sec::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--blue-g);opacity:.6}
+.slbl{position:absolute;top:20px;right:20px;padding:4px 14px;border-radius:50px;font-size:11px;font-weight:700;letter-spacing:1px;background:rgba(59,130,246,.15);color:var(--blue);border:1px solid rgba(59,130,246,.2)}
+.slbl.g{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.2)}
+.sec h2{font-size:22px;font-weight:700;margin-bottom:20px}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:12px;font-weight:700;color:var(--t2);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+textarea{width:100%;padding:16px;background:var(--bg);border:1px solid var(--bdr2);border-radius:14px;color:var(--t1);font-family:'JetBrains Mono',Consolas,monospace;font-size:13px;outline:none;transition:border .3s;resize:vertical}
+textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.hint{font-size:12px;color:var(--tm);margin-top:6px}
+.btn-group{display:flex;gap:8px;flex-wrap:wrap}
+.btn{padding:10px 22px;border-radius:12px;font-size:13px;font-weight:700;border:none;cursor:pointer;transition:all .3s;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.btn:active{transform:translateY(0)}
+.btn-primary{background:var(--blue-g);color:#fff}
+.btn-primary:hover{box-shadow:0 4px 16px rgba(59,130,246,.3)}
+.btn-secondary{background:var(--bg3);color:var(--t1);border:1px solid var(--bdr2)}
+.btn-danger{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.alert{padding:12px 18px;border-radius:12px;font-size:13px;font-weight:600;margin-top:12px;border:1px solid}
+.alert-success{background:rgba(16,185,129,.1);color:var(--green);border-color:rgba(16,185,129,.2)}
+.alert-info{background:rgba(59,130,246,.1);color:var(--blue);border-color:rgba(59,130,246,.2)}
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat-item{background:var(--bg3);border:1px solid var(--bdr);border-radius:14px;padding:16px 12px;text-align:center}
+.stat-item .num{font-size:28px;font-weight:800;background:var(--blue-g);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-item .lbl{font-size:11px;color:var(--tm);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.qr-card{background:var(--bg3);border:1px solid var(--bdr);border-radius:16px;padding:16px;text-align:center;transition:all .3s}
+.qr-card:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.qr-img{margin-bottom:10px;display:flex;justify-content:center}
+.qr-img canvas,.qr-img img{border-radius:8px}
+.qr-label{font-size:12px;font-weight:700;color:var(--t1);word-break:break-all}
+.qr-type{font-size:10px;color:var(--tm);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.qr-note{font-size:11px;color:var(--t2);margin-top:4px;background:var(--bg4);padding:3px 8px;border-radius:6px;display:inline-block}
+.qr-actions{margin-top:8px;display:flex;gap:6px;justify-content:center}
+.qr-actions button{padding:5px 14px;border-radius:8px;font-size:11px;font-weight:700;border:1px solid var(--bdr2);background:var(--bg);color:var(--t2);cursor:pointer;transition:all .2s}
+.qr-actions button:hover{border-color:var(--blue);color:var(--blue);background:rgba(59,130,246,.1)}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{background:var(--bg3);color:var(--t2);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:10px 14px;text-align:left;border-bottom:1px solid var(--bdr2)}
+td{padding:10px 14px;font-size:13px;border-bottom:1px solid var(--bdr);color:var(--t1)}
+tr:hover td{background:rgba(59,130,246,.03)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.upload-zone{border:2px dashed var(--bdr2);border-radius:16px;padding:48px 24px;text-align:center;cursor:pointer;transition:all .3s;background:var(--bg3)}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--blue);background:rgba(59,130,246,.05)}
+.upload-zone .icon{font-size:48px;margin-bottom:12px;filter:grayscale(.3)}
+.upload-zone .text{color:var(--t2);font-size:14px}
+.upload-zone .text strong{color:var(--blue)}
+.hb{background:var(--bg3);border:1px solid var(--bdr);border-radius:14px;padding:16px 20px;margin-bottom:16px}
+.hb p{color:var(--t2);font-size:13px;margin-bottom:4px}
+.hb p:last-child{margin-bottom:0}
+.tg{display:inline-block;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:700}
+.tg-g{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.2)}
+.spinner-overlay{position:fixed;inset:0;background:rgba(10,14,26,.85);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px}
+.spinner-overlay.hidden{display:none}
+.spinner{width:48px;height:48px;border:4px solid var(--bdr);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner-text{color:var(--t1);font-size:16px;font-weight:600}
+.spinner-sub{color:var(--t2);font-size:13px}
+.ft{text-align:center;padding:40px 20px;border-top:1px solid var(--bdr);margin-top:40px}
+.ft p{color:var(--tm);font-size:13px}.ft .fl{width:60px;height:2px;background:var(--grad);margin:0 auto 16px;border-radius:1px}
+@media(max-width:768px){.stats-bar{grid-template-columns:repeat(2,1fr)}.qr-grid{grid-template-columns:1fr}.ctn{padding:12px}.tnav{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<div class="ctn">
+<div class="hdr">
+  <div class="hdr-badge">QR TOOL</div>
+  <h1>QR Code 全自動生成工具</h1>
+  <p class="hdr-sub">手動輸入 · XLSX 批次上傳 · 批次下載</p>
+</div>
+<div class="tnav" id="tnav">
+  <button class="tbtn on" data-tab="0"><span class="tdot td1"></span>手動輸入</button>
+  <button class="tbtn" data-tab="1"><span class="tdot td2"></span>XLSX 批次</button>
+</div>
+
+<!-- Tab 0 -->
+<div class="tc on" id="tab0">
+<div class="sec">
+  <div class="slbl">手動輸入</div>
+  <h2>帳號密碼批次輸入</h2>
+  <div class="form-group">
+    <label>輸入格式（每行一筆，帳號/密碼/備註）</label>
+    <textarea id="credInput" placeholder="root/password/系統管理員&#10;admin/P@ssw0rd!23/測試帳號&#10;api_user/pa$$w0rd/2026/API專用">root/password/系統管理員
+admin/P@ssw0rd!23/測試帳號
+dbadmin/Tr0ub4dor&3xtreme#2026$Secure/DB管理
+api_user/pa$$w0rd/2026/API專用
+管理員/密碼安全2026!@#/主帳號</textarea>
+    <div class="hint">格式：帳號/密碼 或 帳號/密碼/備註，支援中文，密碼含 / 時以最後一個 / 分割備註</div>
+  </div>
+  <div class="btn-group">
+    <button class="btn btn-primary" id="btnGenerate"> 生成 QR Code</button>
+    <button class="btn btn-secondary" id="btnLoadSample">載入範例（5筆）</button>
+    <button class="btn btn-secondary" id="btnLoadScenarios">載入產線場景（20筆）</button>
+    <button class="btn btn-danger" id="btnClear">清空</button>
+  </div>
+</div>
+<div id="inputResultArea" class="hidden">
+  <div class="dv"></div>
+  <div class="sec">
+    <div class="slbl g">生成結果</div>
+    <h2>QR Code 總覽</h2>
+    <div class="stats-bar">
+      <div class="stat-item"><div class="num" id="statTotal">0</div><div class="lbl">總筆數</div></div>
+      <div class="stat-item"><div class="num" id="statQr">0</div><div class="lbl">QR Code</div></div>
+      <div class="stat-item"><div class="num" id="statUser">0</div><div class="lbl">帳號 QR</div></div>
+      <div class="stat-item"><div class="num" id="statPass">0</div><div class="lbl">密碼 QR</div></div>
+    </div>
+    <div id="inputAlert"></div>
+    <div class="btn-group" style="margin-bottom:20px">
+      <button class="btn btn-primary" id="btnDownloadAllQR"> 下載全部 QR ZIP</button>
+      <button class="btn btn-secondary" id="btnDownloadReport">下載報告 TXT</button>
+      <button class="btn btn-secondary" id="btnDownloadXlsx">下載 xlsx</button>
+    </div>
+    <div class="qr-grid" id="qrGrid"></div>
+  </div>
+</div>
+</div>
+
+<!-- Tab 1 -->
+<div class="tc" id="tab1">
+<div class="sec">
+  <div class="slbl">XLSX 批次上傳</div>
+  <h2>上傳 XLSX 自動生成 QR Code</h2>
+  <div class="hb">
+    <p><strong>XLSX 格式要求</strong></p>
+    <p>• 第一列為標題列，至少包含「<strong>帳號</strong>」與「<strong>密碼</strong>」兩個欄位</p>
+    <p>• 帳號欄名：帳號、Account、user、name、員工</p>
+    <p>• 密碼欄名：密碼、Password、pwd、pass、password</p>
+    <p>• 備註欄名（選填）：備註、Note、note、remark、說明</p>
+  </div>
+  <div class="form-group">
+    <div class="upload-zone" id="dropZone">
+      <div class="icon"> </div>
+      <div class="text">拖曳 XLSX 檔案至此，或<strong>點擊選擇檔案</strong></div>
+    </div>
+    <input type="file" id="xlsxFile" accept=".xlsx,.xls" style="display:none">
+  </div>
+  <div class="btn-group" style="margin-top:16px">
+    <button class="btn btn-secondary" id="btnSampleXlsx"> 下載範例 XLSX（5筆）</button>
+    <button class="btn btn-secondary" id="btnSampleAccountsXlsx"> 下載50筆範例帳密 XLSX</button>
+  </div>
+</div>
+<div id="xlsxResultArea" class="hidden">
+  <div class="dv"></div>
+  <div class="sec">
+    <div class="slbl g">XLSX 生成結果</div>
+    <h2>QR Code 總覽</h2>
+    <div class="stats-bar">
+      <div class="stat-item"><div class="num" id="xlsxStatTotal">0</div><div class="lbl">總筆數</div></div>
+      <div class="stat-item"><div class="num" id="xlsxStatQr">0</div><div class="lbl">QR Code</div></div>
+      <div class="stat-item"><div class="num" id="xlsxStatUser">0</div><div class="lbl">帳號 QR</div></div>
+      <div class="stat-item"><div class="num" id="xlsxStatPass">0</div><div class="lbl">密碼 QR</div></div>
+    </div>
+    <div id="xlsxAlert"></div>
+    <div class="btn-group" style="margin-bottom:20px">
+      <button class="btn btn-primary" id="btnXlsxDownloadQr"> 下載全部 QR ZIP</button>
+      <button class="btn btn-secondary" id="btnXlsxDownloadReport">下載報告 TXT</button>
+      <button class="btn btn-secondary" id="btnXlsxDownloadXlsx">下載結果 xlsx</button>
+    </div>
+    <div class="tw">
+      <table><thead><tr><th>#</th><th>帳號</th><th>密碼</th><th>備註</th><th>QR Code</th><th>狀態</th></tr></thead><tbody id="xlsxTable"></tbody></table>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="ft"><div class="fl"></div><p>QR Code 全自動生成工具 — 手動輸入 · XLSX 批次上傳 · 批次下載</p></div>
+</div>
+
+<div class="spinner-overlay hidden" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="spinner-text" id="loadingText">正在生成 QR Code...</div>
+  <div class="spinner-sub" id="loadingSub">請稍候</div>
+</div>
+
+<script src="js/qrcode.min.js"></script>
+<script src="js/jszip.min.js"></script>
+<script src="js/exceljs.min.js"></script>
+<script>
+var inputRecords=[];
+var xlsxRecords=[];
+var ACCOUNT_NAMES=['帳號','帳戶','Account','account','user','name','員工','員工帳號','Username'];
+var PASSWORD_NAMES=['密碼','Password','password','pwd','pass','Pwd','Pass','員工密碼'];
+var NOTE_NAMES=['備註','Note','note','remark','說明','Description','備註欄'];
+var LOCATIONS=["2F-倉儲部-進料區","2F-倉儲部-出貨區","2F-倉儲部-備料區","3F-研發部-軟體組","3F-研發部-測試組","3F-研發部-韌體組","4F-系統廠-組裝線","4F-系統廠-包裝線","4F-系統廠-測試線","5F-品保部-檢驗線","5F-品保部-稽核線","5F-品保部-可靠性組","6F-工程部-維修組","6F-工程部-設備組","6F-工程部-IE組","1F-行政部-前台","1F-行政部-總務組","1F-資訊部-網管組"];
+var NAMES=["Alice","Bob","Charlie","David","Eve","Frank","Grace","Henry","Ivy","Jack","Kate","Leo","Mia","Noah","Olivia","Paul","Quinn","Rachel","Sam","Tina","Uma","Victor","Wendy","Xavier","Yvonne","Zack","Brian","Cindy","Derek","Emily","Felix","Gina","Hugo","Irene","Jason","Karen","Louis","Nancy","Oscar","Penny","Ray","Sandy","Tony","Vera","Walt","Xena","York","Zoe","Allen","Bella"];
+var PREFIXES=["sys","dev","qa","eng","adm","fin","hr","ops","it","mfg"];
+var SCENARIOS=[
+  {user:'bios_admin',pass:'Bios@Wistron2026!',note:'BIOS管理'},
+  {user:'bmc_root',pass:'Bmc#Wiwynn$Admin',note:'BMC管理'},
+  {user:'sw_admin',pass:'Sw!Core-Switch@01',note:'核心交換機'},
+  {user:'sw_mgmt',pass:'Sw_Mgmt_Production#2026',note:'管理交換機'},
+  {user:'storage_admin',pass:'Storage#Array@2026',note:'儲存管理'},
+  {user:'nas_backup',pass:'Nas!Backup$Sync',note:'NAS備份'},
+  {user:'idrac_admin',pass:'Dell@iDRAC2026!Admin',note:'iDRAC管理'},
+  {user:'ilo_admin',pass:'HPE@iLO$Admin2026',note:'iLO管理'},
+  {user:'pdu_ops',pass:'PDU@Power#Ops2026',note:'PDU電源'},
+  {user:'ups_admin',pass:'UPS@Backup!Monitor',note:'UPS監控'},
+  {user:'kvm_console',pass:'KVM!Console@2026',note:'KVM控制台'},
+  {user:'kvm_viewer',pass:'KVM#Viewer$Pro',note:'KVM檢視'},
+  {user:'tftp_fw',pass:'TFTP@Firmware!2026',note:'韌體更新'},
+  {user:'pxe_deploy',pass:'PXE#Deploy$Boot',note:'PXE部署'},
+  {user:'nagios_admin',pass:'Nagios@Monitor!2026',note:'Nagios監控'},
+  {user:'zabbix_ops',pass:'Zabbix#Alert$Ops',note:'Zabbix告警'},
+  {user:'mysql_admin',pass:'MySQL@DB#Admin2026',note:'MySQL資料庫'},
+  {user:'mssql_admin',pass:'MSSQL@DB$Admin2026',note:'MSSQL資料庫'},
+  {user:'lic_admin',pass:'Lic@Wistron#2026',note:'授權管理'},
+  {user:'dns_dhcp',pass:'DNS#DHCP@Wiwynn',note:'DNS/DHCP'}
+];
+
+function switchTab(i){document.querySelectorAll('.tc').forEach(function(t){t.classList.remove('on')});document.querySelectorAll('.tbtn').forEach(function(b){b.classList.remove('on')});document.getElementById('tab'+i).classList.add('on');document.querySelectorAll('.tbtn')[i].classList.add('on')}
+function sanitizeFilename(n){return n.replace(/[\\/*?:"<>|\s]+/g,'_').substring(0,80)||'unnamed'}
+function genPassword(len){len=len||16;var u='ABCDEFGHIJKLMNOPQRSTUVWXYZ',l='abcdefghijklmnopqrstuvwxyz',d='0123456789',s='@#$!&',all=u+l+d+s,pw=[u[Math.floor(Math.random()*26)],l[Math.floor(Math.random()*26)],d[Math.floor(Math.random()*10)],s[Math.floor(Math.random()*4)]];for(var i=4;i<len;i++)pw.push(all[Math.floor(Math.random()*all.length)]);for(var j=pw.length-1;j>0;j--){var k=Math.floor(Math.random()*(j+1));var t=pw[j];pw[j]=pw[k];pw[k]=t}return pw.join('')}
+function makeQR(container,text,size){size=size||120;try{if(typeof QRCode!=='undefined'){new QRCode(container,{text:text,width:size,height:size,correctLevel:QRCode.CorrectLevel.L})}else{var c=document.createElement('canvas');c.width=size;c.height=size;var ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,size,size);ctx.fillStyle='#000';ctx.font='bold '+(size/10)+'px monospace';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text.substring(0,14),size/2,size/2);container.appendChild(c)}}catch(e){var c2=document.createElement('canvas');c2.width=size;c2.height=size;var ctx2=c2.getContext('2d');ctx2.fillStyle='#fff';ctx2.fillRect(0,0,size,size);ctx2.fillStyle='#000';ctx2.font='10px monospace';ctx2.textAlign='center';ctx2.textBaseline='middle';ctx2.fillText(text.substring(0,10),size/2,size/2);container.appendChild(c2)}}
+function getQrDataUrl(el){var c=el.querySelector('canvas');if(c)return c.toDataURL('image/png');var img=el.querySelector('img');if(img)return img.src;return null}
+function addAlert(id,msg,cls){var el=document.getElementById(id);if(el)el.innerHTML='<div class="alert '+(cls||'alert-success')+'">'+msg+'</div>'}
+function downloadBlob(blob,filename){var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(url)},100)}
+
+function writeXlsx(rows,filename,sheetName){
+  sheetName=sheetName||'Sheet1';
+  var sd='';
+  for(var r=0;r<rows.length;r++){
+    sd+='<row r="'+(r+1)+'">';
+    for(var c=0;c<rows[r].length;c++){
+      var ref=String.fromCharCode(65+(c%26))+(r+1);if(c>=26)ref='A'+String.fromCharCode(65+(c-26))+(r+1);
+      var v=String(rows[r][c]==null?'':rows[r][c]).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      sd+='<c r="'+ref+'" t="inlineStr"><is><t>'+v+'</t></is></c>';
+    }
+    sd+='</row>';
+  }
+  var zip=new JSZip();
+  zip.file('[Content_Types].xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>');
+  zip.file('_rels/.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>');
+  zip.file('xl/workbook.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="'+sheetName+'" sheetId="1" r:id="rId1"/></sheets></workbook>');
+  zip.file('xl/_rels/workbook.xml.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>');
+  zip.file('xl/worksheets/sheet1.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>'+sd+'</sheetData></worksheet>');
+  return zip.generateAsync({type:'blob',compression:'STORE'}).then(function(blob){downloadBlob(blob,filename)});
+}
+
+function genQRImagePng(text,size){
+  size=size||80;
+  var margin=Math.round(size*0.15);
+  var inner=size-margin*2;
+  try{
+    if(typeof QRCode!=='undefined'){
+      var div=document.createElement('div');div.style.cssText='position:absolute;left:-9999px;top:-9999px';
+      document.body.appendChild(div);
+      var qr=new QRCode(div,{text:' ',width:inner,height:inner,correctLevel:QRCode.CorrectLevel.L});
+      var u8=new TextEncoder().encode(text);
+      var dummy='';for(var i=0;i<u8.length;i++)dummy+='A';
+      qr.makeCode(dummy);
+      qr._oQRCode.dataList=[{mode:4,parsedData:Array.from(u8),getLength:function(){return this.parsedData.length},write:function(buf){for(var i=0;i<this.parsedData.length;i++)buf.put(this.parsedData[i],8)}}];
+      qr._oQRCode.dataCache=null;
+      qr._oQRCode.make();
+      qr._oDrawing.draw(qr._oQRCode);
+      if(typeof qr.makeImage==='function')qr.makeImage();
+      var c=div.querySelector('canvas');
+      var img=div.querySelector('img');
+      var raw=null;
+      if(c)raw=c.toDataURL('image/png').split(',')[1];
+      else if(img&&img.src)raw=img.src.split(',')[1];
+      document.body.removeChild(div);
+      if(raw){
+        return new Promise(function(resolve){
+          var tmp=new Image();tmp.onload=function(){
+            var cv=document.createElement('canvas');cv.width=size;cv.height=size;
+            var ctx=cv.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,size,size);
+            ctx.drawImage(tmp,margin,margin,inner,inner);
+            resolve(cv.toDataURL('image/png').split(',')[1]);
+          };tmp.src='data:image/png;base64,'+raw;
+        });
+      }
+    }
+  }catch(e){}
+  var c2=document.createElement('canvas');c2.width=size;c2.height=size;var ctx=c2.getContext('2d');
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,size,size);ctx.fillStyle='#000';ctx.font='10px monospace';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text.substring(0,10),size/2,size/2);
+  return Promise.resolve(c2.toDataURL('image/png').split(',')[1]);
+}
+
+function generateCardImage(account,password,note,qrB64,size){
+  size=size||160;
+  var qrSize=Math.floor(size*0.7);
+  var txtH=size-qrSize-8;
+  var canvas=document.createElement('canvas');
+  canvas.width=size;canvas.height=size;
+  var ctx=canvas.getContext('2d');
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,size,size);
+  ctx.fillStyle='#000';
+  var fs=Math.max(9,Math.floor(txtH/4.5));
+  ctx.font='bold '+fs+'px monospace';ctx.textAlign='left';ctx.textBaseline='top';
+  var y=6;
+  ctx.fillText(account,6,y);y+=fs+3;
+  ctx.fillText(password,6,y);y+=fs+3;
+  if(note){ctx.fillText(note,6,y);y+=fs+3}
+  if(!qrB64)return Promise.resolve(canvas.toDataURL('image/png').split(',')[1]);
+  return new Promise(function(resolve){
+    var img=new Image();
+    img.onload=function(){
+      var qrY=size-qrSize-4;
+      ctx.drawImage(img,Math.floor((size-qrSize)/2),qrY,qrSize,qrSize);
+      resolve(canvas.toDataURL('image/png').split(',')[1]);
+    };
+    img.onerror=function(){resolve(canvas.toDataURL('image/png').split(',')[1])};
+    img.src='data:image/png;base64,'+qrB64;
+  });
+}
+
+function writeXlsxWithImages(rows,imgCol,filename,sheetName,cardCol){
+  sheetName=sheetName||'Sheet1';
+  var wb=new ExcelJS.Workbook();
+  var ws=wb.addWorksheet(sheetName);
+  rows[0].forEach(function(_,i){
+    var w=i===imgCol?12:(cardCol!==undefined&&i===cardCol)?23:i===0?6:i===1?15:i===2?20:i===3?15:14;
+    ws.getColumn(i+1).width=w;
+  });
+  ws.getRow(1).values=rows[0].map(String);
+  for(var r=1;r<rows.length;r++){
+    ws.addRow(rows[r].map(function(v,i){
+      return(i===imgCol||i===cardCol||v==null)?'':String(v);
+    }));
+  }
+  var imgPromises=[];
+  var imgMap=[];
+  for(var r=1;r<rows.length;r++){
+    if(imgCol!==undefined&&rows[r][imgCol]){
+      (function(rowIdx,text){
+        var p=genQRImagePng(text,200).then(function(b64){
+          if(!b64)return;
+          var id=wb.addImage({base64:b64,extension:'png'});
+          ws.addImage(id,{tl:{col:imgCol,row:rowIdx-1},ext:{width:80,height:80}});
+        });
+        imgPromises.push(p);
+      })(r+1,rows[r][imgCol]);
+    }
+    if(cardCol!==undefined&&rows[r][cardCol]){
+      (function(rowIdx,text,acct,pwd,note){
+        var p=genQRImagePng(text,200).then(function(b64){
+          if(!b64)return;
+          return generateCardImage(acct,pwd,note,b64,400).then(function(cardB64){
+            var id=wb.addImage({base64:cardB64,extension:'png'});
+            ws.addImage(id,{tl:{col:cardCol,row:rowIdx-1},ext:{width:160,height:160}});
+          });
+        });
+        imgPromises.push(p);
+      })(r+1,rows[r][imgCol],rows[r][1],rows[r][2],rows[r][3]);
+    }
+  }
+  return Promise.all(imgPromises).then(function(){
+    return wb.xlsx.writeBuffer({base64:false});
+  }).then(function(arrayBuf){
+    return JSZip.loadAsync(arrayBuf);
+  }).then(function(zip){
+    var sd='';
+    for(var r=0;r<rows.length;r++){
+      sd+='<row r="'+(r+1)+'"'+(r>0?' ht="120" customHeight="1"':'')+'>';
+      for(var c=0;c<rows[r].length;c++){
+        var ref=String.fromCharCode(65+(c%26))+(r+1);if(c>=26)ref='A'+String.fromCharCode(65+(c-26))+(r+1);
+        var v=String((r>0&&(c===imgCol||c===cardCol))?'':(rows[r][c]==null?'':rows[r][c])).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        sd+='<c r="'+ref+'" t="inlineStr"><is><t>'+v+'</t></is></c>';
+      }
+      sd+='</row>';
+    }
+    return zip.file('xl/worksheets/sheet1.xml').async('string').then(function(origXml){
+      var newXml=origXml.replace(/<sheetData>[\s\S]*?<\/sheetData>/,'<sheetData>'+sd+'</sheetData>');
+      zip.file('xl/worksheets/sheet1.xml',newXml);
+      var drawingFiles=[];
+      zip.forEach(function(p){if(p.match(/drawing\d+\.xml$/))drawingFiles.push(p)});
+      return Promise.all(drawingFiles.map(function(p){
+        return zip.file(p).async('string').then(function(xml){
+          xml=xml.replace(/<xdr:ext cx="(\d+)" cy="(\d+)"\/>([\s\S]*?)<a:ext cx="0" cy="0"\/>/g,function(m,cx,cy,between){
+            return '<xdr:ext cx="'+cx+'" cy="'+cy+'"/>'+between+'<a:ext cx="'+cx+'" cy="'+cy+'"/>';
+          });
+          xml=xml.replace(/<xdr:oneCellAnchor editAs="oneCell">/g,'<xdr:twoCellAnchor editAs="oneCell">');
+          xml=xml.replace(/<\/xdr:oneCellAnchor>/g,'</xdr:twoCellAnchor>');
+          zip.file(p,xml);
+        });
+      }));
+    }).then(function(){return zip.generateAsync({type:'blob'})});
+  }).then(function(blob){
+    downloadBlob(blob,filename);
+  });
+}
+
+function readXlsx(buffer){
+  var zip,sharedStrings=[];
+  return JSZip.loadAsync(buffer).then(function(z){
+    zip=z;
+    var ssFile=zip.file('xl/sharedStrings.xml');
+    if(!ssFile)return;
+    return ssFile.async('string').then(function(xml){
+      var doc=new DOMParser().parseFromString(xml,'application/xml');
+      doc.querySelectorAll('si').forEach(function(si){
+        var tEl=si.querySelector('t');
+        sharedStrings.push(tEl?tEl.textContent:'');
+      });
+    });
+  }).then(function(){
+    return zip.file('xl/worksheets/sheet1.xml').async('string');
+  }).then(function(sheetXml){
+    var doc=new DOMParser().parseFromString(sheetXml,'application/xml');
+    var rows=[];
+    doc.querySelectorAll('row').forEach(function(rowEl){
+      var cells=[];
+      rowEl.querySelectorAll('c').forEach(function(cEl){
+        var vEl=cEl.querySelector('is t');
+        if(vEl){cells.push(vEl.textContent);return}
+        var valEl=cEl.querySelector('v');
+        if(valEl){
+          var t=cEl.getAttribute('t');
+          if(t==='s'){var idx=parseInt(valEl.textContent);cells.push(sharedStrings[idx]||'')}
+          else cells.push(valEl.textContent);
+        }else cells.push('');
+      });
+      rows.push(cells);
+    });
+    return{headers:rows[0]||[],rows:rows.slice(1)};
+  });
+}
+
+function showLoading(text,sub){document.getElementById('loadingText').textContent=text||'處理中...';document.getElementById('loadingSub').textContent=sub||'請稍候';document.getElementById('loadingOverlay').classList.remove('hidden')}
+function hideLoading(){document.getElementById('loadingOverlay').classList.add('hidden')}
+
+function parseInputLine(line){
+  var t=line.trim();if(!t)return null;
+  var parts=t.split('/');
+  if(parts.length<2)return null;
+  var user=parts[0].trim();
+  var pwd=parts[1].trim();
+  var note=parts.length>2?parts.slice(2).join('/').trim():'';
+  if(!user||!pwd)return null;
+  return{user:user,pwd:pwd,note:note};
+}
+
+function generateFromInput(){
+  var input=document.getElementById('credInput').value.trim();if(!input){alert('請輸入帳號密碼');return}
+  var lines=input.split('\n').filter(function(l){return l.trim()&&!l.trim().startsWith('#')});
+  showLoading('正在生成 QR Code...','共 '+lines.length+' 筆，預計 '+lines.length+' 張 QR Code');
+  setTimeout(function(){
+    var grid=document.getElementById('qrGrid');grid.innerHTML='';inputRecords=[];
+    var totalQr=0,userCount=0,passCount=0;
+    lines.forEach(function(line,idx){
+      var parsed=parseInputLine(line);if(!parsed)return;
+      var user=parsed.user,pwd=parsed.pwd,note=parsed.note;
+      var safe=sanitizeFilename(user);totalQr++;userCount++;passCount++;
+      var qrText=user+'\n'+pwd+(note?'\n'+note:'');
+      var uc=document.createElement('div');uc.className='qr-card';
+      var uq=document.createElement('div');uq.className='qr-img';makeQR(uq,qrText,160);
+      var noteHtml=note?'<div class="qr-note">  '+note+'</div>':'';
+      uc.innerHTML='<div class="qr-label">'+user+'</div>'+noteHtml;
+      uc.insertBefore(uq,uc.firstChild.nextSibling);
+      var acts=document.createElement('div');acts.className='qr-actions';
+      var b1=document.createElement('button');b1.textContent='下載';b1.setAttribute('data-fn',safe+'.png');b1.setAttribute('data-role','dl-single');acts.appendChild(b1);uc.appendChild(acts);grid.appendChild(uc);
+      inputRecords.push({no:idx+1,user:user,pwd:pwd,note:note,safe:safe,filename:String(idx+1<10?'0':'')+(idx+1)+'_'+safe});
+    });
+    document.getElementById('statTotal').textContent=lines.length;
+    document.getElementById('statQr').textContent=totalQr;
+    document.getElementById('statUser').textContent=userCount;
+    document.getElementById('statPass').textContent=passCount;
+    document.getElementById('inputResultArea').classList.remove('hidden');
+    hideLoading();
+    addAlert('inputAlert','✅ 成功生成 '+totalQr+' 張 QR Code（'+userCount+' 筆資料）');
+  },100);
+}
+
+function dlSingle(btn,fn){var card=btn.closest('.qr-card');if(!card)return;var el=card.querySelector('.qr-img');var du=getQrDataUrl(el);if(!du)return;var a=document.createElement('a');a.download=fn;a.href=du;a.click()}
+function downloadAllQR(){
+  if(!inputRecords.length){alert('請先生成 QR Code');return}
+  var zip=new JSZip();var cards=document.querySelectorAll('#qrGrid .qr-card');
+  for(var i=0;i<cards.length;i++){var el=cards[i].querySelector('.qr-img');var du=getQrDataUrl(el);if(!du)continue;var d=inputRecords[i];zip.file(d.filename+'.png',du.split(',')[1],{base64:true})}
+  zip.generateAsync({type:'blob'}).then(function(b){downloadBlob(b,'QRCodes_'+new Date().toISOString().slice(0,10)+'.zip')});
+}
+function downloadReport(){
+  if(!inputRecords.length){alert('請先生成 QR Code');return}
+  var r='QR Code 對應表報告\n'+'='.repeat(60)+'\n生成時間: '+new Date().toLocaleString('zh-TW')+'\n總筆數: '+inputRecords.length+'\n'+'='.repeat(60)+'\n\n';
+  inputRecords.forEach(function(d){r+='['+d.no+'] 帳號: '+d.user+'\n    密碼: '+d.pwd+(d.note?'\n    備註: '+d.note:'')+'\n    QR: '+d.filename+'.png\n\n'});
+  downloadBlob(new Blob([r],{type:'text/plain;charset=utf-8'}),'QR報告_'+new Date().toISOString().slice(0,10)+'.txt');
+}
+function downloadXlsx(){
+  if(!inputRecords.length){alert('請先生成 QR Code');return}
+  var data=[['No.','Account','Password','Note','QR Code','Card Image','Verification']];
+  inputRecords.forEach(function(d){var qt=d.user+'\n'+d.pwd+(d.note?'\n'+d.note:'');data.push([d.no,d.user,d.pwd,d.note||'',qt,qt,'PASS'])});
+  writeXlsxWithImages(data,4,'qr_mapping_'+new Date().toISOString().slice(0,10)+'.xlsx','QR Mapping',5);
+}
+
+function parseXlsxFile(file){
+  var reader=new FileReader();
+  reader.onload=function(e){
+    readXlsx(e.target.result).then(function(result){
+      var headers=result.headers,rows=result.rows;
+      if(!headers.length){alert('XLSX 沒有標題列');return}
+      var acctIdx=-1,pwdIdx=-1,noteIdx=-1;
+      for(var i=0;i<headers.length;i++){
+        var h=headers[i].trim();
+        if(acctIdx===-1&&ACCOUNT_NAMES.indexOf(h)!==-1)acctIdx=i;
+        if(pwdIdx===-1&&PASSWORD_NAMES.indexOf(h)!==-1)pwdIdx=i;
+        if(noteIdx===-1&&NOTE_NAMES.indexOf(h)!==-1)noteIdx=i;
+      }
+      if(acctIdx===-1||pwdIdx===-1){alert('找不到帳號/密碼欄位\n偵測到: '+headers.join(', '));return}
+      xlsxRecords=[];
+      rows.forEach(function(row,idx){
+        var a=String(row[acctIdx]||'').trim(),p=String(row[pwdIdx]||'').trim();
+        var n=noteIdx!==-1?String(row[noteIdx]||'').trim():'';
+        if(a&&p)xlsxRecords.push({no:idx+1,account:a,password:p,note:n});
+      });
+      if(!xlsxRecords.length){alert('XLSX 中無有效資料');return}
+      renderXlsxResults();
+    }).catch(function(err){alert('XLSX 解析失敗: '+err.message)});
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function renderXlsxResults(){
+  var tb=document.getElementById('xlsxTable');tb.innerHTML='';
+  xlsxRecords.forEach(function(d){
+    var tr=document.createElement('tr');
+    var noteCell=d.note?'<td style="font-size:12px;color:var(--t2)">'+d.note+'</td>':'<td style="color:var(--tm)">-</td>';
+    tr.innerHTML='<td>'+d.no+'</td><td style="font-family:monospace;font-size:13px">'+d.account+'</td><td style="font-family:monospace;font-size:12px">'+d.password+'</td>'+noteCell+'<td id="xq'+d.no+'"></td><td><span class="tg tg-g">PASS</span></td>';
+    tb.appendChild(tr);
+    var q=document.createElement('div');q.style.cssText='display:inline-block;background:#fff;border-radius:6px;padding:4px';makeQR(q,d.password,60);document.getElementById('xq'+d.no).appendChild(q);
+  });
+  document.getElementById('xlsxStatTotal').textContent=xlsxRecords.length;
+  document.getElementById('xlsxStatQr').textContent=xlsxRecords.length;
+  document.getElementById('xlsxStatUser').textContent=xlsxRecords.length;
+  document.getElementById('xlsxStatPass').textContent=xlsxRecords.length;
+  document.getElementById('xlsxResultArea').classList.remove('hidden');
+  addAlert('xlsxAlert','✅ 從 XLSX 讀取 '+xlsxRecords.length+' 筆，成功生成 '+xlsxRecords.length+' 張 QR Code');
+}
+function downloadXlsxResultQr(){
+  if(!xlsxRecords.length){alert('請先上傳 XLSX');return}
+  var zip=new JSZip();
+  xlsxRecords.forEach(function(d){
+    var qe=document.getElementById('xq'+d.no);
+    if(qe){var c=qe.querySelector('canvas');if(c)zip.file('QR_'+sanitizeFilename(d.account)+'.png',c.toDataURL('image/png').split(',')[1],{base64:true})}
+  });
+  zip.generateAsync({type:'blob'}).then(function(b){downloadBlob(b,'XLSX_QR_'+new Date().toISOString().slice(0,10)+'.zip')});
+}
+function downloadXlsxResultReport(){
+  if(!xlsxRecords.length){alert('請先上傳 XLSX');return}
+  var r='XLSX QR Code 報告\n'+'='.repeat(60)+'\n生成時間: '+new Date().toLocaleString('zh-TW')+'\n總筆數: '+xlsxRecords.length+'\n'+'='.repeat(60)+'\n\n';
+  xlsxRecords.forEach(function(d){r+='['+d.no+'] 帳號: '+d.account+'\n    密碼: '+d.password+(d.note?'\n    備註: '+d.note:'')+'\n\n'});
+  downloadBlob(new Blob([r],{type:'text/plain;charset=utf-8'}),'XLSX_QR_'+new Date().toISOString().slice(0,10)+'.txt');
+}
+function downloadXlsxResultXlsx(){
+  if(!xlsxRecords.length){alert('請先上傳 XLSX');return}
+  var data=[['No.','Account','Password','Note','QR Code','Card Image','Verification']];
+  xlsxRecords.forEach(function(d){var qt=d.account+'\n'+d.password+(d.note?'\n'+d.note:'');data.push([d.no,d.account,d.password,d.note||'',qt,qt,'PASS'])});
+  writeXlsxWithImages(data,4,'qr_mapping_'+new Date().toISOString().slice(0,10)+'.xlsx','QR Mapping',5).catch(function(e){console.error('downloadXlsxResultXlsx error:',e);alert('下載失敗: '+e.message)});
+}
+function downloadSampleXlsx(){
+  writeXlsx([['帳號','密碼','備註'],['root','password','系統管理員'],['admin','P@ssw0rd!23','測試帳號'],['dbadmin','Tr0ub4dor&3xtreme#2026$Secure','DB管理'],['api_user','pa$$w0rd/2026','API專用'],['管理員','密碼安全2026!@#','主帳號']],'QR碼範例_XLSX_5筆.xlsx','帳戶資料');
+  addAlert('xlsxAlert','📥 已下載範例 XLSX（5筆，含備註欄）','alert-info');
+}
+function downloadSampleAccountsXlsx(){
+  var data=[['使用人員','帳戶','密碼','備註','QR CODE','結果']];var used={};
+  var notes=['系統管理','日常操作','測試用','開發用','備份用','監控用','維護用','營運用','內部用','權限測試'];
+  for(var i=0;i<50;i++){var loc=LOCATIONS[Math.floor(Math.random()*LOCATIONS.length)],name=NAMES[Math.floor(Math.random()*NAMES.length)],prefix=PREFIXES[Math.floor(Math.random()*PREFIXES.length)],note=notes[Math.floor(Math.random()*notes.length)],acct;do{acct=prefix+(Math.floor(Math.random()*999)+1)}while(used[acct]);used[acct]=true;data.push([loc+'-'+name,acct,genPassword(16),note,'',''])}
+  writeXlsx(data,'accounts_'+new Date().toISOString().slice(0,10)+'.xlsx','帳戶資料');
+}
+
+
+document.addEventListener('DOMContentLoaded',function(){
+  document.getElementById('tnav').addEventListener('click',function(e){var btn=e.target.closest('.tbtn');if(!btn)return;var tab=btn.getAttribute('data-tab');if(tab!==null)switchTab(parseInt(tab))});
+  document.getElementById('btnGenerate').addEventListener('click',generateFromInput);
+  document.getElementById('btnLoadSample').addEventListener('click',function(){document.getElementById('credInput').value='root/password/系統管理員\nadmin/P@ssw0rd!23/測試帳號\ndbadmin/Tr0ub4dor&3xtreme#2026$Secure/DB管理\napi_user/pa$$w0rd/2026/API專用\n管理員/密碼安全2026!@#/主帳號'});
+  document.getElementById('btnLoadScenarios').addEventListener('click',function(){document.getElementById('credInput').value=SCENARIOS.map(function(s){return s.user+'/'+s.pass+'/'+s.note}).join('\n')});
+  document.getElementById('btnClear').addEventListener('click',function(){document.getElementById('credInput').value='';document.getElementById('inputResultArea').classList.add('hidden');document.getElementById('qrGrid').innerHTML='';inputRecords=[]});
+  document.getElementById('btnDownloadAllQR').addEventListener('click',downloadAllQR);
+  document.getElementById('btnDownloadReport').addEventListener('click',downloadReport);
+  document.getElementById('btnDownloadXlsx').addEventListener('click',downloadXlsx);
+  var dz=document.getElementById('dropZone'),fi=document.getElementById('xlsxFile');
+  dz.addEventListener('click',function(){fi.click()});
+  dz.addEventListener('dragover',function(e){e.preventDefault();dz.classList.add('dragover')});
+  dz.addEventListener('dragleave',function(){dz.classList.remove('dragover')});
+  dz.addEventListener('drop',function(e){e.preventDefault();dz.classList.remove('dragover');if(e.dataTransfer.files.length)parseXlsxFile(e.dataTransfer.files[0])});
+  fi.addEventListener('change',function(e){if(e.target.files.length)parseXlsxFile(e.target.files[0]);e.target.value=''});
+  document.getElementById('btnSampleXlsx').addEventListener('click',downloadSampleXlsx);
+  document.getElementById('btnSampleAccountsXlsx').addEventListener('click',downloadSampleAccountsXlsx);
+  document.getElementById('btnXlsxDownloadQr').addEventListener('click',downloadXlsxResultQr);
+  document.getElementById('btnXlsxDownloadReport').addEventListener('click',downloadXlsxResultReport);
+  document.getElementById('btnXlsxDownloadXlsx').addEventListener('click',downloadXlsxResultXlsx);
+  document.getElementById('qrGrid').addEventListener('click',function(e){if(e.target.getAttribute('data-role')==='dl-single')dlSingle(e.target,e.target.getAttribute('data-fn'))});
+});
+</script>
+</body>
+</html>

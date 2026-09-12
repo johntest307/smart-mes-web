@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>跨部門痛點自動化 — 測試報告</title>
+<style>
+  :root {--bg:#0f172a;--card:#1e293b;--border:#334155;--text:#e2e8f0;--muted:#94a3b8;--green:#10b981;--blue:#3b82f6;--orange:#f59e0b;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;padding:24px;}
+  h1{font-size:1.8rem;margin-bottom:4px;}
+  .sub{color:var(--muted);font-size:.875rem;margin-bottom:32px;}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:32px;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;}
+  .card-label{font-size:.75rem;text-transform:uppercase;color:var(--muted);letter-spacing:.08em;}
+  .card-value{font-size:2rem;font-weight:700;margin-top:4px;}
+  .card-url{font-size:.8rem;color:var(--blue);word-break:break-all;margin-top:8px;}
+  .section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px;}
+  .section h2{font-size:1rem;font-weight:600;margin-bottom:16px;}
+  table{width:100%;border-collapse:collapse;font-size:.8rem;}
+  th{background:#0f172a;padding:10px 12px;text-align:left;color:var(--muted);font-weight:600;text-transform:uppercase;font-size:.7rem;letter-spacing:.05em;}
+  td{padding:10px 12px;border-bottom:1px solid var(--border);}
+  tr:last-child td{border-bottom:none;}
+  .link{color:var(--blue);}
+  .badge-ok{background:#052e16;color:#4ade80;border:1px solid #166534;padding:4px 10px;border-radius:6px;font-size:.75rem;}
+  ul{padding-left:20px;}
+  li{margin:4px 0;font-size:.875rem;}
+</style>
+</head>
+<body>
+<h1>🔗 跨部門痛點自動化</h1>
+<div class="sub">Cross-Functional Pain-Point Automation — 一鍵部署測試報告 | 2026-06-11T20:39:18.829831</div>
+
+<div class="cards">
+  <div class="card">
+    <div class="card-label">解析痛點總數</div>
+    <div class="card-value" style="color:var(--blue)">19</div>
+    <div class="card-url">Step 1: 文件解析完成</div>
+  </div>
+  <div class="card">
+    <div class="card-label">注入 AppFlowy</div>
+    <div class="card-value" style="color:var(--green)">19</div>
+    <div class="card-url"><a class="link" href="http://127.0.0.1:8001" target="_blank">http://127.0.0.1:8001</a></div>
+  </div>
+  <div class="card">
+    <div class="card-label">GitLab Issue 數</div>
+    <div class="card-value" style="color:var(--orange)">7</div>
+    <div class="card-url"><a class="link" href="http://127.0.0.1:8880" target="_blank">http://127.0.0.1:8880</a></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Draw.io 匯入檔</div>
+    <div class="card-value" style="color:#a855f7;font-size:1rem;margin-top:8px">pain_matrix_import.txt</div>
+    <div class="card-url">output/drawio_exports/pain_matrix_import.txt</div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>🔗 服務連結</h2>
+  <ul>
+    <li>AppFlowy Cloud: <a class="link" href="http://127.0.0.1:8001/console" target="_blank">http://127.0.0.1:8001/console</a></li>
+    <li>GitLab CE: <a class="link" href="http://127.0.0.1:8880" target="_blank">http://127.0.0.1:8880</a></li>
+    <li>GitLab Issues: <a class="link" href="http://127.0.0.1:8880/api/v4/projects/1/issues" target="_blank">查看所有 Issue</a></li>
+  </ul>
+</div>
+
+<div class="section">
+  <h2>📐 評分與欄位說明</h2>
+  <table>
+    <thead>
+      <tr><th>欄位</th><th>分數區間 / 取值</th><th>評斷標準</th><th>備註</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>影響度</strong></td>
+        <td style="text-align:center">1 – 10</td>
+        <td>痛點對營運、客戶、成本或風險的實際衝擊。1=幾乎無感，5=中等困擾，10=嚴重影響營收/客訴/合規。</td>
+        <td>由各部門文件中的「影響度」欄位解析；缺值預設 5。</td>
+      </tr>
+      <tr>
+        <td><strong>可行性</strong></td>
+        <td style="text-align:center">1 – 10</td>
+        <td>技術與資源上短期內可落地的程度。1=極難/需大型專案，5=需跨部門協調，10=可快速修復或已有解法。</td>
+        <td>由文件中的「可行性」或「技術可行性」解析；缺值預設 5。</td>
+      </tr>
+      <tr>
+        <td><strong>ROI 權重</strong></td>
+        <td style="text-align:center">1 – 100</td>
+        <td>自動計算：<code>ROI = 影響度 × 可行性</code>。數值越高代表「高影響且相對好做」的投資報酬潛力越大。</td>
+        <td>例：影響度 9 × 可行性 8 = ROI 72。</td>
+      </tr>
+      <tr>
+        <td><strong>優先級</strong></td>
+        <td style="text-align:center">P1 / P2 / P3</td>
+        <td>
+          <span style="background:#ef4444;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P1</span> ROI ≥ 56（立即處理）<br>
+          <span style="background:#f59e0b;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P2</span> ROI 30 – 55（排程處理）<br>
+          <span style="background:#6b7280;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P3</span> ROI &lt; 30（觀察/暫緩）
+        </td>
+        <td>規則定義於 <code>step1_parse/normalize.py</code>。</td>
+      </tr>
+      <tr>
+        <td><strong>狀態</strong></td>
+        <td style="text-align:center">待審 / 已核</td>
+        <td><strong>待審</strong>：剛解析注入，尚未確認執行。<strong>已核</strong>：跨部門會議或自動核准後，允許建立 GitLab Issue。</td>
+        <td>一鍵部署時 P1 會自動標為「已核」並開票。</td>
+      </tr>
+      <tr>
+        <td><strong>GitLab 連結</strong></td>
+        <td style="text-align:center">URL / -</td>
+        <td>整合面板免登入檢視頁：<code>/issue/{iid}</code>；GitLab 原站連結需 root 登入。</td>
+        <td>非 P1 或尚未核准時顯示「-」。</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="section">
+  <h2>📋 痛點清單（共 19 筆）</h2>
+  <table>
+    <thead>
+      <tr><th>痛點描述</th><th>部門</th><th>根本原因</th><th>影響</th><th>緊迫</th><th>可行</th><th>加權分</th><th>優先級</th><th>AI 修復建議</th><th>GitLab 連結</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>客戶合約審核流程效率低下，導致簽署時間延長</td>
+          <td>業務部</td>
+          <td>缺乏自動化流程、資訊不完整或審核人員不足</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">7</td>
+          <td style="text-align:center">6</td>
+          <td style="text-align:center">7.2</td>
+          <td style="text-align:center"><span style="background:#f59e0b;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P2</span></td>
+          <td><small>實施自動化工作流程、優化審核流程、增加審核人員或提供相關培訓</small></td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>業務人員在客戶端現場無法透過手機即時查詢庫存，導致業務流程效率低下</td>
+          <td>業務部</td>
+          <td>缺乏移動端庫存查詢系統或手機應用程式</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">5</td>
+          <td style="text-align:center">6</td>
+          <td style="text-align:center">6.8</td>
+          <td style="text-align:center"><span style="background:#f59e0b;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P2</span></td>
+          <td><small>開發移動端庫存查詢系統或手機應用程式，實現業務人員在客戶端現場即時查詢庫存</small></td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>會議室預約系統使用者體驗不佳，導致會議室資源衝突和預約效率低下</td>
+          <td>業務部</td>
+          <td>系統介面設計不友好、功能不完整或缺乏自動化衝突檢查機制</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">7</td>
+          <td style="text-align:center">6</td>
+          <td style="text-align:center">7.2</td>
+          <td style="text-align:center"><span style="background:#f59e0b;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P2</span></td>
+          <td><small>重新設計會議室預約系統介面，增加自動化衝突檢查和預約提醒功能，提升使用者體驗和預約效率</small></td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>倉儲與電商系統之間的庫存數據不同步，導致超賣現象，進而引發客戶投訴</td>
+          <td>業務部</td>
+          <td>倉儲系統和電商系統之間缺乏實時數據同步機制，導致數據不一致</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">9</td>
+          <td style="text-align:center">6</td>
+          <td style="text-align:center">7.6</td>
+          <td style="text-align:center"><span style="background:#ef4444;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P1</span></td>
+          <td><small>實施倉儲和電商系統之間的實時數據同步API，定期進行數據對齊和校驗，確保數據的一致性</small></td>
+          <td><a class="link" href="http://127.0.0.1:8090/issue/44" target="_blank">查看 Issue</a></td>
+        </tr>
+        <tr>
+          <td>訂單系統漏單問題</td>
+          <td>業務部</td>
+          <td>系統資料同步不完整或訂單處理流程缺陷</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">9</td>
+          <td style="text-align:center">6</td>
+          <td style="text-align:center">7.6</td>
+          <td style="text-align:center"><span style="background:#ef4444;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P1</span></td>
+          <td><small>檢查系統資料同步機制、訂單處理流程，進行程式碼審查和單元測試，實施自動化測試和監控機制</small></td>
+          <td><a class="link" href="http://127.0.0.1:8090/issue/45" target="_blank">查看 Issue</a></td>
+        </tr>
+        <tr>
+          <td>核心資料庫每週日凌晨2點固定發生連線超時，影響全球服務，可能與資料庫維護、系統資源不足或網路連線問題相關</td>
+          <td>維運部</td>
+          <td>資料庫維護任務與系統資源配置不當，導致週日凌晨2點系統資源不足，引發連線超時</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">9</td>
+          <td style="text-align:center">6</td>
+          <td style="text-align:center">7.6</td>
+          <td style="text-align:center"><span style="background:#ef4444;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P1</span></td>
+          <td><small>調整資料庫維護時間、優化系統資源配置、增加網路連線容量和實施連線超時自動重試機制</small></td>
+          <td><a class="link" href="http://127.0.0.1:8090/issue/46" target="_blank">查看 Issue</a></td>
+        </tr>
+        <tr>
+          <td>機房 A 區溫度超出正常範圍，可能導致設備故障、數據損失或系統崩潰</td>
+          <td>維運部</td>
+          <td>空調系統效能下降或故障，可能由於維護不善、老化或設計缺陷</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">9</td>
+          <td style="text-align:center">6</td>
+          <td style="text-align:center">7.6</td>
+          <td style="text-align:center"><span style="background:#ef4444;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P1</span></td>
+          <td><small>進行空調系統檢查、維護和升級，確保機房溫度在正常範圍內，同時評估機房的冷卻需求和空調系統的容量</small></td>
+          <td><a class="link" href="http://127.0.0.1:8090/issue/47" target="_blank">查看 Issue</a></td>
+        </tr>
+        <tr>
+          <td>員工識別證門禁感應器功能失常，導致部分員工無法正常進出，需要手動登記</td>
+          <td>維運部</td>
+          <td>門禁感應器硬件故障或軟件配置問題</td>
+          <td style="text-align:center">6</td>
+          <td style="text-align:center">4</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">6.2</td>
+          <td style="text-align:center"><span style="background:#f59e0b;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P2</span></td>
+          <td><small>檢查和更換故障的門禁感應器，更新軟件配置，實施定期維護和檢查以防止類似問題</small></td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>登入服務回應延遲過高，導致使用者體驗不佳，可能影響業務流程和客戶滿意度</td>
+          <td>維運部</td>
+          <td>可能是由於伺服器效能不足、資料庫查詢效率低下、網路連線問題或程式碼優化不佳等因素所致</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">9</td>
+          <td style="text-align:center">6</td>
+          <td style="text-align:center">7.6</td>
+          <td style="text-align:center"><span style="background:#ef4444;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P1</span></td>
+          <td><small>優化登入服務的程式碼、升級伺服器硬體、改善資料庫查詢效率、進行網路連線優化和監控系統，以減少延遲和提高使用者體驗</small></td>
+          <td><a class="link" href="http://127.0.0.1:8090/issue/48" target="_blank">查看 Issue</a></td>
+        </tr>
+        <tr>
+          <td>虛擬主機磁碟空間不足，導致系統效能降低和資料儲存受限</td>
+          <td>維運部</td>
+          <td>虛擬主機磁碟空間配置不足或資料儲存管理不善</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">9</td>
+          <td style="text-align:center">6</td>
+          <td style="text-align:center">7.6</td>
+          <td style="text-align:center"><span style="background:#ef4444;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P1</span></td>
+          <td><small>增加虛擬主機磁碟空間、優化資料儲存管理、實施自動化監控和警報系統</small></td>
+          <td><a class="link" href="http://127.0.0.1:8090/issue/49" target="_blank">查看 Issue</a></td>
+        </tr>
+        <tr>
+          <td>月底對帳資料重複率極高，導致人工手動核對困難且容易出錯，影響財務部門的工作效率和準確性</td>
+          <td>財務部</td>
+          <td>缺乏自動化對帳流程和資料去重機制</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">7</td>
+          <td style="text-align:center">6</td>
+          <td style="text-align:center">7.2</td>
+          <td style="text-align:center"><span style="background:#f59e0b;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P2</span></td>
+          <td><small>實施自動化對帳系統，整合資料去重和核對功能，減少人工干預和錯誤</small></td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>報銷單據附件上傳系統故障導致報銷進度延遲</td>
+          <td>財務部</td>
+          <td>系統穩定性不足、伺服器容量不足或程式設計缺陷</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">9</td>
+          <td style="text-align:center">6</td>
+          <td style="text-align:center">7.6</td>
+          <td style="text-align:center"><span style="background:#ef4444;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P1</span></td>
+          <td><small>優化系統架構、增加伺服器容量、修復程式設計缺陷並實施自動化測試</small></td>
+          <td><a class="link" href="http://127.0.0.1:8090/issue/50" target="_blank">查看 Issue</a></td>
+        </tr>
+        <tr>
+          <td>財報系統產出的PDF文件字體大小不適宜，導致高層長官閱讀困難，影響決策效率</td>
+          <td>財務部</td>
+          <td>財報系統的PDF輸出設定未根據使用者需求進行優化，可能是由於缺乏使用者反饋或系統設定的缺陷</td>
+          <td style="text-align:center">6</td>
+          <td style="text-align:center">4</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">6.2</td>
+          <td style="text-align:center"><span style="background:#f59e0b;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P2</span></td>
+          <td><small>調整財報系統的PDF輸出設定，增加字體大小或提供可自訂輸出格式的選項，以改善使用者體驗和決策效率</small></td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>對帳系統缺乏自動化歐元轉換功能，導致人工手動計算和貼上數據，增加工作量和錯誤風險</td>
+          <td>財務部</td>
+          <td>系統設計缺陷和功能不足，未能滿足多幣種自動轉換的需求</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">5</td>
+          <td style="text-align:center">6</td>
+          <td style="text-align:center">6.8</td>
+          <td style="text-align:center"><span style="background:#f59e0b;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P2</span></td>
+          <td><small>開發和整合自動化歐元轉換功能，實現多幣種之間的動態轉換和同步更新</small></td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>發票批次下載速度極慢，導致業務流程效率低下和客戶滿意度降低</td>
+          <td>財務部/客服部</td>
+          <td>可能是由於伺服器資源不足、網路傳輸速度慢、資料庫查詢效率低下或程式設計不佳等原因造成</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">7</td>
+          <td style="text-align:center">6</td>
+          <td style="text-align:center">7.2</td>
+          <td style="text-align:center"><span style="background:#f59e0b;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P2</span></td>
+          <td><small>優化伺服器資源配置、升級網路傳輸速度、改善資料庫查詢效率和程式設計，同時考慮使用雲端服務或分散式系統來提高下載速度</small></td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>正式環境與測試環境的代碼版本不一致，導致測試結果無效，影響系統開發和部署的可靠性</td>
+          <td>資訊部</td>
+          <td>版本控制和部署流程的缺陷，可能是由於版本管理工具的不當使用、部署腳本的錯誤配置或是開發人員的操作失誤</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">7</td>
+          <td style="text-align:center">6</td>
+          <td style="text-align:center">7.2</td>
+          <td style="text-align:center"><span style="background:#f59e0b;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P2</span></td>
+          <td><small>實施自動化的版本控制和部署流程，使用CI/CD工具來確保正式環境和測試環境的一致性，同時加強開發人員的版本管理和部署知識培訓</small></td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>Git 權限申請流程因採用人工工單審核，導致平均等待時間超過 2 天，影響團隊開發效率和項目進度</td>
+          <td>資訊部</td>
+          <td>缺乏自動化的權限管理和審核流程</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">7</td>
+          <td style="text-align:center">6</td>
+          <td style="text-align:center">7.2</td>
+          <td style="text-align:center"><span style="background:#f59e0b;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P2</span></td>
+          <td><small>實施自動化的權限管理系統，結合工作流引擎和身份驗證機制，減少人工審核，提高申請流程效率</small></td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>內部技術知識庫搜尋結果不精準，導致工程師難以找到歷史解決方案，從而影響工作效率和項目交付質量</td>
+          <td>資訊部</td>
+          <td>知識庫內容組織不善、搜尋引擎功能不足、缺乏有效的標籤和分類系統</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">7</td>
+          <td style="text-align:center">6</td>
+          <td style="text-align:center">7.2</td>
+          <td style="text-align:center"><span style="background:#f59e0b;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P2</span></td>
+          <td><small>優化知識庫內容結構，升級搜尋引擎，實施標籤和分類系統，定期更新和維護知識庫內容</small></td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>測試伺服器硬體規格不足導致CI/CD pipeline失敗</td>
+          <td>資訊部</td>
+          <td>測試伺服器硬體資源（CPU、記憶體、儲存空間等）不足以支撐CI/CD pipeline的運行需求</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">7</td>
+          <td style="text-align:center">6</td>
+          <td style="text-align:center">7.2</td>
+          <td style="text-align:center"><span style="background:#f59e0b;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P2</span></td>
+          <td><small>升級測試伺服器硬體規格或採用雲端服務以動態調整資源</small></td>
+          <td>-</td>
+        </tr></tbody>
+  </table>
+</div>
+
+<div class="section">
+  <h2>⚙️ 執行狀態</h2>
+  <ul><li style='color:#10b981'>無錯誤</li></ul>
+</div>
+
+<div class="section">
+  <h2>📌 下一步操作</h2>
+  <ul>
+    <li>開啟 <strong>Draw.io</strong> → Arrange → Insert → Advanced → CSV → 貼入 <code>pain_matrix_import.txt</code> 內容 → Import</li>
+    <li>在 AppFlowy 中將確認的 P1 痛點 Status 改為「已核」，再執行 Step 4 推送 GitLab Issue。</li>
+    <li>使用 <code>stop.bat</code> 停止所有容器並清理資料。</li>
+  </ul>
+</div>
+</body>
+</html>

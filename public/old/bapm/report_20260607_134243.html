@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>跨部門痛點自動化 — 測試報告</title>
+<style>
+  :root {--bg:#0f172a;--card:#1e293b;--border:#334155;--text:#e2e8f0;--muted:#94a3b8;--green:#10b981;--blue:#3b82f6;--orange:#f59e0b;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;padding:24px;}
+  h1{font-size:1.8rem;margin-bottom:4px;}
+  .sub{color:var(--muted);font-size:.875rem;margin-bottom:32px;}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:32px;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;}
+  .card-label{font-size:.75rem;text-transform:uppercase;color:var(--muted);letter-spacing:.08em;}
+  .card-value{font-size:2rem;font-weight:700;margin-top:4px;}
+  .card-url{font-size:.8rem;color:var(--blue);word-break:break-all;margin-top:8px;}
+  .section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px;}
+  .section h2{font-size:1rem;font-weight:600;margin-bottom:16px;}
+  table{width:100%;border-collapse:collapse;font-size:.8rem;}
+  th{background:#0f172a;padding:10px 12px;text-align:left;color:var(--muted);font-weight:600;text-transform:uppercase;font-size:.7rem;letter-spacing:.05em;}
+  td{padding:10px 12px;border-bottom:1px solid var(--border);}
+  tr:last-child td{border-bottom:none;}
+  .link{color:var(--blue);}
+  .badge-ok{background:#052e16;color:#4ade80;border:1px solid #166534;padding:4px 10px;border-radius:6px;font-size:.75rem;}
+  ul{padding-left:20px;}
+  li{margin:4px 0;font-size:.875rem;}
+</style>
+</head>
+<body>
+<h1>🔗 跨部門痛點自動化</h1>
+<div class="sub">Cross-Functional Pain-Point Automation — 一鍵部署測試報告 | 2026-06-07T13:42:38.143351</div>
+
+<div class="cards">
+  <div class="card">
+    <div class="card-label">解析痛點總數</div>
+    <div class="card-value" style="color:var(--blue)">7</div>
+    <div class="card-url">Step 1: 文件解析完成</div>
+  </div>
+  <div class="card">
+    <div class="card-label">注入 AppFlowy</div>
+    <div class="card-value" style="color:var(--green)">7</div>
+    <div class="card-url"><a class="link" href="http://localhost:8000" target="_blank">http://localhost:8000</a></div>
+  </div>
+  <div class="card">
+    <div class="card-label">GitLab Issue 數</div>
+    <div class="card-value" style="color:var(--orange)">0</div>
+    <div class="card-url"><a class="link" href="http://localhost:8001" target="_blank">http://localhost:8001</a></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Draw.io 匯入檔</div>
+    <div class="card-value" style="color:#a855f7;font-size:1rem;margin-top:8px">pain_matrix_import.txt</div>
+    <div class="card-url">E:\W_開發中專案\BAPM\run\output\drawio_exports\pain_matrix_import.txt</div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>🔗 服務連結</h2>
+  <ul>
+    <li>AppFlowy Mock API: <a class="link" href="http://localhost:8000/health" target="_blank">http://localhost:8000/health</a></li>
+    <li>GitLab Mock API: <a class="link" href="http://localhost:8001/health" target="_blank">http://localhost:8001/health</a></li>
+    <li>GitLab Issues: <a class="link" href="http://localhost:8001/api/v4/projects/1/issues" target="_blank">查看所有 Issue</a></li>
+  </ul>
+</div>
+
+<div class="section">
+  <h2>📋 痛點清單（共 7 筆）</h2>
+  <table>
+    <thead>
+      <tr><th>痛點描述</th><th>部門</th><th>根本原因</th><th>影響度</th><th>可行性</th><th>ROI</th><th>優先級</th><th>狀態</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>倉儲與電商系統庫存不同步，導致業務超賣被客戶投訴。</td>
+          <td>業務部</td>
+          <td>系統排程每 4 小時才同步一次庫存。</td>
+          <td style="text-align:center">9</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">72</td>
+          <td style="text-align:center"><span style="background:#ef4444;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P1</span></td>
+          <td>待審</td>
+        </tr>
+        <tr>
+          <td>客戶下單後，訂單系統偶爾漏單。</td>
+          <td>業務部</td>
+          <td>後台 API 缺乏自動重試機制。</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">7</td>
+          <td style="text-align:center">56</td>
+          <td style="text-align:center"><span style="background:#ef4444;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P1</span></td>
+          <td>待審</td>
+        </tr>
+        <tr>
+          <td>登入服務回應延遲過高，使用者頻繁抱怨。</td>
+          <td>維運部</td>
+          <td>資料庫登入查詢缺乏 Index 且快取未生效。</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">9</td>
+          <td style="text-align:center">72</td>
+          <td style="text-align:center"><span style="background:#ef4444;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P1</span></td>
+          <td>待審</td>
+        </tr>
+        <tr>
+          <td>虛擬主機磁碟空間頻繁不足。</td>
+          <td>維運部</td>
+          <td>日誌輪轉設定錯誤導致舊日誌未定時清理。</td>
+          <td style="text-align:center">7</td>
+          <td style="text-align:center">8</td>
+          <td style="text-align:center">56</td>
+          <td style="text-align:center"><span style="background:#ef4444;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P1</span></td>
+          <td>待審</td>
+        </tr>
+        <tr>
+          <td>對帳系統缺乏歐元自動轉換，需人工手動貼上計算</td>
+          <td>財務部</td>
+          <td>未串接第三方匯率 API</td>
+          <td style="text-align:center">6</td>
+          <td style="text-align:center">9</td>
+          <td style="text-align:center">54</td>
+          <td style="text-align:center"><span style="background:#f59e0b;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P2</span></td>
+          <td>待審</td>
+        </tr>
+        <tr>
+          <td>發票批次下載速度極慢</td>
+          <td>財務部/客服部</td>
+          <td>下載伺服器頻寬不足且未平行處理</td>
+          <td style="text-align:center">5</td>
+          <td style="text-align:center">6</td>
+          <td style="text-align:center">30</td>
+          <td style="text-align:center"><span style="background:#f59e0b;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P2</span></td>
+          <td>待審</td>
+        </tr>
+        <tr>
+          <td>測試伺服器硬體規格不足，導致 CI/CD pipeline 經常失敗。</td>
+          <td>資訊部</td>
+          <td>本機測試機記憶體僅 8GB。</td>
+          <td style="text-align:center">7</td>
+          <td style="text-align:center">9</td>
+          <td style="text-align:center">63</td>
+          <td style="text-align:center"><span style="background:#ef4444;color:white;padding:2px 8px;border-radius:4px;font-size:12px">P1</span></td>
+          <td>待審</td>
+        </tr></tbody>
+  </table>
+</div>
+
+<div class="section">
+  <h2>⚙️ 執行狀態</h2>
+  <ul><li style='color:#10b981'>無錯誤</li></ul>
+</div>
+
+<div class="section">
+  <h2>📌 下一步操作</h2>
+  <ul>
+    <li>開啟 <strong>Draw.io</strong> → Arrange → Insert → Advanced → CSV → 貼入 <code>pain_matrix_import.txt</code> 內容 → Import</li>
+    <li>在 AppFlowy 中將確認的 P1 痛點 Status 改為「已核」，再執行 Step 4 推送 GitLab Issue。</li>
+    <li>使用 <code>stop.bat</code> 停止所有容器並清理資料。</li>
+  </ul>
+</div>
+</body>
+</html>

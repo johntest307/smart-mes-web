@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.env
+*.zip
+*.xlsx
+tests/
+.netlify/
+netlify/
+netlify.toml
+e2e_test*.mjs
+scripts/
+state_config.json
+*.db
+test_*.py
+test_*.mjs
+debug_test.py

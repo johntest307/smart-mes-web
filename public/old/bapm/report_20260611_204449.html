@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>跨部門痛點自動化 — 戰略決策報告</title>
+<style>
+  :root {--bg:#0f172a;--card:#1e293b;--border:#334155;--text:#e2e8f0;--muted:#94a3b8;--green:#10b981;--blue:#3b82f6;--orange:#f59e0b;--purple:#a855f7;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;padding:24px;}
+  h1{font-size:1.8rem;margin-bottom:4px;}
+  .sub{color:var(--muted);font-size:.875rem;margin-bottom:32px;}
+  
+  /* Tabs Styling */
+  .tabs{display:flex;gap:4px;margin-bottom:24px;border-bottom:1px solid var(--border);padding-bottom:1px;}
+  .tab{padding:12px 24px;cursor:pointer;background:var(--card);border:1px solid var(--border);border-bottom:none;border-radius:8px 8px 0 0;font-size:.875rem;font-weight:600;color:var(--muted);transition:all .2s;}
+  .tab.active{background:var(--bg);color:var(--text);border-bottom:2px solid var(--blue);margin-bottom:-2px;}
+  .tab-content{display:none;animation:fadeIn .3s;}
+  .tab-content.active{display:block;}
+  @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:32px;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;}
+  .card-label{font-size:.75rem;text-transform:uppercase;color:var(--muted);letter-spacing:.08em;}
+  .card-value{font-size:2rem;font-weight:700;margin-top:4px;}
+  
+  .section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px;}
+  table{width:100%;border-collapse:collapse;font-size:.8rem;}
+  th{background:#0f172a;padding:12px;text-align:left;color:var(--muted);text-transform:uppercase;font-size:.7rem;}
+  td{padding:12px;border-bottom:1px solid var(--border);}
+  
+  /* Strategic Styles */
+  .strategic-card{background:rgba(59,130,246,0.05);border:1px solid var(--blue);border-radius:12px;padding:24px;margin-bottom:20px;}
+  .strategic-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+  .theme-title{font-size:1.25rem;font-weight:700;color:var(--blue);}
+  .theme-badge{background:var(--purple);color:white;font-size:.7rem;padding:2px 8px;border-radius:99px;}
+  .roi-badge{background:var(--green);color:white;font-size:.7rem;padding:2px 8px;border-radius:99px;}
+  .strategic-body p{margin-bottom:8px;font-size:.9rem;}
+  .recommendation-box{margin-top:16px;padding:16px;background:rgba(16,185,129,0.1);border-left:4px solid var(--green);border-radius:4px;}
+  
+  .link{color:var(--blue);text-decoration:none;}
+  .link:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+<h1>🔗 跨部門痛點自動化 — 戰略決策報告</h1>
+<div class="sub">Cross-Functional Pain-Point Strategic Insight | 2026-06-11T20:44:47.580766</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('strategic')">📋 戰略決策書 (Aggregated)</div>
+  <div class="tab" onclick="showTab('detailed')">🔍 原始痛點清單 (Raw Data)</div>
+  <div class="tab" onclick="showTab('status')">⚙️ 系統狀態</div>
+</div>
+
+<!-- Tab: Strategic -->
+<div id="strategic" class="tab-content active">
+  <div class="section">
+    <h2>🎯 AI 戰略聚類分析 (Strategic Themes)</h2>
+    <p style="color:var(--muted);margin-bottom:20px;font-size:.875rem;">系統已利用 LLM 將 19 個碎片痛點收斂為以下核心戰略主題，建議高層依據 ROI 優先撥款處理。</p>
+    
+  </div>
+</div>
+
+<!-- Tab: Detailed -->
+<div id="detailed" class="tab-content">
+  <div class="section">
+    <h2>📋 原始痛點清單 (共 0 筆)</h2>
+    <table>
+      <thead>
+        <tr><th>痛點描述</th><th>部門</th><th>根本原因</th><th>影響</th><th>緊迫</th><th>可行</th><th>加權分</th><th>優先級</th><th>AI 修復建議</th><th>GitLab</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Tab: Status -->
+<div id="status" class="tab-content">
+    <div class="cards">
+        <div class="card">
+            <div class="card-label">解析痛點總數</div>
+            <div class="card-value" style="color:var(--blue)">0</div>
+        </div>
+        <div class="card">
+            <div class="card-label">戰略主題數</div>
+            <div class="card-value" style="color:var(--purple)">0</div>
+        </div>
+        <div class="card">
+            <div class="card-label">GitLab Issue 數</div>
+            <div class="card-value" style="color:var(--orange)">0</div>
+        </div>
+    </div>
+    <div class="section">
+        <h2>⚙️ 執行狀態與日誌</h2>
+        <ul><li style='color:#ef4444'>Client.__init__() got an unexpected keyword argument 'proxies'</li></ul>
+    </div>
+</div>
+
+<script>
+function showTab(id) {
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.currentTarget.classList.add('active');
+}
+</script>
+</body>
+</html>

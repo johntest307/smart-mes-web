@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MaTBC產線 人機料法環 管理戰情室</title>
+  <style>
+    :root {
+      --bg: #0b0f1a;
+      --surface: #12182b;
+      --card: #151d33;
+      --card-border: rgba(255,255,255,0.06);
+      --text: #e4e8f1;
+      --text-muted: #8b95b0;
+      --accent: #6c8cff;
+      --success: #34d399;
+      --success-bg: rgba(52,211,153,0.12);
+      --warning: #fbbf24;
+      --warning-bg: rgba(251,191,36,0.12);
+      --danger: #f87171;
+      --danger-bg: rgba(248,113,113,0.12);
+      --info: #60a5fa;
+      --info-bg: rgba(96,165,250,0.12);
+      --radius: 14px;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
+      background: var(--bg); color: var(--text); line-height: 1.6;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    /* ── Topbar ── */
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 32px;
+      background: rgba(11,15,26,0.92); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--card-border);
+    }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand-mark {
+      font-size: 18px; font-weight: 800; letter-spacing: 1px;
+      background: linear-gradient(135deg, var(--accent), #a78bfa);
+      color: #fff; padding: 6px 14px; border-radius: 8px;
+    }
+    .brand-text p { font-size: 13px; color: var(--text-muted); }
+    .brand-text strong { font-size: 15px; }
+    .top-nav { display: flex; gap: 4px; background: var(--surface); border-radius: 10px; padding: 4px; }
+    .nav-btn {
+      padding: 8px 18px; border: none; border-radius: 8px;
+      background: transparent; color: var(--text-muted); font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: all .2s; white-space: nowrap;
+    }
+    .nav-btn:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+    .nav-btn.active { background: var(--accent); color: #fff; }
+
+    /* ── Sections ── */
+    .section { padding: 40px 32px; max-width: 1200px; margin: 0 auto; display: none; }
+    .section.active { display: block; }
+    .section-head { margin-bottom: 24px; }
+    .section-head h2 { font-size: 24px; font-weight: 800; margin-bottom: 6px; }
+    .section-head p { font-size: 14px; color: var(--text-muted); }
+
+    /* ── Hero ── */
+    .hero { padding: 48px 32px 40px; background: linear-gradient(180deg, rgba(108,140,255,0.08) 0%, transparent 100%); }
+    .hero-inner { max-width: 1200px; margin: 0 auto; }
+    .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+    .hero h1 { font-size: 32px; font-weight: 800; margin-bottom: 10px; line-height: 1.25; }
+    .hero .subtitle { font-size: 15px; color: var(--text-muted); max-width: 720px; margin-bottom: 28px; }
+    .hero-cards { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+    .hero-card {
+      background: var(--card); border: 1px solid var(--card-border);
+      border-radius: var(--radius); padding: 18px; position: relative; overflow: hidden;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .hero-card:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+    .hero-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius: var(--radius) var(--radius) 0 0; }
+    .hero-card.accent::before  { background: var(--accent); }
+    .hero-card.success::before { background: var(--success); }
+    .hero-card.warning::before { background: var(--warning); }
+    .hero-card.danger::before  { background: var(--danger); }
+    .hero-card .label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+    .hero-card .icon { font-size: 26px; margin: 8px 0; }
+    .hero-card .value { font-size: 20px; font-weight: 800; }
+    .hero-card .subtext { font-size: 11px; color: var(--text-muted); margin-top: 4px; display: block; }
+
+    /* ── Grid ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+
+    /* ── Cards ── */
+    .card { background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 22px; transition: transform .2s; }
+    .card:hover { transform: translateY(-1px); }
+    .card h3 { font-size: 16px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .card p { font-size: 14px; color: var(--text-muted); line-height: 1.7; }
+
+    /* ── Pill ── */
+    .pill { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; }
+    .pill.blue   { background: var(--info-bg); color: var(--info); }
+    .pill.green  { background: var(--success-bg); color: var(--success); }
+    .pill.yellow { background: var(--warning-bg); color: var(--warning); }
+    .pill.red    { background: var(--danger-bg); color: var(--danger); }
+    .pill.purple { background: rgba(167,139,250,0.12); color: #a78bfa; }
+
+    /* ── Table ── */
+    .table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--card-border); }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th { text-align: left; padding: 14px 16px; background: var(--surface); font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); border-bottom: 1px solid var(--card-border); }
+    td { padding: 14px 16px; border-bottom: 1px solid var(--card-border); color: var(--text-muted); line-height: 1.8; vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(108,140,255,0.03); }
+
+    /* ── Principles ── */
+    .principle-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
+    .principle-card { background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 20px; text-align: center; }
+    .principle-card .p-icon { font-size: 30px; margin-bottom: 8px; }
+    .principle-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 5px; }
+    .principle-card p { font-size: 14px; color: var(--text-muted); }
+
+    /* ── Escalation ── */
+    .escalation { display: flex; flex-direction: column; align-items: center; gap: 0; padding: 24px 0; }
+    .esc-level { background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 18px 24px; text-align: center; width: 100%; max-width: 520px; }
+    .esc-level h4 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+    .esc-level p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+    .esc-arrow { width: 2px; height: 24px; background: var(--accent); position: relative; }
+    .esc-arrow::after { content:''; position:absolute; bottom:-4px; left:50%; transform:translateX(-50%); border-left:5px solid transparent; border-right:5px solid transparent; border-top:6px solid var(--accent); }
+    .esc-time { font-size: 12px; color: var(--warning); font-weight: 600; margin: 4px 0; }
+
+    /* ── Node Cards ── */
+    .node-card { background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius); overflow: hidden; transition: transform .25s, box-shadow .25s; }
+    .node-card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.35); }
+    .node-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+    .node-card-body { padding: 20px; }
+    .node-card-body .node-num { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; font-size: 13px; font-weight: 800; margin-bottom: 10px; }
+    .node-card-body h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+    .node-card-body p { font-size: 13px; color: var(--text-muted); line-height: 1.65; }
+    .node-card-body .tag-row { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+
+    /* ── Case Cards ── */
+    .case-card { background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 24px; margin-bottom: 18px; position: relative; overflow: hidden; }
+    .case-card::before { content:''; position:absolute; top:0; left:0; bottom:0; width:4px; }
+    .case-card.c1::before { background: var(--accent); }
+    .case-card.c2::before { background: var(--warning); }
+    .case-card.c3::before { background: var(--success); }
+    .case-card.c4::before { background: var(--danger); }
+    .case-card.c5::before { background: #a78bfa; }
+    .case-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+    .case-header h3 { font-size: 17px; font-weight: 700; }
+    .case-section { margin-bottom: 14px; }
+    .case-section h4 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 6px; }
+    .case-section p, .case-section li { font-size: 15px; color: var(--text-muted); line-height: 1.8; }
+    .case-section ul { padding-left: 18px; }
+
+    /* ── Divider ── */
+    .divider { border: none; border-top: 1px solid var(--card-border); margin: 0; }
+
+    /* ── Footer ── */
+    .footer { text-align: center; padding: 36px 32px; border-top: 1px solid var(--card-border); font-size: 12px; color: var(--text-muted); }
+
+    /* ── Responsive ── */
+    @media (max-width: 1100px) { .hero-cards { grid-template-columns: repeat(3, 1fr); } .principle-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 900px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; } .principle-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 24px; } .topbar { flex-direction: column; gap: 10px; } .top-nav { flex-wrap: wrap; justify-content: center; }
+      .section { padding: 28px 20px; } .hero { padding: 32px 20px; }
+    }
+    @media (max-width: 600px) {
+      .hero-cards { grid-template-columns: 1fr; } .hero h1 { font-size: 20px; }
+      .topbar { padding: 10px 14px; } .hero, .section { padding-left: 14px; padding-right: 14px; }
+      .nav-btn { padding: 6px 10px; font-size: 11px; } .brand-mark { font-size: 14px; padding: 5px 10px; }
+      .brand-text p { font-size: 11px; } .brand-text strong { font-size: 13px; }
+      .section-head h2 { font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════ Topbar ════════ -->
+<nav class="topbar">
+  <div class="brand">
+    <span class="brand-mark">5M1E</span>
+    <div class="brand-text">
+      <p>MaTBC產線管理</p>
+      <strong>人機料法環 管理戰情室</strong>
+    </div>
+  </div>
+  <div class="top-nav">
+    <button class="nav-btn active" data-tab="overview">📊 總覽</button>
+    <button class="nav-btn" data-tab="definition">⚖️ 定義與對比</button>
+    <button class="nav-btn" data-tab="escalation">🚨 爭議裁決</button>
+    <button class="nav-btn" data-tab="cases">📋 實戰案例</button>
+  </div>
+</nav>
+
+<!-- ════════ 📊 總覽 ════════ -->
+<section class="section active" id="overview">
+  <div class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">Wistron Production Line Management</p>
+      <h1>人機料法環（5M1E）產線管理戰情室</h1>
+      <p class="subtitle">整合人（Man）、機（Machine）、料（Material）、法（Method）、環（Environment）五大關鍵要素，為 SMT、組裝與測試產線提供異常根源分析（RCA）與爭議裁決的數據化管理框架。</p>
+      <div class="hero-cards">
+        <div class="hero-card accent"><div class="label">人 Man</div><div class="icon">👤</div><div class="value">SOP 遵從</div><span class="subtext">AI 影像防呆 · 技能矩陣 · 人員認證</span></div>
+        <div class="hero-card success"><div class="label">機 Machine</div><div class="icon">⚙️</div><div class="value">OEE 稼動</div><span class="subtext">預測性維護 · AMR 物流 · 設備校正</span></div>
+        <div class="hero-card" style="border-top:3px solid #a78bfa;"><div class="label">料 Material</div><div class="icon">📦</div><div class="value">物料管控</div><span class="subtext">來料檢驗 · MSD 管控 · BOM 追溯</span></div>
+        <div class="hero-card warning"><div class="label">法 Method</div><div class="icon">📋</div><div class="value">製程合規</div><span class="subtext">AOI + AI 檢測 · 數位雙生 · ECN 管理</span></div>
+        <div class="hero-card danger"><div class="label">環 Environment</div><div class="icon">🌡️</div><div class="value">環境監控</div><span class="subtext">IoT 溫濕度 · ESD 防護 · ESG 能耗</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" style="padding:40px 32px;">
+    <div class="section-head"><h2>人機料法環 異常處理核心心法</h2></div>
+    <div class="principle-grid">
+      <div class="principle-card" style="border-left:4px solid var(--danger);"><div class="p-icon">🛡️</div><h4>先隔離、後判定</h4><p>疑慮產品一律先入 WIP 隔離區，絕不在瑕疵風險下邊跑產線邊討論。</p></div>
+      <div class="principle-card" style="border-left:4px solid var(--accent);"><div class="p-icon">📈</div><h4>舉證不靠嘴，驗證看數據</h4><p>用 Swapping Test（機）、Golden Sample（法）、IoT 履歷（環）、AI/技能矩陣（人）說話。</p></div>
+      <div class="principle-card" style="border-left:4px solid var(--success);"><div class="p-icon">🔄</div><h4>閉環改善（CAPA）</h4><p>任何爭議處理完畢後，必須修正 SOP 或 MES 防呆邏輯，將個人經驗轉化為系統強制力。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ ⚖️ 定義與對比 ════════ -->
+<section class="section" id="definition">
+  <div class="section-head">
+    <h2>人機料法環 定義</h2>
+    <p>「人機料法環」（5M1E）是MaTBC等 EMS 大廠進行產線管理、智慧製造導入與異常根源分析（RCA）的核心架構</p>
+  </div>
+  <div class="grid-2" style="margin-bottom:32px;">
+    <div class="card"><h3>👤 人（Man / People）</h3><p><strong>定義：</strong>生產線上所有人員的技能等級、SOP 遵從度、機敏權限與作業效率管理。</p><p style="margin-top:10px;"><strong>MaTBC實務：</strong>AI 產線人員 SOP 動作與防錯防呆分析 — 透過影像識別即時監控組裝人員動作，若漏鎖螺絲、順序顛倒或未佩戴靜電手環，系統即時停機警示。</p></div>
+    <div class="card"><h3>⚙️ 機（Machine / Equipment）</h3><p><strong>定義：</strong>生產設備、夾具、測試治具與搬運載具的穩定度、稼動率（OEE）與預測性維護。</p><p style="margin-top:10px;"><strong>MaTBC實務：</strong>SMT 設備 AI 預測性維護（PdM）與 AMR 智慧物流 — 導入 AMR 進行料件自動配送，對迴焊爐進行 IoT 感測器監控，實現停機前的預防性維護。</p></div>
+    <div class="card"><h3>📦 料（Material / Material）</h3><p><strong>定義：</strong>原物料、零組件、錫膏、PCB、包裝材料的品質管控、來料檢驗（IQC）、MSD 濕敏管控與 BOM 追溯管理。</p><p style="margin-top:10px;"><strong>MaTBC實務：</strong>AI 視覺來料檢驗與 MSD 全程追溯 — 透過 AOI + AI 對進料進行外觀瑕疵自動篩檢；對 BGA、QFP 等濕敏元件實施拆封到打件的全程暴露時間追蹤，超時自動鎖定並觸發烘烤流程。</p></div>
+    <div class="card"><h3>📋 法（Method / Process）</h3><p><strong>定義：</strong>製造流程、參數設定、標準工時（ST）與品質檢驗的規範化與自動化優化。</p><p style="margin-top:10px;"><strong>MaTBC實務：</strong>AOI + AI 瑕疵檢測與數位雙生（Digital Twin）流程優化 — 結合 AI 深度學習降低過殺率，透過數位雙生模擬最佳化生產線流向。</p></div>
+    <div class="card"><h3>🌡️ 環（Environment / Workplace）</h3><p><strong>定義：</strong>生產現場的環境條件監控，包含溫濕度、潔淨度、ESD 與碳排放/能耗管理。</p><p style="margin-top:10px;"><strong>MaTBC實務：</strong>無塵室/SMT 車間溫濕度 IoT 監控與 ESG 智慧能源管理 — 佈建微型環境感測器，超標時自動調節空調除濕系統，連動 ESG 能耗管理平台。</p></div>
+  </div>
+
+  <div class="section-head"><h2>爭議評斷三大核心原則</h2><p>事實為本、數據說話、履歷可追溯（Data-Driven & Traceability）</p></div>
+  <div class="principle-grid" style="margin-bottom:32px;">
+    <div class="principle-card"><div class="p-icon">📐</div><h4>規格優先原則</h4><p>以客戶簽章認可的 SIP、圖紙、IPC-A-610 等文件為最高準則，超出規範即屬不良。</p></div>
+    <div class="principle-card"><div class="p-icon">🔒</div><h4>隔離與停損原則</h4><p>爭議發生時，先執行 WIP 隔離（Quarantine），防止疑慮品流入下一站或出貨。</p></div>
+    <div class="principle-card"><div class="p-icon">📊</div><h4>數據量化原則</h4><p>不講「感覺有瑕疵」，必須拿出 CPK &lt; 1.33、GR&amp;R &gt; 10%、Yield 異常等判定數據。</p></div>
+  </div>
+
+  <div class="section-head"><h2>品管 vs 大領班 管理重點對比</h2><p>品管追求「零瑕疵與合規性」，生產追求「產量與稼動率」，兩者目標一致但立場存在天然張力</p></div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th style="width:12%;">項目</th><th style="width:44%;">品管（QA/QC）管理重點</th><th style="width:44%;">生產大領班管理重點</th></tr></thead>
+      <tbody>
+        <tr><td><span class="pill blue">人 Man</span></td><td>1. 人員技能檢定與上崗資質（Certification）<br>2. 是否嚴格遵守 SOP，有無違規操作/越站<br>3. 首件檢查（FAI）與自檢落實度</td><td>1. 產線人力出勤率與瓶頸站人力支援部署<br>2. 新手/熟練工的平衡，產線平衡率<br>3. 人員作業工時（UPPH）與 SOP 執行速度</td></tr>
+        <tr><td><span class="pill green">機 Machine</span></td><td>1. 設備與治具的校正（Calibration）與點檢記錄<br>2. CPK（製程能力指數）與設備精密度表現<br>3. 防呆（Poka-Yoke）機制是否正常發揮作用</td><td>1. 設備稼動率（OEE）、故障停機時間<br>2. 保養（PM）時間安排，避免佔用排程<br>3. 換模/換線（SMED）的切換效率</td></tr>
+        <tr><td><span class="pill purple">料 Material</span></td><td>1. 來料檢驗（IQC）與供應商品質稽核<br>2. MSD（濕敏元件）拆封暴露時間管控<br>3. BOM 版本比對與物料追溯（Traceability）</td><td>1. 線上物料周轉率與呆滞料控制<br>2. 缺料預警與替代料（Alternative）切换效率<br>3. 物料配送準時率（JIT）與線邊倉管理</td></tr>
+        <tr><td><span class="pill yellow">法 Method</span></td><td>1. WI/SOP 版本控制（ECN/ECO 變更履歷）<br>2. 測試參數、過爐溫度曲線（Profile）合規性<br>3. 產品品質規範（AQL / IPC 標準）執行</td><td>1. 生產順暢度，排程達成率<br>2. 異常時的應變流向（MRB / 特採審核）<br>3. 標準工時（ST）與實際工時的差距控制</td></tr>
+        <tr><td><span class="pill red">環 Environment</span></td><td>1. 溫濕度、潔淨度、ESD 靜電接地連通性<br>2. MSD（濕敏元件）拆封暴露時間管控<br>3. 5S 執行與區域劃分（良品/不良品嚴格隔離）</td><td>1. 作業環境安全性（OSHA）與人員舒適度<br>2. 生產現場物料擺放區域（WIP）流暢度<br>3. 環境異常造成停機時的工時報廢處理</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ════════ 🚨 爭議裁決 ════════ -->
+<section class="section" id="escalation">
+  <div class="grid-2" style="margin-bottom:32px;">
+    <div>
+      <div class="section-head"><h2>三級升級裁決機制</h2><p>當品管與大領班無法達成共識時，啟動標準化升級流程</p></div>
+      <div class="escalation">
+        <div class="esc-level"><h4>第一層：現場爭議</h4><p>品管領班（QC Supervisor）↔ 生產大領班（Production Leader）</p></div>
+        <div class="esc-time">⏱ 30 分鐘內無法達成共識</div>
+        <div class="esc-arrow"></div>
+        <div class="esc-level"><h4>第二層：工程與製造判定</h4><p>品質經理（QA Manager）+ 製造部經理（MFG Manager）+ 製程工程師（PE）<br>召開 MRB 審查會議，驗證數據</p></div>
+        <div class="esc-time">⏱ 若仍有爭議或涉重大出貨風險</div>
+        <div class="esc-arrow"></div>
+        <div class="esc-level" style="border-color:var(--accent);"><h4>第三層：終極裁決</h4><p>廠長 / 營運高階主管（Plant General Manager / Operations Director）</p></div>
+      </div>
+      <div class="card" style="margin-top:16px; border-left:4px solid var(--warning);"><h3>⚡ 裁決決策公式</h3><p>若無法立即佐證安全性與品質風險，裁決一律採 <strong>「最高安全原則（Safety/Quality First）」</strong>：先 Hold Line / Quarantine，待 PE/QA 補齊實體測試數據並簽署特採同意書（Waiver / Deviations）後始得放行。</p></div>
+    </div>
+    <div>
+      <div class="section-head"><h2>各項目爭議情境與舉證方法</h2><p>不能靠口角或憑經驗喊話，必須遵循事實為本、數據說話的舉證架構</p></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th style="width:10%;">項目</th><th style="width:22%;">常見爭議</th><th style="width:34%;">品管舉證</th><th style="width:34%;">生產舉證</th></tr></thead>
+          <tbody>
+            <tr><td><span class="pill blue">人</span></td><td>品管判定作業員漏鎖螺絲；領班認為 SOP 模糊</td><td>提出 AOI/AI 錄影檔、稽核紀錄；檢查技能矩陣與認證履歷</td><td>拿出最新 WI/SOP 發布日誌（DCC 簽核紀錄），提出 ECN 申請單</td></tr>
+            <tr><td><span class="pill green">機</span></td><td>貼片機持續拋料，品管要求停機；領班認為是料捲問題</td><td>調閱 MES 拋料率數據（&gt;0.05%）；提出治具/鋼板張力測試值</td><td>執行 Swapping Test — 將疑慮料捲更換至正常 Feeder 驗證</td></tr>
+            <tr><td><span class="pill purple">料</span></td><td>來料不良率偏高，品管要求退貨；領班認為不影響功能</td><td>提出 IQC 檢驗報告、供應商出貨檢驗數據（OQC）、8D 報告</td><td>進行 Assembly-Level 實裝測試，證明功能不受影響；提出特採申請</td></tr>
+            <tr><td><span class="pill yellow">法</span></td><td>產品測試 FAIL，品管認定不良；領班認為是過殺</td><td>檢視 Golden Sample 測試結果（PASS 則產品確實不良）</td><td>執行 Gage R&R — 同一合格板連續測試 10 次，數據波動大則治具不穩定</td></tr>
+            <tr><td><span class="pill red">環</span></td><td>溫濕度超標 1%，品管要求停產；領班認為影響不大</td><td>拿出 IoT 溫濕度追蹤履歷圖與 MSD 管控表，對照規範指出風險</td><td>調閱空調運轉日誌證明暫態超標；要求進行信賴性切片實驗</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-head"><h2>爭議處置 4 大核心節點</h2><p>從異常爆發到標準化優化的完整循環機制</p></div>
+  <div class="grid-2">
+    <div class="node-card"><img src="1.jpg" alt="節點一"/><div class="node-card-body"><div class="node-num" style="background:var(--danger-bg);color:var(--danger);">1</div><h3>現場異常爆發與隔離</h3><p>品管稽核發現操作不合規（人）或環境異動（環），第一時間發起 <strong>Hold Line</strong> 與產品隔離（Quarantine），防止不良品流入下一站。</p><div class="tag-row"><span class="pill red">人 Man</span><span class="pill red">環 Environment</span></div></div></div>
+    <div class="node-card"><img src="2.jpg" alt="節點二"/><div class="node-card-body"><div class="node-num" style="background:var(--info-bg);color:var(--info);">2</div><h3>數據舉證與交叉驗證</h3><p>爭議核心在於「設備誤判」還是「工藝參數錯誤」。雙方不能僅憑經驗，必須依賴 <strong>CPK、GR&R、Swapping Test、Golden Sample</strong> 等數據佐證。</p><div class="tag-row"><span class="pill blue">機 Machine</span><span class="pill blue">法 Method</span></div></div></div>
+    <div class="node-card"><img src="3.jpg" alt="節點三"/><div class="node-card-body"><div class="node-num" style="background:var(--warning-bg);color:var(--warning);">3</div><h3>跨部門決策會議（MRB）</h3><p>現場無法達成共識時，異常升級至管理層。召開 <strong>MRB（物料評論會）</strong>，加入 PE/IE 工程師，最終由廠長或營運總監進行裁決。</p><div class="tag-row"><span class="pill yellow">Escalation</span><span class="pill yellow">MRB Review</span></div></div></div>
+    <div class="node-card"><img src="4.jpg" alt="節點四"/><div class="node-card-body"><div class="node-num" style="background:var(--success-bg);color:var(--success);">4</div><h3>標準化優化與 Lessons Learned</h3><p>裁決完成後，重點轉向預防再發。修訂 WI/SOP、人員再教育、優化設備防呆機制，將經驗轉化為 <strong>組織資產</strong>，實現循環優化。</p><div class="tag-row"><span class="pill green">CAPA</span><span class="pill green">Close-Loop</span></div></div></div>
+  </div>
+</section>
+
+<!-- ════════ 📋 實戰案例 ════════ -->
+<section class="section" id="cases">
+  <div class="section-head"><h2>5 大實戰案例</h2><p>MaTBC等 SMT 及組裝產線中最具代表性的爭議案例與標準處置流程</p></div>
+
+  <div class="case-card c1">
+    <div class="case-header"><span class="pill blue">機 Machine</span><h3>案例 1：SMT 貼片機拋料率高，品管要求停機 vs 領班要求續跑</h3></div>
+    <div class="case-section"><h4>事件背景</h4><p>SMT 產線 0201 小尺寸電容拋料率高達 0.15%（標準 &lt;0.03%）。品管要求停機保養吸嘴；大領班認為是料捲包裝瑕疵，主張更換料捲即可。</p></div>
+    <div class="case-section"><h4>處理步驟</h4><ul><li><strong>交叉驗證（Swapping Test）：</strong>將該料捲移至另一軌道良品 Feeder 測試，區分「料 vs 機」問題</li><li><strong>現場判定：</strong>驗證結果為原站位吸嘴真空度衰退，品管正式啟動 Hold Line，離線更換備用吸嘴（12 分鐘）</li><li><strong>品質放行：</strong>投跑 500 pcs 進行 FAI，拋料率回升至 0.01% 後簽署放行</li></ul></div>
+    <div class="case-section"><h4>注意事項</h4><p>• 禁止盲目停機，應先以 Swapping Test 切斷模糊空間<br>• 備件應採「整組換備品（Quick Swap）」模式，降低 OEE 損失</p></div>
+  </div>
+
+  <div class="case-card c2">
+    <div class="case-header"><span class="pill yellow">人/法 Man/Method</span><h3>案例 2：作業員漏鎖螺絲，AI 系統報警停機</h3></div>
+    <div class="case-section"><h4>事件背景</h4><p>伺服器後段組裝線，AI 影像防呆系統偵測到作業員少鎖一顆散熱器螺絲。領班主張「非結構核心，可出貨前再補鎖」，品管堅決反對。</p></div>
+    <div class="case-section"><h4>處理步驟</h4><ul><li><strong>產品隔離：</strong>品管將前後 20 台疑慮伺服器貼 HOLD 標籤，全數移至 WIP 隔離區</li><li><strong>責任歸因：</strong>調閱 AI 視覺辨識影像與 MES 紀錄，確認作業員未遵循對角線鎖螺絲規範</li><li><strong>返工與再培訓：</strong>由熟練工進行 100% 扭力重檢與螺絲補鎖；該作業員進行 0.5 小時 SOP 再教育</li></ul></div>
+    <div class="case-section"><h4>注意事項</h4><p>• 嚴禁「後補作業」，散熱器未按對角線順序鎖緊易造成晶片開裂<br>• 新人比率控管：單一產線新手不得超過 15%，且必須配置專人帶教</p></div>
+  </div>
+
+  <div class="case-card c3">
+    <div class="case-header"><span class="pill green">法 Method</span><h3>案例 3：ICT 測試站過殺（Overkill），Yield 急降</h3></div>
+    <div class="case-section"><h4>事件背景</h4><p>主機板 ICT 不良率由 0.5% 飆升至 8%，皆為「R123 電阻開路」。大領班認為是測試治具探針污染（過殺）；品管認為是上游 SMT 空焊。</p></div>
+    <div class="case-section"><h4>處理步驟</h4><ul><li><strong>Golden Sample 測試：</strong>投入已驗證合格的 Golden Sample 板，連續測試 10 次出現 3 次 FAIL，證實治具異常</li><li><strong>設備清線與校正：</strong>停用該 ICT 治具，清潔探針、更換磨損針腳並重新校正</li><li><strong>誤判品重測：</strong>重新投入校正後的 ICT 測試，PASS 率恢復至 99.8%</li></ul></div>
+    <div class="case-section"><h4>注意事項</h4><p>• Golden Sample 必須隨時備有有效校正期，是快速區分「產品不良」與「治具過殺」的關鍵工具<br>• 探針清潔後若重測仍 FAIL，须立即送 X-Ray 或切片，切勿重複重測</p></div>
+  </div>
+
+  <div class="case-card c4">
+    <div class="case-header"><span class="pill red">環 Environment</span><h3>案例 4：SMT 車間濕度超標，MSD 暴露超時</h3></div>
+    <div class="case-section"><h4>事件背景</h4><p>暴雨天車間空調除濕故障，濕度飆升至 75% RH（規範最高 60% RH），多批 Level 3 MSD 元件已拆封在線。品管要求停產烘烤；領班認為僅超標 1 小時不影響。</p></div>
+    <div class="case-section"><h4>處理步驟</h4><ul><li><strong>緊急停損：</strong>品管依據 IPC/JEDEC J-STD-033 標準，強制停止 MSD 打件</li><li><strong>物料處置：</strong>BGA 晶片送入 125°C 烘烤爐 20 小時；已過爐 PCB 全數 X-Ray 檢查</li><li><strong>環境恢復：</strong>開啟備用除濕機組，15 分鐘內將濕度拉回 50% RH</li></ul></div>
+    <div class="case-section"><h4>注意事項</h4><p>• 濕敏效應（Popcorn Effect）：IC 吸濕後過 Reflow 會因水氣膨脹導致內部爆裂<br>• IoT 自動連動防呆：濕度超標超過 15 分鐘，自動鎖定 MSD 料號打件權限</p></div>
+  </div>
+
+  <div class="case-card c5">
+    <div class="case-header"><span class="pill blue">法/機 Method/Machine</span><h3>案例 5：ECN 未同步，舊版韌體燒錄出貨</h3></div>
+    <div class="case-section"><h4>事件背景</h4><p>工程部已發布 ECN 升級 BIOS 韌體至 v2.0，但燒錄站仍繼續燒錄 v1.0。品管稽核發現後 Hold 住 300 台產品；領班抗議工程部未及時通知。</p></div>
+    <div class="case-section"><h4>處理步驟</h4><ul><li><strong>版本清查：</strong>檢查 DCC 系統，確認 ECN 簽核已生效但產線未同步韌體檔案</li><li><strong>MRB 異動審查：</strong>召開緊急 MRB 會議，決議「線上拆箱重新燒錄（Rework）」</li><li><strong>重工與稽核：</strong>300 台拆箱刷新 BIOS 至 v2.0、FVT 全測，品管逐台抽驗簽核後放行</li></ul></div>
+    <div class="case-section"><h4>注意事項</h4><p>• 防呆軟體化：燒錄站應導入雲端 FW 自動比對，版本不符直接鎖定無法開工<br>• ECN 閉環管理：變更發布後必須包含「舊料清退」與「舊版刪除」的實體確認步驟</p></div>
+  </div>
+</section>
+
+<!-- ════════ Footer ════════ -->
+<footer class="footer">
+  <p>MaTBC產線 人機料法環 管理戰情室 ｜ Powered by 5M1E Management Framework</p>
+</footer>
+
+<script>
+const navBtns = document.querySelectorAll('.nav-btn');
+const sections = document.querySelectorAll('.section');
+navBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    navBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    sections.forEach(s => s.classList.remove('active'));
+    document.getElementById(btn.dataset.tab).classList.add('active');
+    window.scrollTo(0, 0);
+  });
+});
+</script>
+</body>
+</html>

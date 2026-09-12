@@ -1,0 +1,854 @@
+﻿<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI GPU 伺服器產線 | 組織架構總覽</title>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      --bg: #0e1729;
+      --panel: #1c2a3f;
+      --panel-2: #172338;
+      --line: #30435c;
+      --muted: #91a2b8;
+      --text: #e8f1fa;
+      --cyan: #35bdf2;
+      --green: #22c55e;
+      --yellow: #eab308;
+      --red: #f0444c;
+      --orange: #fb923c;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--text);
+      background: var(--bg);
+      font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+      letter-spacing: .02em;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .28;
+      background-image: linear-gradient(rgba(53,189,242,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(53,189,242,.035) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    .shell { width: min(1520px, calc(100% - 36px)); margin: 0 auto; padding: 24px 0 48px; position: relative; }
+    header { text-align: center; padding: 4px 0 20px; }
+    .eyebrow { color: var(--cyan); font-size: 12px; letter-spacing: .2em; text-transform: uppercase; }
+    h1 { margin: 8px 0 5px; color: var(--cyan); font-size: clamp(25px, 3vw, 38px); letter-spacing: .07em; }
+    .subtitle { margin: 0; color: var(--muted); font-size: 13px; }
+
+    .tabs { display: flex; justify-content: center; gap: 4px; flex-wrap: wrap; margin: 0 auto 18px; }
+    .tab {
+      border: 1px solid var(--line); border-radius: 6px 6px 0 0; padding: 10px 22px;
+      color: var(--muted); background: rgba(28,42,63,.82); cursor: pointer; font: inherit; font-size: 13px;
+      transition: .2s ease;
+    }
+    .tab:hover, .tab.active { color: #061420; background: var(--cyan); border-color: var(--cyan); }
+
+    .view { display: none; animation: rise .35s ease both; }
+    .view.active { display: block; }
+    @keyframes rise { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: none; } }
+
+    .metrics { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 18px; }
+    .metric, .panel, .unit { border: 1px solid var(--line); background: rgba(28,42,63,.94); border-radius: 10px; }
+    .metric { padding: 14px 16px; min-height: 102px; }
+    .metric-label { color: var(--muted); font-size: 12px; }
+    .metric-value { margin-top: 6px; font-size: 32px; line-height: 1; font-weight: 700; }
+    .metric-note { margin-top: 9px; color: var(--muted); font-size: 11px; }
+    .cyan { color: var(--cyan); } .green { color: var(--green); } .yellow { color: var(--yellow); } .red { color: var(--red); } .orange { color: var(--orange); }
+
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin: 34px 0 12px; }
+    .section-head h2 { margin: 0; font-size: 18px; color: var(--cyan); font-weight: 600; }
+    .section-head p { margin: 0; color: var(--muted); font-size: 12px; }
+
+    .command-grid { display: grid; grid-template-columns: 1fr 1.4fr 1fr; align-items: center; gap: 0; }
+    .leader { max-width: 370px; margin: 0 auto; text-align: center; }
+    .leader-main { padding: 18px; border: 1px solid rgba(53,189,242,.7); background: linear-gradient(135deg, #1a3e59, #1c2a3f); border-radius: 10px; box-shadow: 0 0 28px rgba(53,189,242,.09); }
+    .leader-role { color: var(--muted); font-size: 12px; }
+    .leader-name { margin: 4px 0 0; font-size: 20px; font-weight: 700; }
+    .leader-chain { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 14px; color: var(--muted); font-size: 12px; }
+    .chain-line { width: 36px; border-top: 1px dashed var(--cyan); }
+    .support-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .support { padding: 14px; min-height: 80px; border-left: 2px solid var(--cyan); background: var(--panel-2); border-radius: 5px; }
+    .support strong { display: block; font-size: 15px; } .support span { display: block; margin-top: 6px; color: var(--muted); font-size: 11px; }
+    .connector { position: relative; height: 25px; margin: 0 8%; border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
+    .connector::before { content: ""; position: absolute; left: 0; right: 0; top: 0; border-top: 1px solid var(--line); }
+
+    .units { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+    .unit { overflow: hidden; transition: transform .2s ease, border-color .2s ease; }
+    .unit:hover { transform: translateY(-3px); border-color: var(--unit-color); }
+    .unit-top { height: 5px; background: var(--unit-color); }
+    .unit-body { padding: 17px; }
+    .unit-title { display: flex; align-items: start; justify-content: space-between; gap: 8px; }
+    .unit-title h3 { margin: 0; font-size: 18px; } .unit-title small { color: var(--unit-color); font-size: 12px; white-space: nowrap; }
+    .unit-en { margin: 4px 0 16px; color: var(--muted); font-size: 11px; }
+    .headcount { display: flex; align-items: baseline; gap: 8px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+    .headcount b { font-size: 34px; color: var(--unit-color); } .headcount span { color: var(--muted); font-size: 12px; }
+    .unit-stat { display: flex; justify-content: space-between; padding: 12px 0 0; color: var(--muted); font-size: 12px; }
+    .unit-stat b { color: var(--text); font-size: 13px; }
+    .unit-details { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
+    .unit.open .unit-details { max-height: 160px; }
+    .unit-details ul { margin: 14px 0 0; padding: 12px 0 0 17px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; line-height: 1.9; }
+    .unit-toggle { width: 100%; margin-top: 13px; padding: 8px 0 0; color: var(--unit-color); background: transparent; border: 0; border-top: 1px solid var(--line); cursor: pointer; font: inherit; font-size: 12px; }
+    #overview > .units .headcount, #overview > .units .unit-stat { display: none; }
+
+    .info-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 12px; margin-top: 18px; }
+    .panel { padding: 18px; }
+    .panel h3 { margin: 0 0 16px; padding-bottom: 12px; border-bottom: 1px solid var(--line); color: var(--cyan); font-size: 15px; font-weight: 500; }
+    .bars { display: grid; gap: 13px; }
+    .bar-row { display: grid; grid-template-columns: 54px 1fr 58px; align-items: center; gap: 10px; color: var(--muted); font-size: 12px; }
+    .bar-track { height: 8px; background: #101b2e; border-radius: 2px; overflow: hidden; }
+    .bar-fill { height: 100%; background: var(--bar-color); }
+    .bar-row strong { color: var(--text); text-align: right; font-size: 12px; }
+    .legend { display: flex; justify-content: center; gap: 18px; margin-top: 20px; color: var(--muted); font-size: 11px; }
+    .legend i { display: inline-block; width: 9px; height: 9px; margin-right: 5px; background: var(--legend); }
+    .summary-lines { display: grid; gap: 14px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .summary-lines b { color: var(--text); } .summary-lines .accent { color: var(--cyan); font-weight: 700; }
+    .upload-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; padding: 16px 18px; border: 1px dashed var(--cyan); border-radius: 8px; background: rgba(23,35,56,.8); }
+    .upload-copy strong { display: block; color: var(--text); font-size: 14px; } .upload-copy span { display: block; margin-top: 5px; color: var(--muted); font-size: 11px; }
+    .upload-actions { display: flex; align-items: center; gap: 10px; } .file-label, .action-button { padding: 9px 14px; border: 1px solid var(--cyan); border-radius: 5px; color: #061420; background: var(--cyan); cursor: pointer; font: inherit; font-size: 12px; } .file-label input { display: none; } .action-button { color: var(--cyan); background: transparent; } .action-button:disabled { opacity: .45; cursor: not-allowed; }
+    .sheet-status { color: var(--muted); font-size: 11px; }
+    .analysis-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 18px 0; } .analysis-card { padding: 16px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); } .analysis-card span { color: var(--muted); font-size: 11px; } .analysis-card b { display: block; margin-top: 7px; color: var(--cyan); font-size: 25px; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 12px; } .data-table th, .data-table td { padding: 10px 8px; border-bottom: 1px solid var(--line); text-align: left; } .data-table th { color: var(--cyan); font-weight: 500; } .data-table td { color: var(--muted); }
+    #attendance-table { max-height: 430px; overflow: auto; }
+    #attendance-table .data-table { min-width: 760px; }
+    .chart-grid { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .chart { padding: 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+    .chart h4 { margin: 0 0 10px; color: var(--cyan); font-size: 13px; font-weight: 500; }
+    .bar-chart { display: grid; gap: 10px; }
+    .bar-item { display: grid; grid-template-columns: minmax(0, 1fr) 130px; gap: 10px; align-items: center; }
+    .bar-label { color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bar-track { height: 10px; background: #101b2e; border-radius: 999px; overflow: hidden; }
+    .bar-fill { height: 100%; background: var(--cyan); transition: width .3s ease; }
+    .summary-list { display: grid; gap: 8px; }
+    .summary-item { padding: 12px; border-radius: 8px; background: rgba(53,189,242,.08); color: var(--text); font-size: 12px; line-height: 1.6; }
+    .summary-item.important { border-left: 3px solid var(--yellow); }
+    .summary-item.critical { border-left: 3px solid var(--red); }
+    .summary-meta { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 11px; }
+    .report { min-height: 150px; color: var(--muted); font-size: 13px; line-height: 1.8; white-space: pre-line; } .report strong { color: var(--text); }
+    .report-action { margin-bottom: 12px; }
+    .risk-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; } .risk-list li { padding: 12px; border-left: 3px solid var(--yellow); background: var(--panel-2); color: var(--muted); font-size: 12px; line-height: 1.6; } .risk-list li.high { border-color: var(--red); } .risk-list b { color: var(--text); }
+    .executive-photo { cursor: pointer; position: relative; }
+    .executive-photo::after { content: "▶ WATCH VIDEO"; position: absolute; left: 12px; bottom: 12px; padding: 5px 8px; border: 1px solid rgba(255,255,255,.45); border-radius: 4px; color: #fff; background: rgba(6,20,32,.75); font-size: 10px; letter-spacing: .08em; opacity: 0; transition: opacity .2s ease; }
+    .executive-photo:hover::after, .executive-photo:focus-visible::after { opacity: 1; }
+    .video-modal { display: none; position: fixed; z-index: 20; inset: 0; align-items: center; justify-content: center; padding: 24px; background: rgba(4,10,20,.86); }
+    .video-modal.open { display: flex; }
+    .video-dialog { width: min(1350px, calc(100vw - 32px)); padding: 18px; border: 1px solid var(--cyan); border-radius: 10px; background: var(--panel); box-shadow: 0 20px 70px rgba(0,0,0,.5); }
+    .video-dialog-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; color: var(--cyan); font-size: 15px; }
+    .video-close { width: 32px; height: 32px; border: 1px solid var(--line); border-radius: 4px; color: var(--text); background: transparent; cursor: pointer; font-size: 20px; line-height: 1; }
+    .video-dialog video { display: block; width: 100%; max-height: 72vh; background: #050b14; }
+
+    .executive-org { display: grid; justify-items: center; gap: 0; margin: 18px auto 24px; }
+    .executive-card { display: grid; grid-template-columns: 210px minmax(0, 430px); width: min(100%, 720px); min-height: 220px; overflow: hidden; border: 1px solid var(--card-color); border-radius: 10px; background: var(--panel); box-shadow: 0 0 24px rgba(0,0,0,.16); }
+    .executive-photo { display: flex; align-items: end; justify-content: center; min-height: 220px; padding: 8px 12px 0; background: linear-gradient(150deg, color-mix(in srgb, var(--card-color) 24%, #172338), #172338); }
+    .executive-photo img { display: block; width: 100%; height: 210px; object-fit: cover; object-position: center center; }
+    .executive-placeholder { align-items: center; padding: 0; color: var(--card-color); font-size: 13px; letter-spacing: .12em; }
+    .executive-copy { padding: 22px 24px; }
+    .executive-index { color: var(--card-color); font-size: 11px; letter-spacing: .14em; }
+    .executive-copy h3 { margin: 6px 0 3px; font-size: 21px; }
+    .executive-person { margin-left: 10px; color: var(--card-color); font-size: 14px; font-weight: 500; }
+    .executive-en { color: var(--muted); font-size: 11px; }
+    .executive-copy p { margin: 14px 0 0; color: var(--muted); font-size: 12px; line-height: 1.8; }
+    .org-connector { width: 1px; height: 28px; margin-inline: auto; background: var(--cyan); position: relative; }
+    .org-connector::after { content: ""; position: absolute; left: -4px; bottom: 0; width: 8px; height: 8px; border-right: 1px solid var(--cyan); border-bottom: 1px solid var(--cyan); transform: rotate(45deg); }
+    .org-unit-branch { display: grid; grid-template-columns: repeat(5, 1fr); height: 34px; margin: 0 6px; position: relative; }
+    .org-unit-branch::before { content: ""; position: absolute; top: 0; left: 10%; right: 10%; border-top: 1px solid var(--cyan); }
+    .org-unit-branch span { position: relative; }
+    .org-unit-branch span::before { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; border-left: 1px solid var(--cyan); }
+    .org-unit-branch span::after { content: ""; position: absolute; left: calc(50% - 4px); bottom: 1px; width: 7px; height: 7px; border-right: 1px solid var(--cyan); border-bottom: 1px solid var(--cyan); transform: rotate(45deg); }
+
+    .flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 18px; }
+    .org-flow { grid-template-columns: repeat(5, 1fr); }
+    .flow-step { position: relative; padding: 18px 18px 18px 24px; background: var(--panel); border: 1px solid var(--line); }
+    .flow-step:not(:last-child)::after { content: ""; position: absolute; z-index: 1; top: 50%; right: -9px; width: 16px; height: 16px; border-top: 1px solid var(--cyan); border-right: 1px solid var(--cyan); transform: translateY(-50%) rotate(45deg); background: var(--panel); }
+    .flow-step b { display: block; margin-bottom: 6px; color: var(--cyan); font-size: 13px; } .flow-step span { color: var(--muted); font-size: 12px; line-height: 1.6; }
+    .perf-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+    .perf-kpi { border: 1px solid var(--line); background: rgba(28,42,63,.94); border-radius: 10px; padding: 18px; text-align: center; }
+    .perf-kpi-icon { font-size: 22px; margin-bottom: 6px; }
+    .perf-kpi-value { font-size: 26px; font-weight: 700; color: var(--cyan); }
+    .perf-kpi-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .perf-roi { margin-bottom: 18px; }
+    .perf-roi h3 { margin: 0 0 14px; font-size: 16px; color: var(--cyan); }
+    .perf-roi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .perf-roi-card { background: var(--panel-2); border-radius: 8px; padding: 14px; }
+    .perf-roi-label { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+    .perf-roi-compare { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: 700; }
+    .green-arrow { color: var(--green); font-size: 16px; }
+    .perf-pillars { margin-bottom: 18px; }
+    .perf-pillars h3 { margin: 0 0 14px; font-size: 16px; color: var(--cyan); }
+    .perf-pillar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
+    .perf-pillar-card { background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 14px; cursor: pointer; transition: .2s; }
+    .perf-pillar-card:hover { border-color: var(--cyan); }
+    .perf-pillar-icon { font-size: 22px; margin-bottom: 6px; }
+    .perf-pillar-card h4 { margin: 0; font-size: 13px; color: var(--text); }
+    .perf-pillar-en { margin: 2px 0 0; font-size: 10px; color: var(--muted); }
+    .perf-pillar-detail { background: var(--panel-2); border-radius: 8px; padding: 16px; }
+    .perf-pillar-detail p { margin: 0 0 12px; font-size: 13px; color: var(--muted); line-height: 1.6; }
+    .perf-pillar-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .perf-metric { background: var(--bg); border-radius: 6px; padding: 10px; text-align: center; }
+    .perf-metric span { display: block; font-size: 11px; color: var(--muted); }
+    .perf-metric b { font-size: 18px; margin-top: 4px; display: block; }
+    .perf-radar { margin-bottom: 18px; }
+    .perf-radar h3 { margin: 0 0 14px; font-size: 16px; color: var(--cyan); }
+    .perf-radar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .perf-radar-item { background: var(--panel-2); border-radius: 8px; padding: 14px; text-align: center; }
+    .perf-radar-icon { font-size: 24px; margin-bottom: 6px; }
+    .perf-radar-item span { display: block; font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+    .perf-bar { height: 6px; background: rgba(255,255,255,.06); border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
+    .perf-bar-fill { height: 100%; border-radius: 3px; }
+    .perf-bar-fill.cyan { background: var(--cyan); }
+    .perf-bar-fill.green { background: var(--green); }
+    .perf-bar-fill.yellow { background: var(--yellow); }
+    .perf-radar-item b { font-size: 20px; }
+    @media (max-width: 700px) { .perf-kpi-grid, .perf-pillar-grid, .perf-radar-grid, .perf-pillar-metrics { grid-template-columns: 1fr 1fr; } .perf-roi-grid { grid-template-columns: 1fr; } }
+
+    footer { margin-top: 30px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); text-align: center; font-size: 11px; }
+
+    @media (max-width: 1100px) { .metrics { grid-template-columns: repeat(3, 1fr); } .units { grid-template-columns: repeat(3, 1fr); } .command-grid { grid-template-columns: 1fr; gap: 14px; } .leader { order: -1; } .connector { display: none; } .org-unit-branch { display: none; } }
+    @media (max-width: 700px) { .shell { width: min(100% - 24px, 600px); padding-top: 16px; } .tabs { justify-content: stretch; } .tab { flex: 1 1 30%; padding: 9px 7px; font-size: 11px; } .metrics, .units, .info-grid, .flow, .org-flow { grid-template-columns: 1fr; } .analysis-grid { grid-template-columns: repeat(2, 1fr); } .metric { min-height: 88px; } .support-grid { grid-template-columns: repeat(2, 1fr); } .section-head { align-items: start; flex-direction: column; gap: 4px; } .flow-step:not(:last-child)::after { top: auto; right: 50%; bottom: -9px; transform: translateX(50%) rotate(135deg); } .flow-step { margin-bottom: 9px; } .executive-card { grid-template-columns: 145px minmax(0, 1fr); min-height: 185px; } .executive-photo { min-height: 185px; padding-inline: 8px; } .executive-photo img { height: 178px; object-fit: cover; object-position: center center; } .executive-copy { padding: 17px 15px; } .executive-copy h3 { font-size: 17px; } .executive-copy p { margin-top: 10px; font-size: 11px; line-height: 1.65; } h1 { font-size: 25px; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div class="eyebrow">AI GPU SERVER PRODUCTION LINE</div>
+      <h1>產線組織架構總覽</h1>
+      <p class="subtitle">Plant Organization Dashboard ／ 最後更新：2026-08-09 09:30</p>
+    </header>
+
+    <nav class="tabs" aria-label="頁面分頁">
+      <button class="tab active" data-view="overview">總覽</button>
+      <button class="tab" data-view="organization">組織架構</button>
+      <button class="tab" data-view="operations">產線流程</button>
+      <button class="tab" data-view="attendance">出缺勤分析</button>
+      <button class="tab" data-view="discipline">紀律管理</button>
+      <button class="tab" data-view="performance">績效數位化</button>
+    </nav>
+
+    <section id="overview" class="view active">
+      <div class="metrics">
+        <article class="metric"><div class="metric-label">總編制人數</div><div class="metric-value cyan">501</div><div class="metric-note">全線核定編制</div></article>
+        <article class="metric"><div class="metric-label">生產單位</div><div class="metric-value green">05</div><div class="metric-note">組裝・測試・包裝・物料・維修</div></article>
+        <article class="metric"><div class="metric-label">基層 OP／技術員</div><div class="metric-value yellow">477</div><div class="metric-note">依指定比例配置</div></article>
+        <article class="metric"><div class="metric-label">領班幹部</div><div class="metric-value orange">10</div><div class="metric-note">大領班 x5・副領班 x5</div></article>
+        <article class="metric"><div class="metric-label">管理與專案</div><div class="metric-value cyan">14</div><div class="metric-note">核心管理者 4 位・專員 10 人</div></article>
+        <article class="metric"><div class="metric-label">配置完成度</div><div class="metric-value green">100%</div><div class="metric-note">總人數核算完成</div></article>
+      </div>
+
+      <div class="section-head"><h2>指揮鏈與管理層</h2><p>一條主線，對接五大生產單位</p></div>
+      <div class="panel">
+        <div class="command-grid">
+          <div class="support-grid"><div class="support"><strong>生產管理部經理</strong><span>Prod. Control Mgr · P02</span></div><div class="support"><strong>產線專案經理</strong><span>Line Project Mgr · P03</span></div><div class="support"><strong>專員</strong><span>全線共 10 人</span></div><div class="support"><strong>幹部配置</strong><span>每單位大領班 + 副領班</span></div></div>
+          <div class="leader"><div class="leader-main"><div class="leader-role">產線最高主管 · P01</div><div class="leader-name">廠長 Plant Manager</div></div><div class="leader-chain"><span>決策</span><i class="chain-line"></i><span>管理</span><i class="chain-line"></i><span>執行</span></div></div>
+          <div class="support-grid"><div class="support"><strong>產線目標</strong><span>AI GPU 伺服器量產</span></div><div class="support"><strong>品質閉環</strong><span>測試 → 維修 → 回測</span></div><div class="support"><strong>物料協同</strong><span>備料 → 組裝 → 出貨</span></div><div class="support"><strong>核心管理者</strong><span>4 位管理職務</span></div></div>
+        </div>
+      </div>
+
+      <div class="section-head"><h2>五大生產單位</h2><p>點擊卡片下方查看主要工作內容</p></div>
+      <div class="units">
+        <article class="unit" style="--unit-color:#f59e0b"><div class="unit-top"></div><div class="unit-body"><div class="unit-title"><h3>組裝</h3><small>50%</small></div><div class="unit-en">ASSEMBLY</div><div class="headcount"><b>241</b><span>人 · 含幹部 2 人</span></div><div class="unit-stat"><span>OP 作業員</span><b>239 人</b></div><div class="unit-stat"><span>核心任務</span><b>Rack 架設</b></div><div class="unit-details"><ul><li>Compute Tray、Switch Tray 裝配</li><li>Blind-Mate 水冷管道鋪設</li><li>Rack 整機架設與整合</li></ul></div><button class="unit-toggle">展開詳情 ＋</button></div></article>
+        <article class="unit" style="--unit-color:#22c55e"><div class="unit-top"></div><div class="unit-body"><div class="unit-title"><h3>測試</h3><small>20%</small></div><div class="unit-en">TESTING</div><div class="headcount"><b>97</b><span>人 · 含幹部 2 人</span></div><div class="unit-stat"><span>OP 作業員</span><b>95 人</b></div><div class="unit-stat"><span>核心任務</span><b>L10–L12 驗證</b></div><div class="unit-details"><ul><li>高功率燒機測試 Burn-In</li><li>水冷漏液壓力測試</li><li>系統與機櫃級網路整合</li></ul></div><button class="unit-toggle">展開詳情 ＋</button></div></article>
+        <article class="unit" style="--unit-color:#38bdf8"><div class="unit-top"></div><div class="unit-body"><div class="unit-title"><h3>包裝</h3><small>20%</small></div><div class="unit-en">PACKAGING</div><div class="headcount"><b>97</b><span>人 · 含幹部 2 人</span></div><div class="unit-stat"><span>OP 作業員</span><b>95 人</b></div><div class="unit-stat"><span>核心任務</span><b>整櫃出貨</b></div><div class="unit-details"><ul><li>Rack-Level 耐震包裝</li><li>海空運防潮包裝</li><li>出貨標籤 Labeling 比對</li></ul></div><button class="unit-toggle">展開詳情 ＋</button></div></article>
+        <article class="unit" style="--unit-color:#a78bfa"><div class="unit-top"></div><div class="unit-body"><div class="unit-title"><h3>物料</h3><small>5%</small></div><div class="unit-en">MATERIALS</div><div class="headcount"><b>26</b><span>人 · 含幹部 2 人</span></div><div class="unit-stat"><span>OP 作業員</span><b>24 人</b></div><div class="unit-stat"><span>核心任務</span><b>Kitting 備料</b></div><div class="unit-details"><ul><li>NVLink／GPU 模組備料</li><li>水冷板及重型機櫃零件</li><li>SMT／DIP 前段進料管理</li></ul></div><button class="unit-toggle">展開詳情 ＋</button></div></article>
+        <article class="unit" style="--unit-color:#f0444c"><div class="unit-top"></div><div class="unit-body"><div class="unit-title"><h3>維修</h3><small>5%</small></div><div class="unit-en">REPAIR / RMA</div><div class="headcount"><b>26</b><span>人 · 含幹部 2 人</span></div><div class="unit-stat"><span>OP／技術員</span><b>24 人</b></div><div class="unit-stat"><span>核心任務</span><b>快速除錯</b></div><div class="unit-details"><ul><li>Board-level 故障分析</li><li>System-level 快速除錯</li><li>故障品替換與 RMA</li></ul></div><button class="unit-toggle">展開詳情 ＋</button></div></article>
+      </div>
+
+      <div class="info-grid">
+        <section class="panel"><h3>人力比例分布</h3><div class="bars"><div class="bar-row"><span>組裝</span><div class="bar-track"><div class="bar-fill" style="width:100%;--bar-color:#f59e0b"></div></div><strong>241 人</strong></div><div class="bar-row"><span>測試</span><div class="bar-track"><div class="bar-fill" style="width:40%;--bar-color:#22c55e"></div></div><strong>97 人</strong></div><div class="bar-row"><span>包裝</span><div class="bar-track"><div class="bar-fill" style="width:40%;--bar-color:#38bdf8"></div></div><strong>97 人</strong></div><div class="bar-row"><span>物料</span><div class="bar-track"><div class="bar-fill" style="width:11%;--bar-color:#a78bfa"></div></div><strong>26 人</strong></div><div class="bar-row"><span>維修</span><div class="bar-track"><div class="bar-fill" style="width:11%;--bar-color:#f0444c"></div></div><strong>26 人</strong></div></div><div class="legend"><span><i style="--legend:#f59e0b"></i>主要產線</span><span><i style="--legend:#38bdf8"></i>支援單位</span></div></section>
+        <section class="panel"><h3>編制核算</h3><div class="summary-lines"><div>管理層 <b>14 人</b> ＋ 領班幹部 <b>10 人</b></div><div>基層 OP／技術員 <b>477 人</b></div><div class="accent">14 ＋ 10 ＋ 477 ＝ 501 人</div><div>產線核心人力集中於組裝，約占全線 <b>48.1%</b>。</div></div></section>
+      </div>
+    </section>
+
+    <section id="organization" class="view"><div class="section-head"><h2>完整組織單位清單</h2><p>從管理鏈到執行端的責任分工</p></div><div class="panel"><div class="flow org-flow"><div class="flow-step"><b>01 ／ 管理層</b><span>廠長、經理、PM、專員<br>制定目標與資源配置</span></div><div class="flow-step"><b>02 ／ 物料 Kitting</b><span>NVLink、GPU 模組、水冷板<br>備料與進料管理</span></div><div class="flow-step"><b>03 ／ 組裝</b><span>Compute Tray、Switch Tray、Rack<br>水冷管路與整機裝配</span></div><div class="flow-step"><b>04 ／ 測試</b><span>Burn-In、漏液壓測與 L10–L12<br>系統級、機櫃級網路驗證</span></div><div class="flow-step"><b>05 ／ 維修與包裝出貨</b><span>不良品除錯、RMA、耐震防潮包裝<br>完成 Labeling 與整櫃交付</span></div></div></div><div class="section-head"><h2>組織配置</h2><p>管理層垂直指揮鏈與五大生產單位配置</p></div><div class="executive-org" aria-label="管理層垂直組織圖"><article class="executive-card" style="--card-color:#35bdf2"><div class="executive-photo"><img src="1.png" alt="廠長照片"></div><div class="executive-copy"><div class="executive-index">P01 ／ PLANT LEADERSHIP</div><h3>廠長</h3><div class="executive-en">Plant Manager</div><p>統籌 AI GPU 伺服器產線整體營運，制定產能、品質與交付目標，並負責跨單位資源配置。</p></div></article><div class="org-connector"></div><article class="executive-card" style="--card-color:#22c55e"><div class="executive-photo"><img src="2.png" alt="生產管理部經理照片"></div><div class="executive-copy"><div class="executive-index">P02 ／ PRODUCTION CONTROL</div><h3>生產管理部經理</h3><div class="executive-en">Production Control Manager</div><p>承接廠長策略，協調物料、組裝、測試、維修與包裝單位，追蹤產線進度與異常處置。</p></div></article><div class="org-connector"></div><article class="executive-card" style="--card-color:#f59e0b"><div class="executive-photo"><img src="3.png" alt="產線專案經理照片"></div><div class="executive-copy"><div class="executive-index">P03 ／ LINE PROJECT DELIVERY</div><h3>產線專案經理</h3><div class="executive-en">Line Project Manager</div><p>推動產線專案落地，串接工程、製造與品質需求，管理導入節點、風險與跨部門改善事項。</p></div></article></div><div class="org-connector"></div><div class="org-unit-branch" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div><div class="units" id="org-units"></div></section>
+
+    <section id="operations" class="view"><div class="section-head"><h2>產線運作流程</h2><p>從零組件進料到 AI GPU 伺服器出貨</p></div><div class="panel"><div class="flow"><div class="flow-step"><b>01 ／ 進料</b><span>物料單位完成 SMT／DIP 前段進料，建立 Kitting 套件。</span></div><div class="flow-step"><b>02 ／ 裝配</b><span>組裝 Compute Tray、Switch Tray、水冷管路與 Rack 整機。</span></div><div class="flow-step"><b>03 ／ 驗證</b><span>測試單位執行 Burn-In、漏液壓測與 L10／L11／L12 測試。</span></div><div class="flow-step"><b>04 ／ 交付</b><span>包裝單位完成整櫃耐震、防潮包裝與出貨標籤核對。</span></div></div></div><div class="info-grid"><section class="panel"><h3>品質回饋閉環</h3><div class="summary-lines"><div>測試不良 → 維修單位進行 <b>Board-level／System-level</b> 分析</div><div>故障品替換（RMA）→ 回到測試單位重新驗證</div><div class="accent">目標：縮短除錯週期，維持整櫃交付品質</div></div></section><section class="panel"><h3>關鍵控制點</h3><div class="bars"><div class="bar-row"><span>物料齊套</span><div class="bar-track"><div class="bar-fill" style="width:100%;--bar-color:#a78bfa"></div></div><strong>必要</strong></div><div class="bar-row"><span>漏液壓測</span><div class="bar-track"><div class="bar-fill" style="width:100%;--bar-color:#22c55e"></div></div><strong>必要</strong></div><div class="bar-row"><span>標籤比對</span><div class="bar-track"><div class="bar-fill" style="width:100%;--bar-color:#38bdf8"></div></div><strong>必要</strong></div></div></section></div></section>
+
+    <section id="attendance" class="view"><div class="section-head"><h2>人員出缺勤分析</h2><p>Attendance & Leave Analysis · 每日全線目標 ≥ 98%</p></div><div class="upload-bar"><div class="upload-copy"><strong>XLSX 出缺勤資料匯入</strong><span>支援欄位：姓名、單位、日期、出勤狀態、遲到分鐘、請假類型</span></div><div class="upload-actions"><label class="file-label">選擇 XLSX<input id="attendance-file" type="file" accept=".xlsx,.xls,.csv"></label><button class="action-button" id="clear-attendance-cache" type="button">清除本機快取</button><span class="sheet-status" id="attendance-status">尚未匯入資料</span></div></div><div class="analysis-grid"><article class="analysis-card"><span>統計基準人數</span><b>501 人</b></article><article class="analysis-card"><span>資料筆數</span><b id="attendance-count">0</b></article><article class="analysis-card"><span>出勤率</span><b id="attendance-rate">--</b></article><article class="analysis-card"><span>遲到／早退筆數</span><b id="late-count">0</b></article></div><div class="info-grid"><section class="panel"><h3>出缺勤圖表分析</h3><div id="attendance-charts" class="chart-grid"><div class="chart"><h4>單位出勤率</h4><div id="attendance-unit-chart" class="bar-chart"><div class="summary-item">請匯入資料後顯示單位出勤率與缺勤趨勢。</div></div></div><div class="chart"><h4>請假類型分布</h4><div id="attendance-leave-chart" class="bar-chart"><div class="summary-item">請匯入資料後顯示請假類型與次數。</div></div></div><div class="chart"><h4>目標進度</h4><div id="attendance-goal-chart" class="bar-chart"><div class="summary-item">請匯入資料後顯示 98% 全線與 99% 關鍵工站目標進度。</div></div></div><div class="chart"><h4>日別出勤趨勢</h4><div id="attendance-date-trend-chart" class="bar-chart"><div class="summary-item">請匯入資料後顯示最近日期出勤變化。</div></div></div><div class="chart"><h4>遲到/早退摘要</h4><div id="attendance-trend-summary" class="summary-list"><div class="summary-item">請匯入資料後顯示遲到/早退高風險提醒。</div></div></div><div class="chart"><h4>資料品質檢查</h4><div id="attendance-quality-check" class="summary-list"><div class="summary-item">請匯入資料後顯示欄位缺失與狀態異常檢查。</div></div></div><div class="chart"><h4>優先改善名單</h4><div id="attendance-priority-list" class="summary-list"><div class="summary-item">請匯入資料後顯示最需要支援的低出勤工站。</div></div></div><div class="chart"><h4>異常風險提示</h4><div id="attendance-keypoints" class="summary-list"><div class="summary-item">請匯入資料後顯示系統風險與改善建議。</div></div></div></div></section><section class="panel"><h3>匯入資料預覽</h3><div id="attendance-table"><div class="report">請匯入 XLSX 後查看資料預覽與單位分布。</div></div></section><section class="panel"><h3>AI 出缺勤分析報告</h3><button class="action-button report-action" id="attendance-ai" disabled>使用 Groq 生成報告</button><div id="attendance-report" class="report">等待資料匯入。系統將依出勤率、遲到頻率與單位缺勤集中度產生分析。</div></section></div></section>
+
+    <section id="discipline" class="view"><div class="section-head"><h2>紀律管理與特別留意事項</h2><p>Discipline & Compliance · 高單價物料、高壓水冷與 Burn-In 安全</p></div><div class="upload-bar"><div class="upload-copy"><strong>XLSX 紀律事件匯入</strong><span>支援欄位：姓名、單位、日期、事件類型、嚴重度、處置狀態、備註</span></div><div class="upload-actions"><label class="file-label">選擇 XLSX<input id="discipline-file" type="file" accept=".xlsx,.xls,.csv"></label><span class="sheet-status" id="discipline-status">尚未匯入資料</span></div></div><div class="analysis-grid"><article class="analysis-card"><span>事件總數</span><b id="discipline-count">0</b></article><article class="analysis-card"><span>高風險事件</span><b id="high-risk-count">0</b></article><article class="analysis-card"><span>待處置事件</span><b id="open-case-count">0</b></article><article class="analysis-card"><span>主要風險類型</span><b id="top-risk">--</b></article></div><div class="info-grid"><section class="panel"><h3>事件風險清單</h3><ul class="risk-list" id="discipline-list"><li>匯入 XLSX 後，系統將依嚴重度與事件類型排序。</li></ul></section><section class="panel"><h3>AI 紀律分析報告</h3><button class="action-button report-action" id="discipline-ai" disabled>使用 Groq 生成報告</button><div id="discipline-report" class="report">等待資料匯入。系統將依高風險事件、SOP／資安／EHS 類型與處置狀態產生分析。</div></section></div></section>
+
+    <section id="performance" class="view">
+      <div class="section-head"><h2>績效數位化</h2><p>Performance Digitalization · 產線員工績效數位化轉型 — 緯穎 (Wiwynn) AI Server Assembly</p></div>
+
+      <div class="perf-kpi-grid">
+        <article class="perf-kpi"><div class="perf-kpi-icon">📈</div><div class="perf-kpi-value">NT$12M</div><div class="perf-kpi-label">總投資</div></article>
+        <article class="perf-kpi"><div class="perf-kpi-icon">💰</div><div class="perf-kpi-value">NT$83M</div><div class="perf-kpi-label">年化報酬</div></article>
+        <article class="perf-kpi"><div class="perf-kpi-icon">⚡</div><div class="perf-kpi-value">591.6%</div><div class="perf-kpi-label">ROI</div></article>
+        <article class="perf-kpi"><div class="perf-kpi-icon">🏆</div><div class="perf-kpi-value">&lt; 2 個月</div><div class="perf-kpi-label">回收期</div></article>
+      </div>
+
+      <div class="panel perf-roi">
+        <h3>ROI 效益對比</h3>
+        <div class="perf-roi-grid">
+          <div class="perf-roi-card"><div class="perf-roi-label">多能工覆蓋率</div><div class="perf-roi-compare"><span class="red">32%</span><span class="green-arrow">→</span><span class="green">88%</span></div></div>
+          <div class="perf-roi-card"><div class="perf-roi-label">組裝不良率 (Rework)</div><div class="perf-roi-compare"><span class="red">5.2%</span><span class="green-arrow">→</span><span class="green">0.9%</span></div></div>
+          <div class="perf-roi-card"><div class="perf-roi-label">整體 OEE</div><div class="perf-roi-compare"><span class="red">78%</span><span class="green-arrow">→</span><span class="green">91%</span></div></div>
+          <div class="perf-roi-card"><div class="perf-roi-label">新員工上手天數</div><div class="perf-roi-compare"><span class="red">14 天</span><span class="green-arrow">→</span><span class="green">5 天</span></div></div>
+        </div>
+      </div>
+
+      <div class="panel perf-pillars">
+        <h3>四大核心支柱</h3>
+        <div class="perf-pillar-grid">
+          <article class="perf-pillar-card" onclick="showPillar(0)"><div class="perf-pillar-icon" style="color:var(--cyan)">👥</div><h4>蘋果樹多維勝任力模型</h4><p class="perf-pillar-en">Apple Tree Model</p></article>
+          <article class="perf-pillar-card" onclick="showPillar(1)"><div class="perf-pillar-icon" style="color:var(--green)">⏰</div><h4>出勤聯動動態排班</h4><p class="perf-pillar-en">Dynamic Scheduling</p></article>
+          <article class="perf-pillar-card" onclick="showPillar(2)"><div class="perf-pillar-icon" style="color:var(--purple)">🎯</div><h4>高精度產出追蹤</h4><p class="perf-pillar-en">Output Tracking</p></article>
+          <article class="perf-pillar-card" onclick="showPillar(3)"><div class="perf-pillar-icon" style="color:var(--yellow)">📖</div><h4>數位培訓與分級鑑定</h4><p class="perf-pillar-en">Digital Training</p></article>
+        </div>
+        <div id="pillar-detail" class="perf-pillar-detail">
+          <p>技能矩陣 × 品質分數 × 效率係數 × 協作貢獻，四維度交叉評估員工能力。</p>
+          <div class="perf-pillar-metrics">
+            <div class="perf-metric"><span>技能涵蓋率</span><b class="cyan">92%</b></div>
+            <div class="perf-metric"><span>品質評分</span><b class="green">87%</b></div>
+            <div class="perf-metric"><span>效率係數</span><b style="color:var(--purple)">95%</b></div>
+            <div class="perf-metric"><span>協作指數</span><b class="yellow">88%</b></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel perf-radar">
+        <h3>蘋果樹多維勝任力評估</h3>
+        <div class="perf-radar-grid">
+          <div class="perf-radar-item"><div class="perf-radar-icon">🔧</div><span>技能矩陣</span><div class="perf-bar"><div class="perf-bar-fill cyan" style="width:88%"></div></div><b class="cyan">88</b></div>
+          <div class="perf-radar-item"><div class="perf-radar-icon">✅</div><span>品質分數</span><div class="perf-bar"><div class="perf-bar-fill green" style="width:95%"></div></div><b class="green">95</b></div>
+          <div class="perf-radar-item"><div class="perf-radar-icon">⚡</div><span>效率係數</span><div class="perf-bar"><div class="perf-bar-fill" style="width:91%;background:var(--purple)"></div></div><b style="color:var(--purple)">91</b></div>
+          <div class="perf-radar-item"><div class="perf-radar-icon">🤝</div><span>協作貢獻</span><div class="perf-bar"><div class="perf-bar-fill yellow" style="width:87%"></div></div><b class="yellow">87</b></div>
+        </div>
+      </div>
+    </section>
+
+    <footer>AI GPU 伺服器產線組織架構 · 501 人總編制 · Internal Operations View</footer>
+  </main>
+  <div class="video-modal" id="video-modal" role="dialog" aria-modal="true" aria-labelledby="video-title">
+    <div class="video-dialog">
+      <div class="video-dialog-head"><span id="video-title">Management Video</span><button class="video-close" id="video-close" type="button" aria-label="Close video">×</button></div>
+      <video id="manager-video" controls autoplay muted playsinline preload="auto"></video>
+    </div>
+  </div>
+  <script>
+const tabs = document.querySelectorAll('.tab');
+
+    const views = document.querySelectorAll('.view');
+
+    tabs.forEach(tab => tab.addEventListener('click', () => {
+
+      tabs.forEach(item => item.classList.toggle('active', item === tab));
+
+      views.forEach(view => view.classList.toggle('active', view.id === tab.dataset.view));
+
+    }));
+
+    const PILLARS_DATA = [
+      { desc: '技能矩陣 × 品質分數 × 效率係數 × 協作貢獻，四維度交叉評估員工能力。', metrics: ['技能涵蓋率','品質評分','效率係數','協作指數'], values: [92,87,95,88] },
+      { desc: 'AI 預測排班，根據員工技能權重匹配最佳班表，瓶頸工站優先配置高技能人員。', metrics: ['排班匹配度','瓶頸覆蓋率','出勤率','加班時數'], values: [90,85,96,78] },
+      { desc: 'MES + IoT 逐站追蹤，綁定個人員工 ID，即時掌握每人每站產出與品質。', metrics: ['個人產出','站點良率','追溯完整率','異常回報'], values: [94,93,97,88] },
+      { desc: '線上考試 + 防作弊機制，依操作員/領班分級出題，通過後取得工站資質。', metrics: ['培訓時數','鑑定通過率','上手天數','複訓週期'], values: [86,91,82,79] }
+    ];
+    const PILLAR_COLORS = ['cyan','green','purple','yellow'];
+    function showPillar(i) {
+      const p = PILLARS_DATA[i], c = PILLAR_COLORS[i];
+      document.querySelectorAll('.perf-pillar-card').forEach((el,j) => el.style.borderColor = j===i ? `var(--${c})` : 'var(--line)');
+      document.getElementById('pillar-detail').innerHTML = `<p>${p.desc}</p><div class="perf-pillar-metrics">${p.metrics.map((m,j) => `<div class="perf-metric"><span>${m}</span><b class="${c}">${p.values[j]}%</b></div>`).join('')}</div>`;
+    }
+
+    const executiveCards = document.querySelectorAll('.executive-card');
+
+    if (executiveCards.length >= 2) {
+
+      executiveCards[1].insertAdjacentHTML('beforebegin', '<article class="executive-card" style="--card-color:#a78bfa"><div class="executive-photo"><img src="4.png" alt="總監 黃冠宇照片"></div><div class="executive-copy"><div class="executive-index">P02A ／ EXECUTIVE LEADERSHIP</div><h3>總監 <span class="executive-person">黃冠宇 · Kevin Huang</span></h3><div class="executive-en">Director</div><p>協助廠長統籌生產管理與跨部門決策，承接營運策略並監督產線管理執行。</p></div></article><div class="org-connector"></div>');
+
+    }
+
+    document.querySelector('.command-grid .support-grid').insertAdjacentHTML('afterbegin', '<div class="support"><strong>總監</strong><span>Director · P02A</span></div>');
+
+    ['林昱辰 · Ethan Lin', '黃冠宇 · Kevin Huang', '陳柏翰 · Jason Chen', '周雅雯 · Vivian Chou'].forEach((name, index) => {
+
+      const heading = document.querySelectorAll('.executive-card h3')[index];
+
+      if (heading && !heading.querySelector('.executive-person')) heading.insertAdjacentHTML('beforeend', `<span class="executive-person">${name}</span>`);
+
+    });
+
+    const videoModal = document.getElementById('video-modal');
+
+    const managerVideo = document.getElementById('manager-video');
+
+    const videoTitle = document.getElementById('video-title');
+
+    const closeVideo = () => { managerVideo.pause(); managerVideo.removeAttribute('src'); managerVideo.load(); videoModal.classList.remove('open'); };
+
+    document.querySelectorAll('.executive-card .executive-photo').forEach((photo, index) => {
+
+      const card = photo.closest('.executive-card');
+
+      const role = card.querySelector('h3').textContent.trim().split(' · ')[0];
+
+      photo.setAttribute('tabindex', '0'); photo.setAttribute('role', 'button'); photo.setAttribute('aria-label', `Play ${role} video`);
+
+      const openVideo = () => { videoTitle.textContent = `${role} · Management Video`; managerVideo.src = `${index + 1}.mp4`; managerVideo.autoplay = true; managerVideo.muted = false; managerVideo.playsInline = true; videoModal.classList.add('open'); managerVideo.load(); managerVideo.play().catch(() => {}); };
+
+      photo.addEventListener('click', openVideo); photo.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openVideo(); } });
+
+    });
+
+    document.getElementById('video-close').addEventListener('click', closeVideo);
+
+    videoModal.addEventListener('click', event => { if (event.target === videoModal) closeVideo(); });
+
+    document.addEventListener('keydown', event => { if (event.key === 'Escape' && videoModal.classList.contains('open')) closeVideo(); });
+
+    const normalizeRow = row => Object.fromEntries(Object.entries(row).map(([key, value]) => [String(key).trim().toLowerCase(), value ?? '']));
+
+    const findValue = (row, names) => { const key = Object.keys(row).find(item => names.some(name => item.includes(name))); return key ? row[key] : ''; };
+
+    const parseWorkbook = file => new Promise((resolve, reject) => {
+
+      const reader = new FileReader();
+
+      reader.onload = event => {
+
+        try {
+
+          const workbook = XLSX.read(event.target.result, { type: 'array' });
+
+          const sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+          const rawRows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+
+          const columns = rawRows.length ? Object.keys(rawRows[0]).map(header => String(header).trim()) : [];
+
+          const rows = rawRows.map(normalizeRow);
+
+          resolve({ columns, rows });
+
+        } catch (error) {
+
+          reject(error);
+
+        }
+
+      };
+
+      reader.onerror = reject;
+
+      reader.readAsArrayBuffer(file);
+
+    });
+
+    const saveAttendanceCache = (columns, rows) => {
+
+      try {
+
+        localStorage.setItem('attendance-cache', JSON.stringify({ columns, rows }));
+
+      } catch (error) {
+
+        console.warn('Cannot save attendance cache:', error);
+
+      }
+
+    };
+
+    const loadAttendanceCache = () => {
+
+      try {
+
+        const raw = localStorage.getItem('attendance-cache');
+
+        return raw ? JSON.parse(raw) : null;
+
+      } catch (error) {
+
+        localStorage.removeItem('attendance-cache');
+
+        return null;
+
+      }
+
+    };
+
+    const clearAttendanceCache = () => {
+
+      localStorage.removeItem('attendance-cache');
+
+      document.getElementById('attendance-ai').disabled = true;
+
+      setStatus('attendance-status', '本機快取出缺勤資料已清除，請重新匯入或重新整理以自動載入資料');
+
+    };
+
+    const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char]));
+
+    const renderPreview = (target, columns, rows) => {
+
+      const previewCount = rows.length;
+
+      target.innerHTML = rows.length ? `<table class="data-table"><thead><tr>${columns.map(column => `<th>${escapeHtml(column)}</th>`).join('')}</tr></thead><tbody>${rows.slice(0, previewCount).map(row => `<tr>${columns.map(column => `<td>${escapeHtml(row[String(column).trim().toLowerCase()])}</td>`).join('')}</tr>`).join('')}</tbody></table><div class="sheet-status">Preview: ${previewCount} rows · Total ${rows.length} rows · ${columns.length} columns</div>` : '<div class="report">工作表沒有可分析的資料。</div>'; };
+
+    const renderBarChart = (target, items, labelFormatter = v => v, valueFormatter = v => v) => {
+
+      const maxValue = Math.max(...items.map(item => item.value), 1);
+
+      target.innerHTML = items.map(item => `
+
+        <div class="bar-item">
+
+          <div class="bar-label">${escapeHtml(labelFormatter(item.label))}</div>
+
+          <div class="bar-track"><div class="bar-fill" style="width:${Math.round((item.value / maxValue) * 100)}%"></div></div>
+
+          <div class="bar-label">${escapeHtml(valueFormatter(item.value))}</div>
+
+        </div>`).join('');
+
+    };
+
+    const renderSummaryList = (target, items) => {
+
+      target.innerHTML = items.map(item => `<div class="summary-item${item.level ? ' ' + item.level : ''}">${escapeHtml(item.text)}</div>`).join('');
+
+    };
+
+    const setStatus = (id, text) => { document.getElementById(id).textContent = text; };
+
+    let attendanceAnalysisContext = '';
+
+    let disciplineAnalysisContext = '';
+
+    let disciplineRows = [];
+
+    const updateAttendanceFromData = (columns, rows, fileName) => {
+
+      const statuses = rows.map(row => String(findValue(row, ['出勤狀態', '狀態', 'attendance', 'status'])).toLowerCase());
+
+      const present = statuses.filter(status => /出勤|正常|present|on duty|上班/.test(status)).length;
+
+      const absent = rows.length - present;
+
+      const late = rows.filter(row => Number(findValue(row, ['遲到分鐘', 'late', '遲到'])) > 0).length;
+
+      const early = rows.filter(row => /早退|early/.test(String(findValue(row, ['出勤狀態', '狀態', 'status'])).toLowerCase())).length;
+
+      const rate = rows.length ? Math.round((present / rows.length) * 1000) / 10 : 0;
+
+      document.getElementById('attendance-count').textContent = rows.length;
+
+      document.getElementById('attendance-rate').textContent = `${rate}%`;
+
+      document.getElementById('late-count').textContent = late + early;
+
+      renderPreview(document.getElementById('attendance-table'), columns, rows);
+
+      setStatus('attendance-status', `${fileName} · ${rows.length} 筆`);
+
+      document.getElementById('attendance-ai').disabled = false;
+
+      saveAttendanceCache(columns, rows);
+
+      const leaveTypeCounts = rows.reduce((result, row) => {
+
+        const leaveType = String(findValue(row, ['請假類型', 'leave type', 'type'])).trim() || '未標示';
+
+        result[leaveType] = (result[leaveType] || 0) + 1;
+
+        return result;
+
+      }, {});
+
+      const leaveItems = Object.entries(leaveTypeCounts).sort((a, b) => b[1] - a[1]).map(([label, value]) => ({ label, value }));
+
+      const missingCounts = { unit: 0, status: 0, date: 0 };
+
+      const abnormalStatuses = new Set();
+
+      const unitStats = rows.reduce((result, row) => {
+
+        const unit = findValue(row, ['單位', '部門', 'unit', 'department']) || '未標示單位';
+
+        const status = String(findValue(row, ['出勤狀態', '狀態', 'attendance', 'status'])).toLowerCase();
+
+        const dateValue = String(findValue(row, ['日期', 'date'])).trim();
+
+        if (!unit || unit === '未標示單位') missingCounts.unit += 1;
+
+        if (!status) missingCounts.status += 1;
+
+        if (!dateValue) missingCounts.date += 1;
+
+        if (status && !/出勤|正常|present|on duty|上班|缺勤|請假|休假|absent|leave|late|early|早退|遲到/i.test(status)) abnormalStatuses.add(status);
+
+        const isPresent = /出勤|正常|present|on duty|上班/i.test(status);
+
+        const isLate = Number(findValue(row, ['遲到分鐘', 'late', '遲到'])) > 0;
+
+        const isEarly = /早退|early/i.test(status);
+
+        const item = result[unit] || { total: 0, present: 0, absent: 0, late: 0, early: 0 };
+
+        item.total += 1;
+
+        item.present += isPresent ? 1 : 0;
+
+        item.absent += isPresent ? 0 : 1;
+
+        item.late += isLate ? 1 : 0;
+
+        item.early += isEarly ? 1 : 0;
+
+        result[unit] = item;
+
+        return result;
+
+      }, {});
+
+      const unitRateItems = Object.entries(unitStats).map(([label, stats]) => ({ label, value: Math.round((stats.present / Math.max(stats.total, 1)) * 1000) / 10, absent: stats.absent, total: stats.total }));
+
+      const topUnit = Object.entries(unitStats).sort((a, b) => (b[1].absent / b[1].total) - (a[1].absent / a[1].total))[0];
+
+      const lowUnits = unitRateItems.filter(item => item.value < 99).sort((a, b) => a.value - b.value).slice(0, 5);
+
+      const priorityItems = lowUnits.length ? lowUnits.map(item => ({ text: `${item.label}：出勤率 ${item.value}%、缺勤 ${item.absent}/${item.total}` })) : [{ text: '目前無 99% 以下的優先改善工站。' }];
+
+      const goalItems = [
+
+        { label: '全線出勤率', value: rate, valueLabel: `${rate}% / 98%` },
+
+        { label: '最低關鍵工站', value: lowUnits.length ? lowUnits[0].value : 99, valueLabel: lowUnits.length ? `${lowUnits[0].value}% / 99%` : '已達標' }
+
+      ];
+
+      const dateTrendMap = new Map();
+
+      rows.forEach(row => {
+
+        const rawDate = String(findValue(row, ['日期', 'date'])).trim();
+
+        const parsed = rawDate ? new Date(rawDate) : null;
+
+        const label = rawDate ? (!isNaN(parsed) ? `${parsed.getMonth() + 1}/${parsed.getDate()}` : rawDate) : '未標示日期';
+
+        if (!dateTrendMap.has(label)) dateTrendMap.set(label, { label, present: 0, total: 0, sortKey: !isNaN(parsed) ? parsed.getTime() : label });
+
+        const bucket = dateTrendMap.get(label);
+
+        bucket.total += 1;
+
+        if (/出勤|正常|present|on duty|上班/i.test(String(findValue(row, ['出勤狀態', '狀態', 'attendance', 'status'])).toLowerCase())) bucket.present += 1;
+
+      });
+
+      const dateTrendItems = [...dateTrendMap.values()].sort((a, b) => {
+
+        if (typeof a.sortKey === 'number' && typeof b.sortKey === 'number') return a.sortKey - b.sortKey;
+
+        if (typeof a.sortKey === 'number') return -1;
+
+        if (typeof b.sortKey === 'number') return 1;
+
+        return String(a.label).localeCompare(String(b.label), undefined, { numeric: true });
+
+      }).slice(-10).map(item => ({ label: item.label, value: Math.round((item.present / Math.max(item.total, 1)) * 1000) / 10 }));
+
+      const qualityItems = [];
+
+      if (missingCounts.unit) qualityItems.push({ text: `缺失單位資料 ${missingCounts.unit} 筆。`, level: 'important' });
+
+      if (missingCounts.status) qualityItems.push({ text: `缺失出勤狀態 ${missingCounts.status} 筆。`, level: 'important' });
+
+      if (missingCounts.date) qualityItems.push({ text: `缺失日期資料 ${missingCounts.date} 筆。`, level: 'important' });
+
+      if (abnormalStatuses.size) qualityItems.push({ text: `未辨識狀態：${[...abnormalStatuses].slice(0, 5).join('、')}` });
+
+      if (!qualityItems.length) qualityItems.push({ text: '欄位與狀態檢查通過。' });
+
+      renderBarChart(document.getElementById('attendance-unit-chart'), unitRateItems.sort((a, b) => b.value - a.value).slice(0, 8), label => label, value => `${value}%`);
+
+      renderBarChart(document.getElementById('attendance-leave-chart'), leaveItems.slice(0, 10), label => label, value => `${value} 次`);
+
+      renderBarChart(document.getElementById('attendance-goal-chart'), goalItems, item => item.label, item => item.valueLabel);
+
+      renderBarChart(document.getElementById('attendance-date-trend-chart'), dateTrendItems, label => label, value => `${value}%`);
+
+      const trendItems = [
+
+        { text: `總體出勤率：${rate}%（${present}/${rows.length}）。`, level: rate < 98 ? 'important' : '' },
+
+        { text: `缺勤 ${absent} 人；遲到 ${late} 筆；早退 ${early} 筆。`, level: (late + early) > 0 ? 'important' : '' },
+
+        { text: `已識別 ${leaveItems.length} 種請假類型，其中「${leaveItems[0] ? leaveItems[0].label : '無'}」最多。`, level: '' }
+
+      ];
+
+      const riskItems = [
+
+        { text: rate < 98 ? '出勤率低於 98% 全線目標，建議立即展開班前點名與關鍵工站補人。' : '出勤率達到 98% 目標，維持高可靠排班。', level: rate < 98 ? 'important' : '' },
+
+        { text: late + early > 0 ? `遲到/早退共 ${late + early} 筆，其中遲到 ${late} 筆、早退 ${early} 筆。` : '目前沒有遲到或早退紀錄。', level: late + early > 0 ? 'important' : '' }
+
+      ];
+
+      const highRiskUnits = unitRateItems.filter(item => (item.absent / Math.max(item.total, 1)) >= 0.05);
+
+      if (highRiskUnits.length) {
+
+        highRiskUnits.slice(0, 3).forEach(item => {
+
+          riskItems.push({ text: `單位 ${item.label} 缺勤率達到 ${(item.absent / Math.max(item.total, 1) * 100).toFixed(1)}%，建議優先檢視排班與備援人力。`, level: 'critical' });
+
+        });
+
+      }
+
+      if (!highRiskUnits.length && rate >= 98) {
+
+        riskItems.push({ text: '目前尚無顯著單位缺勤風險，請持續使用每日出勤報表監控。', level: '' });
+
+      }
+
+      renderSummaryList(document.getElementById('attendance-trend-summary'), trendItems);
+
+      renderSummaryList(document.getElementById('attendance-keypoints'), riskItems);
+
+      renderSummaryList(document.getElementById('attendance-priority-list'), priorityItems);
+
+      renderSummaryList(document.getElementById('attendance-quality-check'), qualityItems);
+
+      attendanceAnalysisContext = JSON.stringify({ baseline: 501, records: rows.length, present, absent, attendanceRate: rate, lateOrEarly: late + early, late, early, leaveTypeCounts, unitStats, unitRateItems, lowUnits, dateTrendItems, dataQuality: { missingCounts, abnormalStatuses: [...abnormalStatuses] }, targetRate: 98, criticalStationTargetRate: 99 });
+
+      document.getElementById('attendance-report').textContent = `出缺勤分析\n\n實際資料：${rows.length} 筆，出勤 ${present} 人，缺勤 ${absent} 人，出勤率 ${rate}%，遲到 ${late} 筆，早退 ${early} 筆。${rate < 98 ? '低於 98% 目標，需啟動班前點名與跨站調度。' : '達到 98% 目標。'}${topUnit ? `\n\n缺勤率最高單位：${topUnit[0]}（${topUnit[1].absent}/${topUnit[1].total}，${(topUnit[1].absent / topUnit[1].total * 100).toFixed(1)}%）。` : ''}`;
+
+    };
+
+    const loadAttendance = async file => {
+
+      const { columns, rows } = await parseWorkbook(file);
+
+      updateAttendanceFromData(columns, rows, file.name || '出缺勤資料');
+
+    };
+
+    const loadDiscipline = async file => {
+
+      const { columns, rows } = await parseWorkbook(file); disciplineRows = rows; const severity = rows.map(row => String(findValue(row, ['嚴重度', '風險', 'severity', 'risk'])).toLowerCase()); const types = rows.map(row => String(findValue(row, ['事件類型', '違規類型', '類型', 'type'])).trim() || '未分類'); const high = severity.filter(value => /高|重大|high|critical/.test(value)).length; const open = rows.filter(row => /待處理|未結案|open|pending/.test(String(findValue(row, ['處置狀態', '狀態', 'status'])).toLowerCase())).length; const counts = types.reduce((result, type) => { result[type] = (result[type] || 0) + 1; return result; }, {}); const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+
+      const categoryCounts = types.reduce((result, type) => { result[type] = (result[type] || 0) + 1; return result; }, {});
+
+      disciplineAnalysisContext = JSON.stringify({ records: rows.length, highRisk: high, openCases: open, categoryCounts, escalation: '重大安衛、資安、竊盜或拒絕指令事件須呈報廠長與 HR' });
+
+      disciplineAnalysisContext = JSON.stringify({ records: rows.length, highRisk: high, openCases: open, categoryCounts, events: rows.map(row => ({ eventId: findValue(row, ['事件編號', 'event id', 'id']), who: findValue(row, ['員工代號', '姓名', 'employee']), where: findValue(row, ['單位', '部門', 'unit', 'department']), when: findValue(row, ['日期', 'date']), what: findValue(row, ['事件類型', '違規類型', '類型', 'type']), category: findValue(row, ['事件分類', '分類', 'category']), severity: findValue(row, ['嚴重度', '風險', 'severity', 'risk']), owner: findValue(row, ['責任主管', '責任人', 'owner']), dueDate: findValue(row, ['期限', '到期日', 'due date']), status: findValue(row, ['處置狀態', '狀態', 'status']), action: findValue(row, ['備註', '描述', 'note', 'remark']) })), escalation: '重大安衛、資安、竊盜或拒絕指令事件須呈報廠長與 HR' });
+
+      document.getElementById('discipline-list').innerHTML = rows.slice(0, 15).map(row => `<li class="${/高|重大|high|critical/i.test(findValue(row, ['嚴重度', '風險', 'severity', 'risk'])) ? 'high' : ''}"><b>${escapeHtml(findValue(row, ['事件類型', '違規類型', '類型', 'type']) || '未分類')}</b> · ${escapeHtml(findValue(row, ['嚴重度', '風險', 'severity', 'risk']) || '未標示')}<br>Who：${escapeHtml(findValue(row, ['員工代號', '姓名', 'employee']) || '未標示')} · When：${escapeHtml(findValue(row, ['日期', 'date']) || '未標示')} · Where：${escapeHtml(findValue(row, ['單位', '部門', 'unit', 'department']) || '未標示')}<br>Owner：${escapeHtml(findValue(row, ['責任主管', '責任人', 'owner']) || '未標示')} · Due：${escapeHtml(findValue(row, ['期限', '到期日', 'due date']) || '未標示')} · Status：${escapeHtml(findValue(row, ['處置狀態', '狀態', 'status']) || '待確認')}<br>Action：${escapeHtml(findValue(row, ['備註', '描述', 'note', 'remark']) || '未記錄')}</li>`).join('') || '<li>工作表沒有可分析的資料。</li>';
+
+      document.getElementById('discipline-count').textContent = rows.length; document.getElementById('high-risk-count').textContent = high; document.getElementById('open-case-count').textContent = open; document.getElementById('top-risk').textContent = top ? top[0] : '--'; setStatus('discipline-status', `${file.name} · ${rows.length} 筆`); document.getElementById('discipline-list').innerHTML = rows.slice(0, 8).map(row => `<li class="${/高|重大|high|critical/i.test(findValue(row, ['嚴重度', '風險', 'severity', 'risk'])) ? 'high' : ''}"><b>${escapeHtml(findValue(row, ['事件類型', '違規類型', '類型', 'type']) || '未分類')}</b> · ${escapeHtml(findValue(row, ['單位', '部門', 'unit', 'department']) || '未標示單位')}<br>${escapeHtml(findValue(row, ['處置狀態', '狀態', 'status']) || '待確認')} · ${escapeHtml(findValue(row, ['備註', '描述', 'note', 'remark']))}</li>`).join('') || '<li>工作表沒有可分析的資料。</li>'; document.getElementById('discipline-report').textContent = `紀律分析\n\n實際資料：${rows.length} 件，高／重大 ${high} 件，待處置 ${open} 件。${high ? '高風險事件依 EHS、資安與物料管制流程升級處理。' : '目前沒有高風險事件。'}${top ? `\n\n主要事件類型：${top[0]}（${top[1]} 件）。` : ''}`;
+
+      document.getElementById('discipline-list').innerHTML = disciplineRows.slice(0, 15).map(row => `<li class="${/高|重大|high|critical/i.test(findValue(row, ['嚴重度', '風險', 'severity', 'risk'])) ? 'high' : ''}"><b>${escapeHtml(findValue(row, ['事件類型', '違規類型', '類型', 'type']) || '未分類')}</b> · ${escapeHtml(findValue(row, ['嚴重度', '風險', 'severity', 'risk']) || '未標示')}<br>Who：${escapeHtml(findValue(row, ['員工代號', '姓名', 'employee']) || '未標示')} · When：${escapeHtml(findValue(row, ['日期', 'date']) || '未標示')} · Where：${escapeHtml(findValue(row, ['單位', '部門', 'unit', 'department']) || '未標示')}<br>Owner：${escapeHtml(findValue(row, ['責任主管', '責任人', 'owner']) || '未標示')} · Due：${escapeHtml(findValue(row, ['期限', '到期日', 'due date']) || '未標示')} · Status：${escapeHtml(findValue(row, ['處置狀態', '狀態', 'status']) || '待確認')}<br>Action：${escapeHtml(findValue(row, ['備註', '描述', 'note', 'remark']) || '未記錄')}</li>`).join('') || '<li>工作表沒有可分析的資料。</li>';
+
+    };
+
+    const generateGroqReport = async (buttonId, reportId, prompt) => {
+
+      const button = document.getElementById(buttonId); const report = document.getElementById(reportId); button.disabled = true; button.textContent = '生成中...';
+
+      const ragBase = window.location.hostname === 'localhost' ? 'http://localhost:9766' : '';
+      try { const response = await fetch(`${ragBase}/api/analyze`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt }) }); const data = await response.json(); if (!response.ok) throw new Error(data.error || data.detail || 'API request failed'); report.textContent = data.report; } catch (error) { report.textContent = `Groq 報告生成失敗：${error.message}`; } finally { button.disabled = false; button.textContent = '使用 Groq 生成報告'; }
+
+    };
+
+    const buildAttendancePrompt = () => `你是製造現場管理顧問。請只根據以下 JSON 實際統計產生繁體中文報告，不得假設、補造或改寫任何數字。內容要精簡、專業，僅提供：現況判定、單位風險、瓶頸工站、當班調度、責任與時限。每段 1-2 句，並明確指出是否低於 98% 全線目標與 99% 關鍵工站目標。JSON：${attendanceAnalysisContext}`;
+
+    const buildDisciplinePrompt = () => `你是 AI GPU 伺服器產線 EHS／資安管理顧問。請只根據以下 JSON 實際統計產生繁體中文報告，不得假設、補造或改寫任何數字。內容要精簡、專業，僅提供：事件總覽、重大風險、立即處置、責任人與期限、預防措施。每段 1-2 句。JSON：${disciplineAnalysisContext}`;
+
+    document.getElementById('attendance-ai').addEventListener('click', () => generateGroqReport('attendance-ai', 'attendance-report', buildAttendancePrompt()));
+
+    document.getElementById('discipline-ai').addEventListener('click', () => generateGroqReport('discipline-ai', 'discipline-report', buildDisciplinePrompt()));
+
+    document.getElementById('attendance-file').addEventListener('change', event => event.target.files[0] && loadAttendance(event.target.files[0]).then(() => { document.getElementById('attendance-ai').disabled = false; }).catch(error => setStatus('attendance-status', `讀取失敗：${error.message}`)));
+
+    document.getElementById('discipline-file').addEventListener('change', event => event.target.files[0] && loadDiscipline(event.target.files[0]).then(() => { document.getElementById('discipline-ai').disabled = false; }).catch(error => setStatus('discipline-status', `讀取失敗：${error.message}`)));
+
+    document.getElementById('clear-attendance-cache').addEventListener('click', () => clearAttendanceCache());
+
+    const autoLoadWorkbook = async (url, loader, statusId, buttonId) => { const response = await fetch(url, { cache: 'no-store' }); if (!response.ok) throw new Error(`${url} ${response.status}`); const blob = await response.blob(); const file = new File([blob], url.split('/').pop(), { type: blob.type }); await loader(file); document.getElementById(buttonId).disabled = false; setStatus(statusId, `自動載入 ${file.name}`); };
+
+    const cacheBuster = Date.now();
+
+    const runAutoLoad = async () => {
+      const maxWait = 3000;
+      const start = Date.now();
+      while (typeof XLSX === 'undefined' && Date.now() - start < maxWait) {
+        await new Promise(r => setTimeout(r, 100));
+      }
+      if (typeof XLSX === 'undefined') {
+        setStatus('attendance-status', 'XLSX 函式庫載入失敗，請重新整理');
+        setStatus('discipline-status', 'XLSX 函式庫載入失敗，請重新整理');
+        return;
+      }
+
+      const cachedAttendance = loadAttendanceCache();
+      if (cachedAttendance && cachedAttendance.columns && cachedAttendance.rows) {
+        updateAttendanceFromData(cachedAttendance.columns, cachedAttendance.rows, '本機快取');
+      } else {
+        try {
+          await autoLoadWorkbook(`/old/attendance.xlsx?cb=${cacheBuster}`, loadAttendance, 'attendance-status', 'attendance-ai');
+        } catch (error) {
+          setStatus('attendance-status', `自動讀取失敗：${error.message}`);
+        }
+      }
+
+      try {
+        await autoLoadWorkbook(`/old/discipline.xlsx?cb=${cacheBuster}`, loadDiscipline, 'discipline-status', 'discipline-ai');
+      } catch (error) {
+        setStatus('discipline-status', `自動讀取失敗：${error.message}`);
+      }
+    };
+
+    runAutoLoad();
+
+    document.querySelectorAll('#overview > .units .unit').forEach(unit => { unit.classList.add('open'); unit.querySelector('.unit-toggle').textContent = '收合詳情 −'; });
+
+    document.querySelectorAll('.unit-toggle').forEach(button => button.addEventListener('click', () => {
+
+      const unit = button.closest('.unit');
+
+      unit.classList.toggle('open');
+
+      button.textContent = unit.classList.contains('open') ? '收合詳情 −' : '展開詳情 ＋';
+
+    }));
+
+    const originalUnits = document.querySelector('#overview > .units').innerHTML;
+
+    document.querySelector('#org-units').innerHTML = originalUnits;
+
+    document.querySelectorAll('#org-units .unit').forEach(unit => { unit.classList.add('open'); unit.querySelector('.unit-toggle').textContent = '收合詳情 −'; });
+
+    document.querySelectorAll('#org-units .unit-toggle').forEach(button => button.addEventListener('click', () => {
+
+      const unit = button.closest('.unit');
+
+      unit.classList.toggle('open');
+
+      button.textContent = unit.classList.contains('open') ? '收合詳情 −' : '展開詳情 ＋';
+
+    }));
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+

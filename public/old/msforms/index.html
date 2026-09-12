@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MSForms 考試管理 Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-left">
+      <span class="nav-logo">MSForms</span>
+      <a href="index.html" class="nav-link active">測驗總覽</a>
+      <a href="employees.html" class="nav-link">員工總覽</a>
+    </div>
+    <div class="nav-right">
+      <span id="clock" class="nav-clock"></span>
+      <button id="btn-dark-mode" class="btn-icon" title="切換深色模式">🌙</button>
+      <label class="auto-refresh-label"><input type="checkbox" id="auto-refresh"> 自動刷新</label>
+      <button id="btn-export" class="btn-nav" title="匯出 PDF">列印</button>
+      <span id="data-source" class="nav-info"></span>
+      <button id="btn-refresh" class="btn-nav">重新整理</button>
+    </div>
+  </nav>
+
+  <div id="alert-banner" class="alert-banner" style="display:none;"></div>
+
+  <main>
+    <section class="summary-cards">
+      <div class="card card-accent">
+        <div class="card-icon">📋</div>
+        <div class="card-label">測驗數量</div>
+        <div class="card-value" id="val-total-quizzes">-</div>
+      </div>
+      <div class="card card-accent">
+        <div class="card-icon">✅</div>
+        <div class="card-label">已提交 / 必交</div>
+        <div class="card-value" id="val-total-submitted">-</div>
+      </div>
+      <div class="card card-accent">
+        <div class="card-icon">📊</div>
+        <div class="card-label">總完成率</div>
+        <div class="card-value" id="val-completion-rate">-</div>
+      </div>
+      <div class="card card-accent">
+        <div class="card-icon">🏆</div>
+        <div class="card-label">平均分數</div>
+        <div class="card-value" id="val-avg-score">-</div>
+      </div>
+    </section>
+
+    <section class="charts-row">
+      <div class="chart-container">
+        <h3>總完成率</h3>
+        <canvas id="chart-gauge"></canvas>
+      </div>
+      <div class="chart-container">
+        <h3>各測驗完成率</h3>
+        <canvas id="chart-completion"></canvas>
+      </div>
+      <div class="chart-container">
+        <h3>部門參與分佈</h3>
+        <canvas id="chart-departments"></canvas>
+      </div>
+    </section>
+
+    <section class="charts-row">
+      <div class="chart-container wide">
+        <h3>部門×測驗完成率 (堆疊)</h3>
+        <canvas id="chart-stacked"></canvas>
+      </div>
+    </section>
+
+    <section class="charts-row">
+      <div class="chart-container">
+        <h3>分數分佈</h3>
+        <canvas id="chart-score-dist"></canvas>
+      </div>
+      <div class="chart-container">
+        <h3>提交時間分佈</h3>
+        <canvas id="chart-time"></canvas>
+      </div>
+      <div class="chart-container">
+        <h3>部門平均分 (雷達)</h3>
+        <canvas id="chart-radar"></canvas>
+      </div>
+    </section>
+
+    <section class="quiz-table-section">
+      <div class="table-header">
+        <h2>測驗清單</h2>
+        <div class="table-controls">
+          <input type="text" id="search-input" placeholder="搜尋測驗名稱..." class="search-input">
+          <select id="dept-filter" class="filter-select">
+            <option value="">所有部門</option>
+          </select>
+          <select id="status-filter" class="filter-select">
+            <option value="">所有狀態</option>
+            <option value="complete">已完成 (≥80%)</option>
+            <option value="partial">進行中 (20-79%)</option>
+            <option value="notstarted">未開始 (<20%)</option>
+          </select>
+        </div>
+      </div>
+      <table id="quiz-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>測驗名稱</th>
+            <th>已交</th>
+            <th>必交</th>
+            <th>完成%</th>
+            <th>平均分</th>
+            <th>通過/未通過</th>
+            <th>部門數</th>
+          </tr>
+        </thead>
+        <tbody id="quiz-tbody"></tbody>
+      </table>
+      <div id="table-empty" class="loading" style="display:none;">找不到符合的測驗</div>
+    </section>
+  </main>
+
+  <script src="js/index.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "msforms-dashboard",
+  "version": "1.0.0",
+  "description": "MSForms 考試管理 Dashboard",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0",
+    "express": "^4.22.2"
+  }
+}

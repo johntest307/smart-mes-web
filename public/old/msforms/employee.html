@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>員工詳細 - MSForms Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-left">
+      <span class="nav-logo">MSForms</span>
+      <a href="index.html" class="nav-link">測驗總覽</a>
+      <a href="employees.html" class="nav-link">員工總覽</a>
+    </div>
+    <div class="nav-right">
+      <span id="clock" class="nav-clock"></span>
+      <button id="btn-dark-mode" class="btn-icon" title="切換深色模式">🌙</button>
+    </div>
+  </nav>
+
+  <main>
+    <div class="page-header">
+      <a href="employees.html" class="btn btn-back-inline">← 返回員工總覽</a>
+      <h1 id="emp-name">載入中...</h1>
+    </div>
+
+    <section class="summary-cards">
+      <div class="card card-accent">
+        <div class="card-icon">📋</div>
+        <div class="card-label">工號 / 部門</div>
+        <div class="card-value small" id="val-emp-info">-</div>
+      </div>
+      <div class="card card-accent">
+        <div class="card-icon">✅</div>
+        <div class="card-label">已完成</div>
+        <div class="card-value" id="val-completed">-</div>
+      </div>
+      <div class="card card-accent">
+        <div class="card-icon">🏆</div>
+        <div class="card-label">通過 / 未通過</div>
+        <div class="card-value" id="val-pass-fail">-</div>
+      </div>
+      <div class="card card-accent">
+        <div class="card-icon">📊</div>
+        <div class="card-label">平均分</div>
+        <div class="card-value" id="val-avg-pct">-</div>
+      </div>
+    </section>
+
+    <section class="charts-row">
+      <div class="chart-container wide">
+        <h3>各測驗成績</h3>
+        <canvas id="chart-scores"></canvas>
+      </div>
+    </section>
+
+    <section class="charts-row">
+      <div class="chart-container">
+        <h3>通過 vs 未通過</h3>
+        <canvas id="chart-pass-fail"></canvas>
+      </div>
+      <div class="chart-container">
+        <h3>分數等級分佈</h3>
+        <canvas id="chart-grade"></canvas>
+      </div>
+    </section>
+
+    <section class="quiz-table-section">
+      <h2>測驗成績明細</h2>
+      <table id="detail-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>測驗名稱</th>
+            <th>分數</th>
+            <th>百分比</th>
+            <th>結果</th>
+            <th>提交時間</th>
+          </tr>
+        </thead>
+        <tbody id="detail-tbody"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="js/employee.js"></script>
+</body>
+</html>

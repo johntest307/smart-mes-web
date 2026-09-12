@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <title>MPI 工藝展示平台</title>
+  <style>
+    :root { --bg: #07111f; --panel: #0f172a; --panel-2: #111c31; --line: #233449; --text: #f8fbff; --muted: #90a3bf; --accent: #5ee7ff; --accent-2: #4f8cff; }
+    body { font-family: "Segoe UI", Arial, sans-serif; margin: 0; background: linear-gradient(135deg, #07111f 0%, #0d1b2f 100%); color: var(--text); }
+    .wrap { max-width: 1400px; margin: 0 auto; padding: 28px 24px 56px; }
+    .hero { background: linear-gradient(135deg, var(--panel) 0%, var(--panel-2) 100%); border: 1px solid var(--line); border-radius: 18px; padding: 24px 26px; box-shadow: 0 12px 32px rgba(0,0,0,0.24); }
+    .hero h1 { margin: 0 0 8px; font-size: 28px; }
+    .hero p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
+    .top-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+    .metrics { display: flex; gap: 10px; flex-wrap: wrap; }
+    .metric { background: rgba(255,255,255,0.06); border: 1px solid var(--line); padding: 8px 10px; border-radius: 10px; min-width: 120px; }
+    .metric .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .metric .value { font-size: 15px; font-weight: 700; margin-top: 4px; }
+    .panel { margin-top: 20px; background: rgba(255,255,255,0.03); border: 1px solid var(--line); border-radius: 16px; padding: 18px; }
+    .panel-title { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
+    .work-area { display: flex; flex-direction: column; gap: 18px; }
+    .sidebar { display: flex; flex-direction: column; gap: 14px; }
+    .search-box { display: grid; gap: 10px; margin-bottom: 12px; }
+    .search-box input { width: 100%; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.04); color: var(--text); border-radius: 12px; padding: 12px 14px; outline: none; }
+    .search-box input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(94,231,255,0.08); }
+    .no-results { color: var(--muted); font-size: 13px; padding: 12px 14px; background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.14); border-radius: 12px; }
+    .sidebar { padding-right: 4px; }
+    .card-list { display: grid; grid-template-columns: repeat(5, minmax(160px, 1fr)); gap: 16px; max-height: none; overflow: hidden; }
+    .card { background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)); border: 1px solid var(--line); border-radius: 18px; padding: 16px; cursor: pointer; transition: transform 0.18s ease, border-color 0.18s ease; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; min-height: 260px; }
+    .card:hover { transform: translateY(-2px); border-color: rgba(94,231,255,0.28); }
+    .qr-image { width: 140px; height: 140px; object-fit: contain; background: #ffffff; border-radius: 14px; padding: 10px; }
+    .qr-hint { color: var(--muted); font-size: 12px; }
+    .pagination { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; margin-top: 16px; }
+    .pagination button { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14); color: var(--text); border-radius: 10px; padding: 10px 14px; cursor: pointer; transition: background 0.15s ease; }
+    .pagination button:hover { background: rgba(255,255,255,0.14); }
+    .pagination button.active { background: rgba(94,231,255,0.22); border-color: rgba(94,231,255,0.36); color: var(--accent); }
+    .pagination .page-info { color: var(--muted); font-size: 13px; }
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; padding: 18px; z-index: 1000; }
+    .modal[hidden] { display: none; }
+    .modal-backdrop { position: absolute; inset: 0; }
+    .modal-content { position: relative; width: min(1400px, 90vw); height: min(1100px, 90vh); background: #0f172a; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; z-index: 1; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .modal-header .title { margin: 0; font-size: 18px; color: #ffffff; }
+    .close-btn { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #ffffff; border-radius: 999px; width: 38px; height: 38px; cursor: pointer; font-size: 18px; }
+    .maximize-btn { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #ffffff; border-radius: 999px; width: 38px; height: 38px; cursor: pointer; font-size: 16px; margin-right: 6px; }
+    .modal.maximized { padding: 0 !important; background: #000 !important; }
+    .modal.maximized .modal-backdrop { background: #000 !important; }
+    .modal.maximized .modal-content { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; max-width: none !important; max-height: none !important; border-radius: 0 !important; border: none !important; }
+    .modal.maximized .modal-body { flex: 1 !important; min-height: 0 !important; }
+    .modal.maximized .split-panel { flex: 1 !important; min-width: 0 !important; min-height: 0 !important; }
+    .modal.maximized .pdf-panel { display: flex !important; flex-direction: column !important; }
+    .modal.maximized .pdf-panel .modal-iframe { flex: 1 !important; min-height: 0 !important; }
+    .modal.maximized .video-panel { display: flex !important; flex-direction: column !important; }
+    .modal.maximized .video-panel .video-player { flex: 1 !important; min-height: 0 !important; }
+    .modal-body { background: #07111f; flex: 1; overflow: hidden; display: flex; flex-direction: row; }
+    .split-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+    .split-panel.pdf-panel { border-right: 1px solid rgba(255,255,255,0.08); }
+    .split-panel .panel-label { padding: 8px 16px; font-size: 12px; color: var(--muted); background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.06); text-transform: uppercase; letter-spacing: 0.08em; }
+    .modal-iframe { width: 100%; height: 100%; border: none; flex: 1; min-height: 0; }
+    .video-player { width: 100%; height: 100%; object-fit: contain; background: #000; flex: 1; min-height: 0; }
+    .no-video { display: flex; align-items: center; justify-content: center; flex: 1; color: var(--muted); font-size: 14px; background: rgba(0,0,0,0.3); }
+    .pdf-fallback { padding: 12px 18px; color: var(--muted); font-size: 13px; text-align: center; background: rgba(255,255,255,0.04); border-top: 1px solid rgba(255,255,255,0.08); }
+    .pdf-fallback a { color: var(--accent); text-decoration: none; }
+    body.modal-open { overflow: hidden; }
+    .viewer-panel { display: none; }
+    .panel-title { margin-bottom: 18px; }
+    .title { font-weight: 700; font-size: 15px; margin-bottom: 8px; word-break: break-all; }
+    .meta { color: var(--muted); font-size: 13px; line-height: 1.55; margin-bottom: 10px; }
+    .status-row { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+    .ok { background: rgba(86, 214, 135, 0.2); color: #7ef3a7; font-size: 11px; padding: 4px 8px; border-radius: 999px; }
+    .tip { color: var(--muted); font-size: 12px; }
+    .button { display: inline-block; background: rgba(94,231,255,0.16); color: var(--accent); text-decoration: none; padding: 8px 10px; border-radius: 8px; font-size: 13px; }
+    .viewer-panel { background: rgba(255,255,255,0.04); border: 1px solid var(--line); border-radius: 16px; min-height: 720px; overflow: hidden; display: flex; flex-direction: column; }
+    .viewer-header { padding: 18px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .viewer-header .title { margin: 0; font-size: 16px; color: #ffffff; }
+    .viewer-header .status { font-size: 13px; color: #a1c9ff; }
+    .viewer-frame { flex: 1; border: none; width: 100%; min-height: 560px; background: #08121f; }
+    .empty-state { display: flex; align-items: center; justify-content: center; flex: 1; color: var(--muted); font-size: 14px; }
+    .settings-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 16px; padding: 12px 18px; background: rgba(255,255,255,0.04); border: 1px solid var(--line); border-radius: 14px; }
+    .settings-title { font-size: 13px; font-weight: 700; color: var(--accent); margin-right: 4px; display: flex; align-items: center; gap: 6px; }
+    .settings-group { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+    .settings-group select, .settings-group input[type="range"] { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.18); color: var(--text); padding: 6px 10px; border-radius: 8px; outline: none; cursor: pointer; font-size: 12px; }
+    .settings-group select:focus { border-color: var(--accent); }
+    .settings-group input[type="range"] { padding: 0; cursor: pointer; width: 110px; accent-color: var(--accent); }
+  </style>
+  <script>
+    function normalize(text) {
+      return (text || '').toLowerCase();
+    }
+
+    var currentPage = 1;
+    var pageSize = 25;
+
+    function updateFilter() {
+      var query = normalize(document.getElementById('searchInput').value).trim();
+      var keywords = query.split(/\s+/).filter(function(token) { return token; });
+      var cards = Array.from(document.querySelectorAll('.card[data-url]'));
+      var visibleCount = 0;
+      cards.forEach(function(card) {
+        var cardKeywords = normalize(card.dataset.keywords || '');
+        var title = normalize(card.dataset.filename || card.querySelector('.title')?.textContent || '');
+        var matches = !keywords.length || keywords.every(function(token) {
+          return cardKeywords.indexOf(token) !== -1 || title.indexOf(token) !== -1;
+        });
+        card.dataset.match = matches ? '1' : '0';
+        card.style.display = matches ? '' : 'none';
+        if (matches) {
+          visibleCount += 1;
+        }
+      });
+      document.getElementById('noResults').hidden = visibleCount > 0;
+      currentPage = 1;
+      renderPage();
+    }
+
+    function renderPage() {
+      var cards = Array.from(document.querySelectorAll('.card[data-url]'));
+      var visibleCards = cards.filter(function(card) { return card.dataset.match !== '0'; });
+      var totalPages = Math.max(1, Math.ceil(visibleCards.length / pageSize));
+      if (currentPage > totalPages) { currentPage = totalPages; }
+      cards.forEach(function(card) {
+        if (card.dataset.match === '0') {
+          card.style.display = 'none';
+          return;
+        }
+        var index = visibleCards.indexOf(card);
+        card.style.display = (index >= (currentPage - 1) * pageSize && index < currentPage * pageSize) ? '' : 'none';
+      });
+      renderPagination(totalPages);
+    }
+
+    function renderPagination(totalPages) {
+      var container = document.getElementById('paginationControls');
+      container.innerHTML = '';
+      if (totalPages <= 1) {
+        return;
+      }
+
+      var prevButton = document.createElement('button');
+      prevButton.textContent = '上一頁';
+      prevButton.disabled = currentPage === 1;
+      prevButton.onclick = function() { if (currentPage > 1) { currentPage -= 1; renderPage(); } };
+      container.appendChild(prevButton);
+
+      for (var i = 1; i <= totalPages; i++) {
+        var pageButton = document.createElement('button');
+        pageButton.textContent = i;
+        if (i === currentPage) { pageButton.classList.add('active'); }
+        pageButton.onclick = (function(page) { return function() { currentPage = page; renderPage(); }; })(i);
+        container.appendChild(pageButton);
+      }
+
+      var nextButton = document.createElement('button');
+      nextButton.textContent = '下一頁';
+      nextButton.disabled = currentPage === totalPages;
+      nextButton.onclick = function() { if (currentPage < totalPages) { currentPage += 1; renderPage(); } };
+      container.appendChild(nextButton);
+    }
+
+    function setSearchQuery(keyword) {
+      var input = document.getElementById('searchInput');
+      input.value = keyword;
+      updateFilter();
+    }
+
+    function loadSettings() {
+      try {
+        var saved = localStorage.getItem('mpi_settings');
+        if (saved) {
+          var parsed = JSON.parse(saved);
+          if (parsed.viewMode && document.getElementById('settingViewMode')) document.getElementById('settingViewMode').value = parsed.viewMode;
+          if (parsed.splitRatio && document.getElementById('settingSplitRatio')) document.getElementById('settingSplitRatio').value = parsed.splitRatio;
+          if (parsed.pdfZoom && document.getElementById('settingPdfZoom')) document.getElementById('settingPdfZoom').value = parsed.pdfZoom;
+        }
+      } catch (e) {}
+      applySettings();
+    }
+
+    function updateSettings() {
+      var viewMode = document.getElementById('settingViewMode')?.value || 'both';
+      var splitRatio = document.getElementById('settingSplitRatio')?.value || '50';
+      var pdfZoom = document.getElementById('settingPdfZoom')?.value || '80';
+
+      // 偵測 pdfZoom 是否有變更，若有則儲存後重新整理頁面
+      var prevZoom = null;
+      try {
+        var prev = localStorage.getItem('mpi_settings');
+        if (prev) { prevZoom = JSON.parse(prev).pdfZoom; }
+      } catch (e) {}
+
+      try {
+        localStorage.setItem('mpi_settings', JSON.stringify({
+          viewMode: viewMode,
+          splitRatio: splitRatio,
+          pdfZoom: pdfZoom
+        }));
+      } catch (e) {}
+
+      if (prevZoom !== null && prevZoom !== pdfZoom) {
+        location.reload();
+        return;
+      }
+
+      applySettings();
+    }
+
+    function applySettings() {
+      var viewModeEl = document.getElementById('settingViewMode');
+      var splitRatioEl = document.getElementById('settingSplitRatio');
+      var pdfZoomEl = document.getElementById('settingPdfZoom');
+      if (!viewModeEl || !splitRatioEl || !pdfZoomEl) return;
+
+      var viewMode = viewModeEl.value;
+      var splitRatio = parseInt(splitRatioEl.value, 10);
+      var pdfZoom = pdfZoomEl.value;
+
+      var splitValEl = document.getElementById('splitRatioVal');
+      var videoValEl = document.getElementById('videoRatioVal');
+      var splitGroupEl = document.getElementById('splitRatioGroup');
+      var zoomGroupEl = document.getElementById('pdfZoomGroup');
+
+      if (splitValEl) splitValEl.textContent = splitRatio + '%';
+      if (videoValEl) videoValEl.textContent = (100 - splitRatio) + '%';
+      if (splitGroupEl) splitGroupEl.style.display = (viewMode === 'both') ? '' : 'none';
+      if (zoomGroupEl) zoomGroupEl.style.display = (viewMode === 'video') ? 'none' : '';
+
+      var pdfPanel = document.querySelector('.pdf-panel');
+      var videoPanel = document.querySelector('.video-panel');
+
+      if (pdfPanel && videoPanel) {
+        if (viewMode === 'pdf') {
+          pdfPanel.style.setProperty('display', 'flex', 'important');
+          pdfPanel.style.setProperty('flex', '1', 'important');
+          videoPanel.style.setProperty('display', 'none', 'important');
+        } else if (viewMode === 'video') {
+          pdfPanel.style.setProperty('display', 'none', 'important');
+          videoPanel.style.setProperty('display', 'flex', 'important');
+          videoPanel.style.setProperty('flex', '1', 'important');
+        } else {
+          pdfPanel.style.setProperty('display', 'flex', 'important');
+          videoPanel.style.setProperty('display', 'flex', 'important');
+          pdfPanel.style.setProperty('flex', '0 0 ' + splitRatio + '%', 'important');
+          videoPanel.style.setProperty('flex', '0 0 ' + (100 - splitRatio) + '%', 'important');
+          pdfPanel.style.setProperty('min-width', '0', 'important');
+          videoPanel.style.setProperty('min-width', '0', 'important');
+          pdfPanel.style.setProperty('overflow', 'hidden', 'important');
+          videoPanel.style.setProperty('overflow', 'hidden', 'important');
+        }
+      }
+    }
+
+    function openModal(url, title, videoUrl) {
+      var modal = document.getElementById('previewModal');
+      var viewer = document.getElementById('pdfViewer');
+      var titleEl = document.getElementById('modalTitle');
+      var fallback = document.getElementById('pdfFallback');
+      var fallbackLink = document.getElementById('pdfFallbackLink');
+      var videoPlayer = document.getElementById('videoPlayer');
+      var noVideo = document.getElementById('noVideo');
+      if (viewer && titleEl && modal && fallback && fallbackLink) {
+        modal.classList.add('maximized');
+        modal.hidden = false;
+        document.body.classList.add('modal-open');
+
+        applySettings();
+
+        var pdfZoom = document.getElementById('settingPdfZoom')?.value || '80';
+        var rawUrl = url.split('#')[0];
+        var targetUrl = rawUrl + '#zoom=' + pdfZoom;
+        viewer.src = targetUrl;
+        titleEl.textContent = title || rawUrl.split('/').pop();
+        fallbackLink.href = targetUrl;
+        fallback.hidden = false;
+        if (videoPlayer && noVideo) {
+          if (videoUrl) {
+            videoPlayer.src = videoUrl;
+            videoPlayer.style.display = '';
+            noVideo.style.display = 'none';
+            videoPlayer.play().catch(function() {});
+          } else {
+            videoPlayer.src = '';
+            videoPlayer.style.display = 'none';
+            noVideo.style.display = '';
+          }
+        }
+      }
+    }
+
+    function closeModal() {
+      var modal = document.getElementById('previewModal');
+      var viewer = document.getElementById('pdfViewer');
+      var fallback = document.getElementById('pdfFallback');
+      var videoPlayer = document.getElementById('videoPlayer');
+      if (viewer) {
+        viewer.src = '';
+      }
+      if (videoPlayer) {
+        videoPlayer.pause();
+        videoPlayer.src = '';
+      }
+      if (fallback) {
+        fallback.hidden = true;
+      }
+      if (modal) {
+        modal.classList.remove('maximized');
+        modal.hidden = true;
+      }
+      document.body.classList.remove('modal-open');
+    }
+
+    function toggleMaximize() {
+      var modal = document.getElementById('previewModal');
+      if (modal) {
+        modal.classList.toggle('maximized');
+      }
+    }
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeModal();
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+      updateFilter();
+      loadSettings();
+    });
+  </script>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <h1>MPI 工藝展示平台</h1>
+      <p>AI 伺服器製造現場之工藝文件、站別流程、品質管制與文件查閱入口。</p>
+      <div class="top-row">
+        <div class="metrics">
+          <div class="metric"><div class="label">站別</div><div class="value">L11 / L10</div></div>
+          <div class="metric"><div class="label">文件</div><div class="value">22</div></div>
+          <div class="metric"><div class="label">狀態</div><div class="value">ONLINE</div></div>
+      <div class="settings-bar">
+        <div class="settings-title">⚙️ 預覽視窗動態設定</div>
+        <div class="settings-group">
+          <label for="settingViewMode">顯示模式：</label>
+          <select id="settingViewMode" onchange="updateSettings()">
+            <option value="both">雙視窗 (文件 + 影片)</option>
+            <option value="pdf">僅顯示 PDF 文件</option>
+            <option value="video">僅顯示影片</option>
+          </select>
+        </div>
+        <div class="settings-group" id="splitRatioGroup">
+          <label for="settingSplitRatio">左右佔比：PDF <span id="splitRatioVal">50%</span> / 影片 <span id="videoRatioVal">50%</span></label>
+          <input type="range" id="settingSplitRatio" min="20" max="80" step="5" value="50" oninput="updateSettings()">
+        </div>
+        <div class="settings-group" id="pdfZoomGroup">
+          <label for="settingPdfZoom">PDF 縮放比例：</label>
+          <select id="settingPdfZoom" onchange="updateSettings()">
+            <option value="50">50%</option>
+            <option value="60">60%</option>
+            <option value="75">75%</option>
+            <option value="80" selected>80% (預設)</option>
+            <option value="90">90%</option>
+            <option value="100">100%</option>
+            <option value="125">125%</option>
+            <option value="150">150%</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">作業文件清單</div>
+      <div class="work-area">
+        <div class="sidebar">
+          <div class="search-box">
+            <input id="searchInput" type="text" placeholder="搜尋檔名關鍵字，例如 Busbar、L11、CP01..." oninput="updateFilter()">
+          </div>
+          <div id="noResults" class="no-results" hidden>沒有符合的文件，請調整關鍵字。</div>
+          <div class="card-list" id="cardList">
+            <div class="card" data-url="Busbar-L11-042.pdf" data-filename="Busbar-L11-042.pdf" data-keywords="" data-video="videos/042.mp4" onclick="openModal(this.dataset.url, this.dataset.filename, this.dataset.video || '')"><div class="title">Busbar-L11-042.pdf</div><img class="qr-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGMAAABjAQAAAACnQIM4AAABYklEQVR4nLVUsWrDMBB9igLOlOQDnDiQn1AhYG/9j/5Am0yd4rhdOtnp52RLoCB/hkqGjrU9yWD5iqd20pVCNQgOnt7de3cnQfg+76MfAfDnyAmxyoTYQYgJ8y4liDOmZURnBllPQKnJEjf6RS37crW1XJ3j4Xo9rcOS1zez7jNZ1Yns/Uh0QLjV4VYDgfFySqLrUum5IrIM516FMxvR+Urk50QDc5+YJ7U5ln5OIi0r0CEIEXs5QX1AxVlWMCyyimWlqLBR7teODnGXUjdVVPsVYUhd2Ki23QPjJ5rANLgsboOlYuazb2/ycn1oO6bvoD6mWkekJWl/drfDIm9NAxQJ57w1UEbQtedc2kNmFPXAlum7zKh1wjzrjibsfEYVQqHDvb+bI6TkDkq7ZBDF7aYsis3zaTzjthhwI7g+QOZ3aYhkrnBsu/SF3U3c4a0JQI8MMhPucJEu+Zj7FYl/+BW/AOBMrnnqZda8AAAAAElFTkSuQmCC" alt="QR code for Busbar-L11-042.pdf"><div class="qr-hint">掃碼開啟</div></div><div class="card" data-url="Busbar-L11-043.pdf" data-filename="Busbar-L11-043.pdf" data-keywords="" data-video="videos/043.mp4" onclick="openModal(this.dataset.url, this.dataset.filename, this.dataset.video || '')"><div class="title">Busbar-L11-043.pdf</div><img class="qr-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGMAAABjAQAAAACnQIM4AAABXUlEQVR4nLWUsU7zMBSFj+NK6dTkAcLvPoYrIZGN1yFMTISIpVPK67CVybwEUiBIrHWnVLJzfsHCP/n+QsKDpSsdXd/v6B4r4vu8Zv8UwI+rqNS626hrKLVMKhFaGu41naEb0i/4JY4XL6qO2X/Nsm4mac7F130aq2eZr5hiibWv9ZxWIgBV46rGAXmaSJNjaV1pyUnws92cRXV++/QuzImwsuHKspvMTvBTv+WLYgsWsbkRejZuvIM+YMBFsidCQazA3WT6NDtIsmNYWXoKSu/MbI2fwpXgZ+wxqO3T2WX+x6aJOOemm3Rv2QtE9ByQGzot7CdCs9eHz2m1yD5bHuygOM6CMjTUh9zMQJN2KdM9Tjs/3LtAKXGA4VQpV92m2TO0jBlcrIejlA6/1G1xfv+4KPZiNiN9nHN0tajUaomHU2i3YjbRuvdjDqY3OUOnYnkaY/1RponUL/yKfwEh5rAOQnFHJAAAAABJRU5ErkJggg==" alt="QR code for Busbar-L11-043.pdf"><div class="qr-hint">掃碼開啟</div></div><div class="card" data-url="Busbar-L11-044.pdf" data-filename="Busbar-L11-044.pdf" data-keywords="" onclick="openModal(this.dataset.url, this.dataset.filename, this.dataset.video || '')"><div class="title">Busbar-L11-044.pdf</div><img class="qr-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGMAAABjAQAAAACnQIM4AAABXklEQVR4nLVUsWrDMBB9igPqZPUDkiqQn1ChYG/5nMaZMtUOXTrF6edkc6DgbP2Cgos/oHG6KGDpiqd20pVCNQgOTu/uvbsnQfg+76MfAfDnyAkx213ECkJcMe9ywn2K+KipYjK7KzyXJFI3+k0vRnSW63M8XOdDOzny/JR1HrMujXw4Ez0wyepJVgOyCWJGRK1K62tDZBnMBzNRVlPVEgUx0S/Rq4o2Vpd1uDpUJfM1SLlsHa5OJ9l6E53QIOGqJ7qsqLR6G+YO2sq2SPrYUMcxyivtje5sv+T0VIu3FQ7ThbwxzDQ/K1lgXlx6Zu4gbxpFmuqIGD1dgfnHbXMGypTDRAPTCGo9o1KfUUS19kDGqEREg5ibmlXJCTFfHacFZjGnUk6utLVLB1KcN6Nscfe4HyvOxYCjvfMSm7BKQxSNXrG79PkT600AL2cJYjZ58GacRF622/Ami3/4Fb8AORqrswCmj0gAAAAASUVORK5CYII=" alt="QR code for Busbar-L11-044.pdf"><div class="qr-hint">掃碼開啟</div></div><div class="card" data-url="L10-GPU-Guide-205.pdf" data-filename="L10-GPU-Guide-205.pdf" data-keywords="gpu guide 205" onclick="openModal(this.dataset.url, this.dataset.filename, this.dataset.video || '')"><div class="title">L10-GPU-Guide-205.pdf</div><img class="qr-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAG8AAABvAQAAAADKvqPNAAABrklEQVR4nLVVsYrcMBB9Wi3omnjrgA4v3BekCOgg4HT5g5A+P7Du0pwtd2nizf1N0vkgxO4C6UOcU5FW2koL451jU103gRAVA4LR6M2bpyfFeLR49XgH/MsWBJTRcHQhAo10tmV8xK9ueNoxiReliyW6bYEt7rZC8vocbr/aAl9uRczrc7i5xubTm+/f5AZbtjBlX6FmEhvsFOphCe8tq7VUmZlJsW2gmfkkVF5qdeUnwCy1ktgA7zPtMKPSKVsBM7hjvR/0nu1m1CKMOBEwHxD8UZSK9m7Nry5Pdyri6KXKH67pbQorR+mdSB3Vg20M2pFQSZjBaeSUQ8r65EoxuXe2qGY12sKI4168GeMRN/Xv+2fiUKjNes9znbmTedar6di+tAUuo8gzSA2lNyFl2gxBapAaR3We20F7J2qDGqN7lNFZQMQM9flHxNJPwVeLNG6k9sUBYWUWP9HfvJQCc1HZdpRMBmdH6hgbRi3zjJaXfpoPmAtImEE7YxtjG1hA5nlnrMo6ceghCemPIz25gH/9/N5d/ZQdqeyyTplPRtQzAXaTdTfOjYhZ/bdv4gHd+t7SQxSDggAAAABJRU5ErkJggg==" alt="QR code for L10-GPU-Guide-205.pdf"><div class="qr-hint">掃碼開啟</div></div><div class="card" data-url="L10-LiquidCooling-Check-203.pdf" data-filename="L10-LiquidCooling-Check-203.pdf" data-keywords="liquidcooling check 203" onclick="openModal(this.dataset.url, this.dataset.filename, this.dataset.video || '')"><div class="title">L10-LiquidCooling-Check-203.pdf</div><img class="qr-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAG8AAABvAQAAAADKvqPNAAABnklEQVR4nLVVzYrbMBgcRynypRb0tqDFC3mC3lwoqE/R54j31JNt3XppsvsC7au4sOA8hokDvUY5KSBnyt729hlKdRPMN5pvvh9lxJvD1dsb8C9XJKDcObt10xlopNiWuBxefvV3nkl8KORz6DfH6wN+PyxRVVQj9MvCFC64N7nqFoBNxNOh3MfPcKMI9hm2mI+Huc3WAnitiPndVxTXk6FYlLnONu0nQNuQSW6A+zjdqgSnQrRCUUBP1D1MtGZQN0EzmKcP++kn1ON17qTeML06O9tybECBGWQ/1pw6qBBHSXNqdBmIluwwicyBDFGFWLIvJXDKIhqt/GALncR+pqEKd3P95/hxI7lBP1i4KZBe9BmpwHR2YxuTkTWz0zAsw/AaJTLXA3cODRSjlCBSA3VGGaLNosS8wsWl537+kY/M5YHN/Pr9N7XSJ2hprEAyFRWKyraD2M8JKG8OJo616PMKLWflcQGKBbtuq62JtnHp1ZkFS4ZfhkfoHU6LNpK+99+vR+fEsWpZek7nijfI/QzYbFB+GKGlCmb/7Zv4C1Q52HvnllVKAAAAAElFTkSuQmCC" alt="QR code for L10-LiquidCooling-Check-203.pdf"><div class="qr-hint">掃碼開啟</div></div><div class="card" data-url="L10-LiquidCooling-Flow-204.pdf" data-filename="L10-LiquidCooling-Flow-204.pdf" data-keywords="liquidcooling flow 204" onclick="openModal(this.dataset.url, this.dataset.filename, this.dataset.video || '')"><div class="title">L10-LiquidCooling-Flow-204.pdf</div><img class="qr-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAG8AAABvAQAAAADKvqPNAAABn0lEQVR4nLVVMW7cMBAcHgXQTcQEaRnTX0gnV7q/5AM6P0C8c+XK9wP7HelowACv8xdoKA8gzwigAyhtcKlcZQUYYcUFlsuZ4exSEN4tWr2PgI+EKIDpW8rBJqDnzjoCDtO39bSjwl6UL/Dmfx2/RzxdLUAlPzeW7qplFKbtoToqs4SgI7ttLY1DpsIS3Ikp3003L9dOVFxlIqI8EpEkopmD0QObIGdVdOB0RqnVsCOZ1DDDMpVX+OGv02H64ifpX7f/Tq5A6xEwb03lHK+z+ClWJ+QLA0QmuZKXTXzQv7+mqj5ZBgZoH+z5OVqbGl66uinaD5mG1BhOOpoh75XNZM57juCtiiI/f1oPOXAWBSVlOsQeksYFMJqBqECVjm0rFDcaF2huTb9ADe1jr0rXDokliOI8nI/CQ1NkYXRNdMFokjviXIdSK5tD7Fpz9jbfKQXKuGBckGxlwGgvUxM3gTe/Ixxh9P6qBmd+lE6ZTaBtG6F46TploOw97J6V7u/4SqfpRr06wc86PeLRP29GGvyi+axDEQFoOcziv30TfwDH0eLeruY5ngAAAABJRU5ErkJggg==" alt="QR code for L10-LiquidCooling-Flow-204.pdf"><div class="qr-hint">掃碼開啟</div></div><div class="card" data-url="L11-PowerRack-Assembly-201.pdf" data-filename="L11-PowerRack-Assembly-201.pdf" data-keywords="powerrack assembly 201" onclick="openModal(this.dataset.url, this.dataset.filename, this.dataset.video || '')"><div class="title">L11-PowerRack-Assembly-201.pdf</div><img class="qr-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAG8AAABvAQAAAADKvqPNAAABrElEQVR4nLVVsW7bMBQ8mgbYJVK2ooAMCsgXdGOAAtTWz+gnVOrkyaK2LLG/oMh3dKMnZRPQuQGUyEDHSu0io5Re4UzZnoEi3B5wJO/dOx4F4cWixcsK+J8SAUgKH2C7Hthwe0sCDIqbVFBgLxreyMvm52odsE/PYDXdrleDf3Qs5yUA+fRWu/2n7w3fbzzibkC1fnC2ZcGVmJ6aadilJJacdEQUSiJnJRHNnM65kb3SPbphbFmd0bQRJmdS4ANLo1dya5PYdz24k0EOAUb2NskNx3kxzSrdNEH4Wt+wOks5dov3U5ld/1of+HHvxfb+gKP8wjcYYMnZUHg9G83qvFFJMUoadeV5cOlb4buKWuE56Zb4jTT/+CM66q26+ssOxXS7kajunGK9QeSfvWH0bCTLuaipqmUPOVDgjCTdcXlx/U7X+JrxfnYmRCrJrRzqjvez1b2FqAMUC6bTSzkhUbI645RIEWi2KGrWoigJf/xj9Q0RVu6MRCpLGWdtlfHBmKskHvXgUY4J/2CBzzFgw5BJlkY8yoXZx9nhbvfAgJ/ViAmxPyNkxKt9E/8ARrzbGSEa+pgAAAAASUVORK5CYII=" alt="QR code for L11-PowerRack-Assembly-201.pdf"><div class="qr-hint">掃碼開啟</div></div><div class="card" data-url="L11-PowerRack-Validation-202.pdf" data-filename="L11-PowerRack-Validation-202.pdf" data-keywords="powerrack validation 202" onclick="openModal(this.dataset.url, this.dataset.filename, this.dataset.video || '')"><div class="title">L11-PowerRack-Validation-202.pdf</div><img class="qr-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAG8AAABvAQAAAADKvqPNAAABqklEQVR4nLWVQarbMBCGf0UGZ2VnW6o+F3KC7hwo+O16j57A7gEip13XPkF7FgdK5Z3XhT5wcA5guRsFZM8jXb3dGEq1GBgYjf75ZiQJwotFm5ce8C8uPJCUqc+zYQSO3F5NQBvEzeFEnj3IbmdyfroB57drVJ0+BN/DK685uJvjefi2HaKOrzd2EM2b2r1H1rPBJ4GpVR/bWYuAQ0dEXhhJTmmihck8F2L/tZjL7moFRwNkG59nKs+kdYppCqgKoamPSQkjGRnwhfFRqApH1PDBOSQZsqaPwBUIH7s+NgAGS9wggWqj8iy5A3QDl5ksERmVI1nShOOM+hB8htyF8657KjnNwpBtVJTJMeU5W5JLKmuXWJbzZtaP/kvTT5gfbq8YGYHcnUUe/1rCoX4k4jkPZIYxlZY8p9nnoTqiL1xSguXstRusG5bUC+JoBJi6QzRB/ARtf79ecVN0g2Oq9Ap0QuxjjT/mx7TiNdM0fzojuiECxxl3GrGjMfRg53nz17aXKg0rXNZkBhJLPl8xorGTZfhU3eRDyxd4EnP1br/pLiOuTLD4b9/EM7125kTvoN1bAAAAAElFTkSuQmCC" alt="QR code for L11-PowerRack-Validation-202.pdf"><div class="qr-hint">掃碼開啟</div></div><div class="card" data-url="MPI-Doc-101.pdf" data-filename="MPI-Doc-101.pdf" data-keywords="mpi doc 101" onclick="openModal(this.dataset.url, this.dataset.filename, this.dataset.video || '')"><div class="title">MPI-Doc-101.pdf</div><img class="qr-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGMAAABjAQAAAACnQIM4AAABVUlEQVR4nLVUMWrDQBCcPRnOjS23gRMW+BNyZb3FL7CSOjnpAcl/0qk7dXmBwc4Z0lpKcwZJG1Il1Z0I5LqFOXZmdnaJ8fPO4lcB/LkaiNKuGURDNA/804zlTY5Ycx1AtvMh1kedD2ICF6qjMpvEmrd35QR9scMe8qGORj8SPaAKowoDyJMXycz9ErZlZvYj+wPWzNAGFERKW3GPDNp4kQLI0kX+0dYKmV8RszkdpNLOjrtAd6pVbLgyXPl5iug5P3W3lAu6Nt7uM1C9GQTYEDJvPsEjbFVbZvUU5GnUYQdtuA35WTgeJV93oKCfTVJml/jVln4/BRba3CPt5HbIg9qTizwmHTq/S/jO0hPWpewDqRMD0Ubg/IKUXCDJmhU5y6aPA9NEOwfektVttp+wcYuc3yXHocsA4NOdV6Ax5GfsomuDx9yuJuzmMltXzgbmTv9wFb8AfWKo0C1elCIAAAAASUVORK5CYII=" alt="QR code for MPI-Doc-101.pdf"><div class="qr-hint">掃碼開啟</div></div><div class="card" data-url="MPI-Doc-102.pdf" data-filename="MPI-Doc-102.pdf" data-keywords="mpi doc 102" onclick="openModal(this.dataset.url, this.dataset.filename, this.dataset.video || '')"><div class="title">MPI-Doc-102.pdf</div><img class="qr-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGMAAABjAQAAAACnQIM4AAABWUlEQVR4nK1UMW6DQBCcBUu48Z0fgIW/kO5cQefnBFK5siGVq/CD9PkFaQKfsESM+0B3kQ42cpOkurOibLfS7M7s3O4R4yfevV8J8OdsJFrJDVFCNHfUHdjvSp4QceVADnMsdpfHZvTs7DMAo/825vHpFtW8Wx+O7vmkhjxylviTHQkDhFkdZjUQtFYkM5uDbiUzsxXpjXkzG5LwfkPLxsGeKkMa5GT3IJr1YtuKu87hPEyqupKjQod7e8+ZH5WElwsnHb/a32j8IAYuzyWJTzs7DzrKAWIeaoefpeYehribHM4bqiC12St+ih1IETNrf6jgmB3cqyuGdEgunYPmKYC8RWcdFVUoK0h7T8+f1KmP64fApDfsp1B+Hzh1mgNHpW6pNg52mDQIpTYCEHY/PQB+tg3Oioej+zapaGUJTty3KbAuktXSdcUFjecAQJ0rK/K6nN/xT7/iF5YYqPr+0Hw9AAAAAElFTkSuQmCC" alt="QR code for MPI-Doc-102.pdf"><div class="qr-hint">掃碼開啟</div></div><div class="card" data-url="MPI-Doc-103.pdf" data-filename="MPI-Doc-103.pdf" data-keywords="mpi doc 103" onclick="openModal(this.dataset.url, this.dataset.filename, this.dataset.video || '')"><div class="title">MPI-Doc-103.pdf</div><img class="qr-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGMAAABjAQAAAACnQIM4AAABX0lEQVR4nLVUMW7CQBCctZFMEx8pIlIcgi/QGSmSXeYB+UeAPhhTUQXyI6jOn4jkxKSMhKkO6eyNUiWVF0XKFSetNLc7s7tzxPg5b96vAPhzVBMNZkSUEHWFdyn7zzE3GPJOQFZdrPLDKq89mUu9sfUyuoj1CaN0LSE7UHaAnKv+bZO3IuEAPTN6ZoCgaEUys1O2UMzMrUivXuadU64fJ9QTqnNmymUEEqt7uJrcISjCcSl0HtyANzzMrF605+xgG5MaHzgpeS90SZnyGJeZQSjw9Ofn0Us2QsSlyDMuFpEjLhshZz0/x/4aTxO9jQSeZF1q/WoHQTu4AaZxQVaTkeZuikUAdQFPSmJvrLEfXAvu8Nm+sjHzwE2FTa470A/kf/ZvPu4F7SkPq11BxilBkZsGGnAhEMbC1gH+hoP3iKu17E1OoDbfdztSWdAOWTLoSX7PqD6eAZhl+9zpH37FL2t+pOtG8Yx7AAAAAElFTkSuQmCC" alt="QR code for MPI-Doc-103.pdf"><div class="qr-hint">掃碼開啟</div></div><div class="card" data-url="MPI-Doc-104.pdf" data-filename="MPI-Doc-104.pdf" data-keywords="mpi doc 104" onclick="openModal(this.dataset.url, this.dataset.filename, this.dataset.video || '')"><div class="title">MPI-Doc-104.pdf</div><img class="qr-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGMAAABjAQAAAACnQIM4AAABXElEQVR4nLWUsWrDMBCGf1kBZamdB1CrQF5CgYIz9nHsTp3stJ0T5w36HN28KVueIODEha5xuzgg+0qndvKFQrUIwQf3///dSRB+ziH49QD+/OqEmAKjJwgxHiThczInQDhDrhqu0IyxiWm16IILtGTnt8/2ItUfu+t+y5NR293YOl/IfpiEB3TqdOoANegIRES9raLve5j0mdW5M0VZM2Qg75WL0v3J3m62wzqpj5HAnJRGzOgsykq0PkHFkkuFTEG0Zs1491FJRaszSw3jnZYwa6uj1idsnm0lXIVYrod1Bt0Ss9VcZ2fP9B3UuJpKQ04y8wmfkyxI505y3qmPPWJEVPdcSqmTvaIeSLmUiHwYG3JcSkEnxOyI/QTT0LK7qUMlT8oz1QM0Y3mEf3kdXXH7nigN6yMHZpZGAGQTTo87/3zH7iY2OEwU6IEhH0XXzet88T4Z7rv4h1/xC2BDsXkCPCtpAAAAAElFTkSuQmCC" alt="QR code for MPI-Doc-104.pdf"><div class="qr-hint">掃碼開啟</div></div><div class="card" data-url="MPI-Doc-105.pdf" data-filename="MPI-Doc-105.pdf" data-keywords="mpi doc 105" onclick="openModal(this.dataset.url, this.dataset.filename, this.dataset.video || '')"><div class="title">MPI-Doc-105.pdf</div><img class="qr-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGMAAABjAQAAAACnQIM4AAABYklEQVR4nK2UMU7DQBBF/3ot2Y3ttEgL9hXoNpVdcQMuwAns0CemS5XcAK7iVE6XEyCZ2BJtNpUjrTMIJASVJ0JsN9Lfmbcz81cQfs6b8ysA/hwNQlwXIjGZED5zb0FyoiGWMVWM0vjDats968EZr+4CkI932mQXUQdZ8rLklVE/7G+Ra3keV8ICqqhVUQNeM6YUn50/et4FnR9mcIOsW2fdcctwkv9aekOJJMgYzqiSTxWARtSjnLBz3RpCQc2CxpV0gIJWeSppPKczrPuaqvcbwIxzOnKCaek12J7i8Q0BUd+etS36mBhOG5Fa9O0qlWuGU8427WSH/MRxwgLxAQgRM28HGWqJYrqEs1ZRL6lCmDI5iWzRy5VnmWm6gwt1v2vUNJlzm7yguNRkastUd2B8hOiCqSuWvOMeAFHZI1c991ToyUNqGR99elPucVVuuqjnvRnVNkfMzP3Lm9/nn37FDxiqo2MY7vgFAAAAAElFTkSuQmCC" alt="QR code for MPI-Doc-105.pdf"><div class="qr-hint">掃碼開啟</div></div><div class="card" data-url="MPI-Doc-106.pdf" data-filename="MPI-Doc-106.pdf" data-keywords="mpi doc 106" onclick="openModal(this.dataset.url, this.dataset.filename, this.dataset.video || '')"><div class="title">MPI-Doc-106.pdf</div><img class="qr-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGMAAABjAQAAAACnQIM4AAABYUlEQVR4nLVUMW7CQBCc8yEdDbYfYGJLeUE6F0i4y3cwaaiwoaKJyQvIO+hIZTpegGQgfTA0tnTnjaiSyosi5ZrTSqOdmdvZE4Sfc7B+FcCfKyNEsIw6cwjRbUVCJ+TPKojcp7xoZyi7gKLXyFh3aBl9fF6ru1SvVL/Z8kinMilOSSSbdiQ04MW5F+eAanUEIqJzWDi3ux2pp6EXk7/cnBikdSO16/05HLxt2x1JC8EFj7Fj4gnjyA6prPQIBYaMzlEoMwVR+RnnvcwpgzcNqeS820PZwHMqPWrvaSFeF9e8KJ/VQ8hM87IbrJ4wrTUzd1CjKAt9yiWXTzOuA+xMCiwjpidVNCM4dGoYR2asgl5EX6L/UjHTzLAvF4HINXXZ3Xx0sXcR2NwrJWSOUIeouG4YZNmVLvT7utNj2AGYM0yqMOfYAZlCHmudLNjdBE0OrgJxSQa8hGSqTll7ksU//Irfsu6oQq2zmWYAAAAASUVORK5CYII=" alt="QR code for MPI-Doc-106.pdf"><div class="qr-hint">掃碼開啟</div></div><div class="card" data-url="MPI-Doc-107.pdf" data-filename="MPI-Doc-107.pdf" data-keywords="mpi doc 107" onclick="openModal(this.dataset.url, this.dataset.filename, this.dataset.video || '')"><div class="title">MPI-Doc-107.pdf</div><img class="qr-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGMAAABjAQAAAACnQIM4AAABUElEQVR4nLVUMU7DMBT9PwY5Empc9lRF4hLZko2DcIGk7EnD1ImcAO7BhDu5l6hkmu6QLYOTj8ICk3+EhAdLlp6fn9/zMxL8jPfg1wLgz6sBcVUhYoYYMvsqEg9EI6xJM8guhBc4Px6GgNcynGDYJrNUP4c31Y5Hqh7ueyoyMfqR4ADiwsSFAZDWiyQiB4lVRER+pKsMKO3KBJRhkCCt0oAzTm/0hFF9Swwnjakr03Xdx6Wf82K4fLvNX68oa2nP+Fmmx487iw0uD34/icy66UVN1Pl1BkOV7U+T/+dFxmWUAk5+0lPK+JmDK0F0Gpi7A3UUF8ZiHyPnZ2csEihqR4bTRdMcK83lHoiOHKRmI10+431GID4lpzOYurlJjtfaRhxnLmNIJrWR388AAESt5Smhbsd3cxGCaoD8aX53M5e2zlbLOd3UYitbJnf8h1/xCxTnogAWjmJZAAAAAElFTkSuQmCC" alt="QR code for MPI-Doc-107.pdf"><div class="qr-hint">掃碼開啟</div></div><div class="card" data-url="MPI-Doc-108.pdf" data-filename="MPI-Doc-108.pdf" data-keywords="mpi doc 108" onclick="openModal(this.dataset.url, this.dataset.filename, this.dataset.video || '')"><div class="title">MPI-Doc-108.pdf</div><img class="qr-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGMAAABjAQAAAACnQIM4AAABXElEQVR4nLWUPW7bQBCF33IFrBqbPsAmK8AncMdO6nIP5wJkp8ailCqNrZwgPoc7pVp3PoEBJcwBpLhZAkO+wJVd7QgBss1ggA/z/9YQb+9n8c4B/tkbjJltFpMvMGaaJSEtwzbBxMC4z2c4TlE73i6G4pRa+t8v6bSqnz6MjzpZpqFA1y7smCchgG+ibyLgsh2BJNfYl682T8qq8iaG7a5TSVTdJkmbwjY/T3B04ZjCwXnMlZjNjtxJjb1Gckucz2FSuMv3XuDPD7nu/c1i/znl50lGe4Avk9RazG/9c2BsPrmPlbJNLuetGcZelL2Dm52sEBitcp+Q2lnSt9EqvYNMUs9RshsVUlbOl+QINMreSQpcYFSnNBhzua6eLzA7r1Rt+jLagxMle4Hj1K4ruX+YnGl6r503lDJCuaVXzx4e7a9e2q+qNvH9ylw4cKlr09CuXXeXz27+w6/4F9NLs6lElMmWAAAAAElFTkSuQmCC" alt="QR code for MPI-Doc-108.pdf"><div class="qr-hint">掃碼開啟</div></div><div class="card" data-url="MPI-Doc-109.pdf" data-filename="MPI-Doc-109.pdf" data-keywords="mpi doc 109" onclick="openModal(this.dataset.url, this.dataset.filename, this.dataset.video || '')"><div class="title">MPI-Doc-109.pdf</div><img class="qr-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGMAAABjAQAAAACnQIM4AAABZUlEQVR4nLVUPU7DMBT+3FRyGJqUDQkXV+oJ2LK1Wy/APUg2JlJ1YiGBE3COMnVAcjdOgJTSHiARiys5eagTTH4VEl6sJ33y+37esyD8nG3vVwH8uWqFGFPYX0KI0IuEy0kvAGE0mcrfoQkhDD3O2t4JXNLD/suexHowH3UbDtlHbEfna3V5dtFtGEWAyozKDCC9ikBEVKOKj7cXKdzydX/zXqXXE+XPCNQYh8TlVpd+P+EiqXKra6kw5XjaHa1diopFFlMIA2F1wWmvZZVbdZ9Q49cOKkk3a11al/rf7OE2rJ7kWzOXVwmTu1iJPGu7g2NyBxWSOmgyATefbZ30v0y7AMoZ82ZjdvUUMe06xiWXGxUdCSDjXCJykdRkWJdaISY1PoYYRwm7myqjoJaO6d5DEwZx6F5W/QG376lU0dTFBswsHaugPkw+Dy5/YNKMLZ7L7VCC7vjdjNfBQu4Kf3fxD7/iN6m7s1nplKi2AAAAAElFTkSuQmCC" alt="QR code for MPI-Doc-109.pdf"><div class="qr-hint">掃碼開啟</div></div><div class="card" data-url="MPI-Doc-110.pdf" data-filename="MPI-Doc-110.pdf" data-keywords="mpi doc 110" onclick="openModal(this.dataset.url, this.dataset.filename, this.dataset.video || '')"><div class="title">MPI-Doc-110.pdf</div><img class="qr-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGMAAABjAQAAAACnQIM4AAABZElEQVR4nLVUMWrDQBCc0wmkJpJTpLtwBr8g3QUCdufnxCJNKstOetlfSZlOhoDS+QUGGRvS+uxGEJ02uEqq2xDIdQuz7MzOzgnC99sGPwrgz5UTom/j8AlCxExfTq5nQLGmkkHaWM5LNTUu+A2X1dtzyfEMAbgD+p/xFasvbeT1GEsjOz8SLaCySmUVENVeJBFRN9wVQyLyI9us0t0Z1k6HDDIt6wRt3uhF5UUGuB8PHqh/XG+2I78istWug4JpE2Y6WZJdBNHowq89cLmoAd0BJ873JLpb3mxm7yvn5xlIWW5m0YfIBz3DeJQ1ChFRozvOoy6qp4YWpK1/n2jzUgnSVElGeyjFiOa3+8UL4OcZuIMJk7XCyln/lnC+jfQ8vZ0wilpAF4aKSCWMR8gJp2p/RJ01bDZdHqv0NSQu74C0FjSuj3yKXT7qnywEdyFpIy/L7WytLh75bE4MRCUZ38U//Ipf/NWqLGgWY+MAAAAASUVORK5CYII=" alt="QR code for MPI-Doc-110.pdf"><div class="qr-hint">掃碼開啟</div></div><div class="card" data-url="MaTBC100-CP01.pdf" data-filename="MaTBC100-CP01.pdf" data-keywords="" onclick="openModal(this.dataset.url, this.dataset.filename, this.dataset.video || '')"><div class="title">MaTBC100-CP01.pdf</div><img class="qr-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGMAAABjAQAAAACnQIM4AAABYUlEQVR4nLVUsUrEQBScTQIbC5OzsBCiOfAL7CIId935H36ACTZWl7uzueZu9XPsUgh7PyGsnGB7wSaBTZ5cpdU+EdxilwfDezPDmxWE7/Pm/SiAP1edEEMVvi8gROhEwpaU1toInZI27gl1iMfMX4077zdcNlc3Dccz2F+3Ax8bXl/cdEfV62rs924kLJAUOik0IJ2KQESkyIj960baaZZESFW1ZZERTASaN6ly+wnqRxCaeplg5Ha+G8DgIkD7wrgEUtonSqlJ15LnGTc2yqgmnmeeJUVjc3dPD5+ViZU+ncizjNnPWTusL092rWUV9dLGFUrtc/vZzWtZTlIPUGOmJ1U2komgbc+5lEtfkc2BgnOJyMYEoVmXOiHOy9DmGEaMSyipm2UBjc3nkkHWoX+3NE/PwaFbuweg27UJJBbu6fts+quDY7T24ZrNJkT1sZagez6bU1jI7dq98+IffsUvsdOpVVCnyMkAAAAASUVORK5CYII=" alt="QR code for MaTBC100-CP01.pdf"><div class="qr-hint">掃碼開啟</div></div><div class="card" data-url="MaTBC100-CP02.pdf" data-filename="MaTBC100-CP02.pdf" data-keywords="" onclick="openModal(this.dataset.url, this.dataset.filename, this.dataset.video || '')"><div class="title">MaTBC100-CP02.pdf</div><img class="qr-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGMAAABjAQAAAACnQIM4AAABV0lEQVR4nLVUsW7CMBQ8x0jJAoQ9xZX4CXdKt/ZzYGPCwNSlEb/TLUwe8wWVEqVSxxJYguTkVbC0kx+qVG9POj/fvXdnQfg5VfCrAP5cdULcH/GxhRARc89Qt96DIkW5Fwk3D1Wfyj5NhC1ZLjskp/wW1l2dVybikeNWxmc51bL3I+GAZGGThQVCL08QETU5rVMi8iPdwqr+gner1K9dTvU+ALbn2eSFUURilqHri/fqkVEk8nKl60y7kf91uLmWh1BRqzK/9kBOC7dDuQNOzN5prSHaKwemJ0ReZ8Xnq5nFmumZpckqJGpVf0PP4FzFIcvTGcLYqo2VjPaBFFE9fAYtAYanM1aSTQAYxiF08UYIYd2ccZ0DVKbpECYjDmlINbZE6AyXuCbqYkC8DcjvpQCA/HpQ5qk83pDNib1rGgj/5K/ZPGg7LZLhks/mSNPGSmbv4h9+xW/FK6eYkOASWwAAAABJRU5ErkJggg==" alt="QR code for MaTBC100-CP02.pdf"><div class="qr-hint">掃碼開啟</div></div><div class="card" data-url="MaTBC100-CP03.pdf" data-filename="MaTBC100-CP03.pdf" data-keywords="" onclick="openModal(this.dataset.url, this.dataset.filename, this.dataset.video || '')"><div class="title">MaTBC100-CP03.pdf</div><img class="qr-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGMAAABjAQAAAACnQIM4AAABaklEQVR4nLWUsUrDUBSG/5sbuAUhbZ0spMQ3cI0gZOwb+A5OVl06NcnmlNLFrQ/iloKYvIQQjZtLgoMp3JsjddHpHhG824WPw/n//5wjCN/v2fnxAf78M0JMnXLqlEIMrCR0TL4XBSkFVFQ20kU7OEov3rzSOI9sL6YpzzaL33QtnegVJU8OO2Drz0PZ20lowL8q/KsCUHZFkmAO7/QIxDgPPQ/lioJGBZm9JjSiuiXqQ8R2P0HUYQlKC9lEVtIBzTRgzMIEt5x2JRtVxQWlxPTphbTqZKaCnlFEbRcQ+V5YJ3bSwWb2lGyLujjtQzZ3l2aT0e6ByR2U5tTvvao5l0wDcUP7HNc5U7OPKkF1msuWcYmyKEhCPcwhOJJIe8BSaWbq8DWfufaU73G5xwSK5QuqObcd7UAm5fH63n23a3f3uzn+OEBYnZxP2ItyOdyZgUz43ZTjXF0r0IIhU2Ey7Fb5pLHXFP9wFT8BhBaofm2dI6QAAAAASUVORK5CYII=" alt="QR code for MaTBC100-CP03.pdf"><div class="qr-hint">掃碼開啟</div></div><div class="card" data-url="MaTBC100-CP04.pdf" data-filename="MaTBC100-CP04.pdf" data-keywords="" onclick="openModal(this.dataset.url, this.dataset.filename, this.dataset.video || '')"><div class="title">MaTBC100-CP04.pdf</div><img class="qr-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGMAAABjAQAAAACnQIM4AAABTklEQVR4nLVUsW6DMBC9w5GcCdKxklHyGWaCTwo/QEgnpuQTsvcLOtLJ/EKHSE4ZOhaSxZXAVzG1ExdVqgdLJz3fvXt6z0jwcy7BrwLgz9WIGGNywQxxybzbkeia1MOaagbZL+Fk7FMzBjyX8TOJO30X66v+2Fc8MnIAzUCZ8PNIGABUblRuAKSd7SmILGVmpYkco2fZLE7ucUxw1TDT85r6WhA7HQaQ4qABXUuGQaKzYWojpwqmJx2d8KAKTT5lkF4OWyl6AyHXs5STN3ZEPcvTtMfaRtR6bvciVaCHQtNhnmcAWNm82twq7BjlyYMgaskpZHhST22XKryDJ4DwsN7XEBnWS1+lPE+q3uHPEMRBcjyDKZsl2FttQ81mc3wHoGRBGTN9K9dkhNfEuG4xXcfn88MLUPbGZhPNhrJ4xaV4j2P3OlzBlPMb4T/8it9HELNuaYQnpAAAAABJRU5ErkJggg==" alt="QR code for MaTBC100-CP04.pdf"><div class="qr-hint">掃碼開啟</div></div>
+          </div>
+          <div class="pagination" id="paginationControls"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="previewModal" class="modal" hidden>
+    <div class="modal-backdrop" onclick="closeModal()"></div>
+    <div class="modal-content" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <div class="title" id="modalTitle">文件預覽</div>
+        <div style="display:flex;gap:4px;">
+          <button class="maximize-btn" onclick="toggleMaximize()" aria-label="放大">&#x26F6;</button>
+          <button class="close-btn" onclick="closeModal()" aria-label="關閉">×</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="split-panel pdf-panel">
+          <div class="panel-label">PDF 文件</div>
+          <embed id="pdfViewer" class="modal-iframe" type="application/pdf" src="" />
+        </div>
+        <div class="split-panel video-panel">
+          <div class="panel-label">對應影片</div>
+          <video id="videoPlayer" class="video-player" controls autoplay loop muted style="display:none;"></video>
+          <div id="noVideo" class="no-video">此文件無對應影片</div>
+        </div>
+      </div>
+      <div class="pdf-fallback" id="pdfFallback" hidden>
+        若瀏覽器無法直接預覽，請點選：<a id="pdfFallbackLink" href="#" target="_blank">在新視窗開啟 PDF</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

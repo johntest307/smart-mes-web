@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧廠區溫濕度監控儀錶板與 AI 診斷系統</title>
+    <meta name="description" content="智慧廠區 13 個感測器即時溫濕度監控、2D 平面圖感測器互動地圖、AI 根因診斷與 LLM 分析系統。">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link rel="stylesheet" href="style.css?v=20260828">
+    <script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+</head>
+<body>
+    <!-- 全域平面圖 Hover Tooltip -->
+    <div id="fp-hover-tooltip" style="display:none;"></div>
+    <!-- 全域 sensor popup 彈窗 -->
+    <div id="sensor-popup" class="sensor-popup hidden">
+        <div class="popup-header">
+            <span id="popup-sensor-id" class="popup-sensor-id">SEN-01</span>
+            <span id="popup-alarm-badge" class="popup-alarm-badge">NONE</span>
+            <button class="popup-close-btn" onclick="closeSensorPopup()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="popup-body">
+            <div class="popup-stat"><i class="fa-solid fa-temperature-half"></i> 溫度: <strong id="popup-temp">--</strong> °C</div>
+            <div class="popup-stat"><i class="fa-solid fa-droplet"></i> 濕度: <strong id="popup-humid">--</strong> %</div>
+            <div class="popup-stat"><i class="fa-solid fa-location-dot"></i> 位置: <strong id="popup-location">--</strong></div>
+            <div class="popup-stat"><i class="fa-solid fa-code"></i> 告警碼: <strong id="popup-alarm-code">SYS_OK</strong></div>
+            <div class="popup-diag" id="popup-diag-text">載入診斷中...</div>
+            <span class="source-tag" id="popup-diag-source"></span>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <i class="fa-solid fa-microchip brand-icon"></i>
+                <h2>智慧廠區 AI</h2>
+            </div>
+            <nav class="sidebar-menu">
+                <a href="#" class="menu-item active" data-tab="cover" id="nav-cover">
+                    <i class="fa-solid fa-house"></i>
+                    <span>專案封面</span>
+                </a>
+                <a href="#" class="menu-item" data-tab="temp" id="nav-temp">
+                    <i class="fa-solid fa-temperature-half"></i>
+                    <span>溫濕度監控</span>
+                </a>
+                <a href="#" class="menu-item" data-tab="sensors" id="nav-sensors">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span>感測器清單</span>
+                </a>
+                <a href="#" class="menu-item" data-tab="trend" id="nav-trend">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>歷史趨勢分析</span>
+                </a>
+                <a href="#" class="menu-item" data-tab="spatial" id="nav-spatial">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                    <span>空間分佈分析</span>
+                </a>
+                <a href="#" class="menu-item" data-tab="alarm" id="nav-alarm">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>告警診斷</span>
+                </a>
+                <a href="#" class="menu-item" data-tab="llm" id="nav-llm">
+                    <i class="fa-solid fa-robot"></i>
+                    <span>AI 全域分析</span>
+                </a>
+                <a href="#" class="menu-item" data-tab="roi" id="nav-roi">
+                    <i class="fa-solid fa-coins"></i>
+                    <span>ROI 效益分析</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="header-title">
+                    <h1 id="page-title">溫度即時監控</h1>
+                    <p class="subtitle">TPE-Plant1 | 13 監測點即時 SCADA 資料採集</p>
+                </div>
+                <div class="header-status">
+                    <div class="status-item">
+                        <span class="status-dot online"></span>
+                        <span>系統連線正常</span>
+                    </div>
+                    <div class="status-item alarm-badge-container">
+                        <i class="fa-solid fa-bell"></i>
+                        <span id="active-alarms-count" class="alarm-count-badge">0</span>
+                    </div>
+                    <button id="refresh-data-btn" class="btn-primary"><i class="fa-solid fa-rotate"></i> 刷新</button>
+                </div>
+            </header>
+            <div id="data-load-error" class="data-load-error hidden" role="alert"></div>
+
+            <!-- KPI 總覽 (所有頁面共用) -->
+            <div class="kpi-grid kpi-global" id="kpi-global-row">
+                <div class="kpi-card" data-tab="temp" onclick="jumpToTab('temp')" title="點擊查看溫濕度監控">
+                    <div class="kpi-icon temp"><i class="fa-solid fa-temperature-half"></i></div>
+                    <div class="kpi-info">
+                        <span class="label">廠區平均溫度</span>
+                        <h3 class="value" id="kpi-avg-temp">--.- °C</h3>
+                    </div>
+                </div>
+                <div class="kpi-card" data-tab="temp" onclick="jumpToTab('temp')" title="點擊查看溫濕度監控">
+                    <div class="kpi-icon humid"><i class="fa-solid fa-droplet"></i></div>
+                    <div class="kpi-info">
+                        <span class="label">廠區平均濕度</span>
+                        <h3 class="value" id="kpi-avg-humid">--.- %</h3>
+                    </div>
+                </div>
+                <div class="kpi-card" data-tab="trend" onclick="jumpToTab('trend')" title="點擊查看歷史趨勢分析">
+                    <div class="kpi-icon compliance"><i class="fa-solid fa-square-check"></i></div>
+                    <div class="kpi-info">
+                        <span class="label">稽核週期合規率</span>
+                        <h3 class="value" id="kpi-compliance">--.- %</h3>
+                    </div>
+                </div>
+                <div class="kpi-card" data-tab="alarm" onclick="jumpToTab('alarm')" title="點擊查看告警診斷">
+                    <div class="kpi-icon alarms"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                    <div class="kpi-info">
+                        <span class="label">當前活動告警數</span>
+                        <h3 class="value" id="kpi-active-alarms">--</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== TAB 0: 專案封面 ==================== -->
+            <section class="tab-panel active" id="tab-cover">
+                <div class="cover-title-block">
+                    <h1>智慧廠區溫濕度監控<br>AI 診斷與預警系統</h1>
+                    <p class="cover-subtitle">TPE-Plant1 | 27 點分佈式感測 × AI 即時診斷 × 48hr 預警</p>
+                    <div class="cover-tags">
+                        <span class="cover-tag"><i class="fa-solid fa-microchip"></i> 27 感測器</span>
+                        <span class="cover-tag"><i class="fa-solid fa-robot"></i> Groq LLM AI</span>
+                        <span class="cover-tag"><i class="fa-solid fa-bolt"></i> 60 秒即時</span>
+                        <span class="cover-tag"><i class="fa-solid fa-shield-halved"></i> 48hr 預警</span>
+                    </div>
+                </div>
+                <div class="cover-hero">
+                    <div class="cover-hero-video">
+                        <video autoplay loop playsinline controls class="cover-video">
+                            <source src="動畫/movie.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                    <div class="cover-hero-3d">
+                        <model-viewer
+                            src="動畫/GPU/amd_gpu_draco.glb"
+                            alt="AMD GPU 3D 模型"
+                            auto-rotate
+                            camera-controls
+                            shadow-intensity="1"
+                            camera-orbit="45deg 55deg 2.5m"
+                            min-camera-orbit="auto auto 1.5m"
+                            max-camera-orbit="auto auto 5m"
+                            style="width:100%;height:100%;">
+                        </model-viewer>
+                        <p class="cover-3d-caption">AMD Instinct GPU — 拖曳旋轉 / 滾輪縮放</p>
+                    </div>
+                </div>
+
+                <div class="cover-section">
+                    <h2><i class="fa-solid fa-circle-exclamation"></i> 專案痛點</h2>
+                    <div class="cover-cards">
+                        <div class="cover-card pain">
+                            <div class="cover-card-icon"><i class="fa-solid fa-fire"></i></div>
+                            <h3>GPU 降頻損失</h3>
+                            <p>機房溫度失控導致 GPU 熱降頻，AI 訓練效能損失 15~30%，每年損失逾 NT$2,000 萬。</p>
+                        </div>
+                        <div class="cover-card pain">
+                            <div class="cover-card-icon"><i class="fa-solid fa-skull"></i></div>
+                            <h3>非計畫停機</h3>
+                            <p>冷卻系統失效 37 分鐘即造成 US$320 萬硬體損壞，72 小時完全停機，生產線全面癱瘓。</p>
+                        </div>
+                        <div class="cover-card pain">
+                            <div class="cover-card-icon"><i class="fa-solid fa-clock"></i></div>
+                            <h3>被動式維護</h3>
+                            <p>傳統巡檢無法即時發現異常，故障後才搶修，維修成本高且無法預防。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cover-section">
+                    <h2><i class="fa-solid fa-lightbulb"></i> 解決方案</h2>
+                    <div class="cover-cards">
+                        <div class="cover-card solution">
+                            <div class="cover-card-icon"><i class="fa-solid fa-satellite-dish"></i></div>
+                            <h3>27 點即時監控</h3>
+                            <p>4F + 2F 全廠佈建 27 個溫濕度感測器，60 秒刷新，涵蓋物料區、組裝區、測試區、包裝區等所有關鍵區域。</p>
+                        </div>
+                        <div class="cover-card solution">
+                            <div class="cover-card-icon"><i class="fa-solid fa-brain"></i></div>
+                            <h3>AI 根因診斷</h3>
+                            <p>整合 Groq LLM 即時分析，自動診斷異常根因（AHU 效率、濾網堵塞、外部熱源），提供專業建議。</p>
+                        </div>
+                        <div class="cover-card solution">
+                            <div class="cover-card-icon"><i class="fa-solid fa-bell"></i></div>
+                            <h3>48hr 預警系統</h3>
+                            <p>AI 趨勢分析提前 48 小時預警設備劣化，從被動維護轉為預防性維護，停機風險降低 95%。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cover-section">
+                    <h2><i class="fa-solid fa-chart-line"></i> ROI 效益</h2>
+                    <div class="cover-roi-grid">
+                        <div class="cover-roi-item">
+                            <div class="cover-roi-val">NT$2,000萬+</div>
+                            <div class="cover-roi-label">年度避損效益</div>
+                        </div>
+                        <div class="cover-roi-item">
+                            <div class="cover-roi-val">9 天</div>
+                            <div class="cover-roi-label">投資回收期</div>
+                        </div>
+                        <div class="cover-roi-item">
+                            <div class="cover-roi-val">300%</div>
+                            <div class="cover-roi-label">年化 ROI</div>
+                        </div>
+                        <div class="cover-roi-item">
+                            <div class="cover-roi-val">95%</div>
+                            <div class="cover-roi-label">停機風險降低</div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- ==================== TAB 1: 溫濕度監控 ==================== -->
+            <section class="tab-panel" id="tab-temp">
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3><i class="fa-solid fa-chart-simple"></i> 即時溫度分佈</h3>
+                        <div id="chart-temp-bar" class="chart-container chart-md"></div>
+                    </div>
+                    <div class="chart-card">
+                        <h3><i class="fa-solid fa-chart-area"></i> 即時濕度分佈</h3>
+                        <div id="chart-humid-bar" class="chart-container chart-md"></div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-card-header">
+                            <h3><i class="fa-solid fa-chart-line"></i> 歷史溫濕度時序趨勢</h3>
+                        </div>
+                        <div class="trend-floor-filter" onclick="event.stopPropagation()">
+                            <button class="trend-floor-btn active" data-floor="all" onclick="setTrendFloor('all')">全部</button>
+                            <button class="trend-floor-btn" data-floor="4F" onclick="setTrendFloor('4F')">4F</button>
+                            <button class="trend-floor-btn" data-floor="2F" onclick="setTrendFloor('2F')">2F</button>
+                        </div>
+                        <div id="chart-trend-line" class="chart-container chart-md"></div>
+                    </div>
+                    <div class="chart-card">
+                        <h3><i class="fa-solid fa-chart-pie"></i> 系統告警狀態總體分佈</h3>
+                        <div id="chart-alarm-pie" class="chart-container chart-md"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== TAB 3: 感測器清單 ==================== -->
+            <section class="tab-panel" id="tab-sensors">
+                <div class="sensor-list-card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-list-check"></i> 溫濕度感測監測點清單</h3>
+                        <div class="sensor-filter-bar">
+                            <button class="sensor-filter-btn active" data-filter="all" onclick="filterSensorTable('all')">全部</button>
+                            <button class="sensor-filter-btn" data-filter="4F" onclick="filterSensorTable('4F')">4F</button>
+                            <button class="sensor-filter-btn" data-filter="2F" onclick="filterSensorTable('2F')">2F</button>
+                            <button class="sensor-filter-btn" data-filter="alarm" onclick="filterSensorTable('alarm')">僅告警</button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper sensor-table-scroll">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="sortable" onclick="sortSensorTable('sensor_id')">感測器 <i class="fa-solid fa-sort"></i></th>
+                                    <th class="sortable" onclick="sortSensorTable('floor')">樓層 <i class="fa-solid fa-sort"></i></th>
+                                    <th>區域</th>
+                                    <th class="sortable" onclick="sortSensorTable('temperature')">溫度 (°C) <i class="fa-solid fa-sort"></i></th>
+                                    <th class="sortable" onclick="sortSensorTable('humidity')">濕度 (%) <i class="fa-solid fa-sort"></i></th>
+                                    <th>溫度狀態</th><th>濕度狀態</th>
+                                    <th>告警級別</th><th>告警代碼</th>
+                                    <th>狀態</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sensor-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== TAB 4: 歷史趨勢分析 ==================== -->
+            <section class="tab-panel" id="tab-trend">
+                <div class="trend-export-bar">
+                    <button class="btn-export-csv" onclick="exportTrendCSV()"><i class="fa-solid fa-download"></i> 匯出 CSV</button>
+                </div>
+                <!-- 溫度群 -->
+                <div class="trend-group-header"><i class="fa-solid fa-temperature-half"></i> 溫度分析</div>
+                <div class="charts-grid dual">
+                    <div class="chart-card">
+                        <h3><i class="fa-solid fa-code-compare"></i> 溫度 YoY (年度同期)</h3>
+                        <div id="chart-yoy-temp" class="chart-container chart-md"></div>
+                    </div>
+                    <div class="chart-card">
+                        <h3><i class="fa-solid fa-chart-column"></i> 溫度 MoM (月對比)</h3>
+                        <div id="chart-mom-temp" class="chart-container chart-md"></div>
+                    </div>
+                </div>
+                <!-- 濕度群 -->
+                <div class="trend-group-header"><i class="fa-solid fa-droplet"></i> 濕度分析</div>
+                <div class="charts-grid dual">
+                    <div class="chart-card">
+                        <h3><i class="fa-solid fa-code-compare"></i> 濕度 YoY (年度同期)</h3>
+                        <div id="chart-yoy-humid" class="chart-container chart-md"></div>
+                    </div>
+                    <div class="chart-card">
+                        <h3><i class="fa-solid fa-chart-column"></i> 濕度 MoM (月對比)</h3>
+                        <div id="chart-mom-humid" class="chart-container chart-md"></div>
+                    </div>
+                </div>
+                <!-- 綜合指標 -->
+                <div class="trend-group-header"><i class="fa-solid fa-chart-pie"></i> 綜合指標</div>
+                <div class="charts-grid dual">
+                    <div class="chart-card">
+                        <h3><i class="fa-solid fa-shield-check"></i> 月度合規率</h3>
+                        <div id="chart-compliance" class="chart-container chart-md"></div>
+                    </div>
+                    <div class="chart-card">
+                        <h3><i class="fa-solid fa-layer-group"></i> 各區域年度溫度比較</h3>
+                        <div id="chart-zone-yoy" class="chart-container chart-md"></div>
+                    </div>
+                </div>
+                <!-- 分佈分析 -->
+                <div class="charts-grid dual">
+                    <div class="chart-card">
+                        <h3><i class="fa-solid fa-circle-nodes"></i> 區域溫濕度雷達圖</h3>
+                        <div id="chart-radar" class="chart-container chart-md"></div>
+                    </div>
+                    <div class="chart-card">
+                        <h3><i class="fa-solid fa-braille"></i> 溫濕度相關性散佈圖</h3>
+                        <div id="chart-scatter" class="chart-container" style="height:420px;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== TAB 5: 空間分佈分析 ==================== -->
+            <section class="tab-panel" id="tab-spatial">
+                <!-- 工具列 -->
+                <div class="floorplan-toolbar">
+                    <div class="toolbar-left">
+                        <span class="toolbar-title"><i class="fa-solid fa-map"></i> <span id="floorplan-title">4F 廠區平面圖 — Wiwynn AI Server</span></span>
+                        <div class="floor-tabs">
+                            <button class="floor-tab active" data-floor="4F">4F</button>
+                            <button class="floor-tab" data-floor="3F" style="display:none;">3F</button>
+                            <button class="floor-tab" data-floor="2F">2F</button>
+                        </div>
+                    </div>
+                    <div class="toolbar-right">
+                        <label class="upload-btn" for="floor-plan-upload">
+                            <i class="fa-solid fa-upload"></i> 上傳平面圖
+                            <input type="file" id="floor-plan-upload" accept="image/*" style="display:none;">
+                        </label>
+                        <button id="toggle-pin-mode" class="btn-pin-mode">
+                            <i class="fa-solid fa-map-pin"></i> 標定模式
+                        </button>
+                        <button id="reset-pins-btn" class="btn-reset">
+                            <i class="fa-solid fa-trash"></i> 重設標定
+                        </button>
+                        <div class="heatmap-toggle">
+                            <label class="toggle-label">熱力圖</label>
+                            <label class="switch"><input type="checkbox" id="heatmap-toggle" checked><span class="slider"></span></label>
+                        </div>
+                    </div>
+                </div>
+                <div id="pin-mode-hint" class="pin-mode-hint hidden">
+                    <i class="fa-solid fa-crosshairs"></i>
+                    <strong>標定模式</strong> — 選擇感測器後點擊主圖放置
+                    <select id="pin-target-select" class="pin-target-select"></select>
+                </div>
+
+                <!-- 宮格佈局：主圖居中 + 子圖環繞 -->
+                <div class="palace-layout">
+                    <!-- 左列子圖 -->
+                    <div class="palace-left">
+                        <div class="zone-card-slot" id="zone-slot-1"></div>
+                        <div class="zone-card-slot" id="zone-slot-2"></div>
+                        <div class="zone-card-slot" id="zone-slot-3"></div>
+                    </div>
+                    <!-- 中央主圖 -->
+                    <div class="palace-center">
+                        <div class="master-plan-wrapper">
+                            <div class="floorplan-canvas-wrapper">
+                                <canvas id="floorplan-canvas"></canvas>
+                                <canvas id="heatmap-canvas"></canvas>
+                                <div id="sensor-overlay"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 右列子圖 -->
+                    <div class="palace-right">
+                        <div class="zone-card-slot" id="zone-slot-4"></div>
+                        <div class="zone-card-slot" id="zone-slot-5"></div>
+                        <div class="zone-card-slot" id="zone-slot-6"></div>
+                        <div class="zone-card-slot" id="zone-slot-7"></div>
+                    </div>
+                </div>
+
+                <!-- 非 1F 樓層提示 -->
+                <div id="floor-placeholder" class="floor-placeholder hidden">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <p>此樓層尚未配置平面圖與感測器。</p>
+                </div>
+            </section>
+
+            <!-- ==================== TAB 6: 告警診斷 ==================== -->
+            <section class="tab-panel" id="tab-alarm">
+                <div class="charts-grid dual">
+                    <div class="chart-card">
+                        <h3><i class="fa-solid fa-triangle-exclamation"></i> 告警代碼排行</h3>
+                        <div id="chart-alarm-rank" class="chart-container chart-md"></div>
+                    </div>
+                    <div class="chart-card">
+                        <h3><i class="fa-solid fa-box-archive"></i> 各樓層溫度箱型圖</h3>
+                        <div id="chart-boxplot" class="chart-container chart-md"></div>
+                    </div>
+                </div>
+                <!-- Email 告警設定 -->
+                <div class="alarm-email-section">
+                    <div class="alarm-email-header">
+                        <h3><i class="fa-solid fa-envelope"></i> Email 告警設定</h3>
+                    </div>
+                    <div class="alarm-email-body">
+                        <div class="alarm-recipients">
+                            <label>收件者：</label>
+                            <div id="recipients-list" class="recipients-list"></div>
+                            <div class="recipient-add">
+                                <input type="email" id="new-recipient" placeholder="新增 email..." />
+                                <button onclick="addRecipient()"><i class="fa-solid fa-plus"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 歷史告警記錄 -->
+                <div class="alarm-history-section">
+                    <div class="alarm-history-header">
+                        <h3><i class="fa-solid fa-clock-rotate-left"></i> 歷史告警記錄</h3>
+                        <div class="alarm-history-actions">
+                            <button class="btn-resolve-all" onclick="resolveAllAlarms()"><i class="fa-solid fa-check-double"></i> 全部解除</button>
+                            <button class="btn-refresh-alarms" onclick="loadAlarmHistory()"><i class="fa-solid fa-sync"></i> 重新整理</button>
+                        </div>
+                    </div>
+                    <div class="alarm-history-table-wrap">
+                        <table class="alarm-history-table">
+                            <thead>
+                                <tr>
+                                    <th>最新時間</th>
+                                    <th>感測器</th>
+                                    <th>樓層</th>
+                                    <th>區域</th>
+                                    <th>等級</th>
+                                    <th>事件</th>
+                                    <th>次數</th>
+                                    <th>最新溫度</th>
+                                    <th>最新濕度</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="alarm-history-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== TAB 7: AI 全域分析 ==================== -->
+            <section class="tab-panel" id="tab-llm">
+                <div class="llm-tab-layout">
+                    <div class="llm-tab-header">
+                        <div class="llm-tab-title">
+                            <i class="fa-solid fa-robot"></i>
+                            <h2>AI 全廠診斷中心</h2>
+                            <p>基於 Groq LLM 對全廠 13 個感測器即時數據進行綜合分析</p>
+                        </div>
+                        <button class="btn-groq-analyze llm-main-btn" onclick="callGroqAnalysis('llm')" id="btn-analyze-llm">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> 執行全廠 AI 診斷
+                        </button>
+                    </div>
+                    <div id="llm-loading-bar" class="llm-loading-bar hidden">
+                        <i class="fa-solid fa-spinner fa-spin"></i> LLM 正在分析全廠數據，請稍候...
+                    </div>
+                    <div class="llm-report-wrap">
+                        <div id="llm-report-content" class="llm-report-content">
+                            <p style="color:#6b7280; padding:20px;">尚未執行 AI 診斷，請點擊上方按鈕。</p>
+                        </div>
+                        <div class="llm-source-row">
+                            <span id="groq-source-llm" class="groq-source-tag"></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== TAB 7: ROI 效益分析 ==================== -->
+            <section class="tab-panel" id="tab-roi">
+                <!-- SVG Gradient for rings -->
+                <svg width="0" height="0" style="position:absolute;">
+                    <defs>
+                        <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#a78bfa"/>
+                            <stop offset="100%" stop-color="#60a5fa"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <!-- Hero Section -->
+                <div class="roi-hero">
+                    <div class="roi-hero-text">
+                        <h2><i class="fa-solid fa-shield-halved"></i> AI 伺服器產線溫濕度監控 — ROI 效益分析</h2>
+                        <p>高價 GPU 模組（8 顆 H100/B200 × 百萬等級）因溫濕度失控導致的硬體損壞、效能降頻與非計畫停機，是廠區最大的隱性成本。本分析以事實數據說明溫濕度監控的投資回報。</p>
+                    </div>
+                    <div class="roi-hero-kpi">
+                        <div class="roi-kpi-box">
+                            <span class="roi-kpi-num" data-target="7000000" data-prefix="NT$" data-suffix="">0</span>
+                            <span class="roi-kpi-label">最高可節省（單模組）</span>
+                        </div>
+                        <div class="roi-kpi-box">
+                            <span class="roi-kpi-num" data-target="300" data-prefix="" data-suffix="%">0</span>
+                            <span class="roi-kpi-label">年化 ROI</span>
+                        </div>
+                        <div class="roi-kpi-box">
+                            <span class="roi-kpi-num" data-target="9" data-prefix="" data-suffix=" 天">0</span>
+                            <span class="roi-kpi-label">投資回收期</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Flow Chart 1: 因果鏈 -->
+                <div class="roi-section">
+                    <h3><i class="fa-solid fa-link"></i> 溫濕度失控 → 損害因果鏈</h3>
+                    <div class="flow-chain" id="flow-chain-1">
+                        <div class="flow-node flow-trigger">
+                            <div class="flow-icon"><i class="fa-solid fa-temperature-high"></i></div>
+                            <div class="flow-text">溫度 >25°C<br>濕度 >60%</div>
+                            <div class="flow-pulse"></div>
+                        </div>
+                        <div class="flow-arrow"><div class="flow-arrow-line"></div><div class="flow-arrow-head"></div></div>
+                        <div class="flow-node flow-warn">
+                            <div class="flow-icon"><i class="fa-solid fa-bolt"></i></div>
+                            <div class="flow-text">GPU 降頻<br>15~30%</div>
+                        </div>
+                        <div class="flow-arrow"><div class="flow-arrow-line"></div><div class="flow-arrow-head"></div></div>
+                        <div class="flow-node flow-danger">
+                            <div class="flow-icon"><i class="fa-solid fa-skull-crossbones"></i></div>
+                            <div class="flow-text">硬體壽命<br>縮短 30~50%</div>
+                        </div>
+                        <div class="flow-arrow"><div class="flow-arrow-line"></div><div class="flow-arrow-head"></div></div>
+                        <div class="flow-node flow-critical">
+                            <div class="flow-icon"><i class="fa-solid fa-server"></i></div>
+                            <div class="flow-text">非計畫停機<br>NT$5,700萬/時</div>
+                        </div>
+                        <div class="flow-arrow"><div class="flow-arrow-line"></div><div class="flow-arrow-head"></div></div>
+                        <div class="flow-node flow-loss">
+                            <div class="flow-icon"><i class="fa-solid fa-money-bill-trend-up"></i></div>
+                            <div class="flow-text">單模組損失<br>NT$700萬+</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Flow Chart 2: 監控防護鏈 -->
+                <div class="roi-section">
+                    <h3><i class="fa-solid fa-link"></i> 即時監控 → 自動告警防護鏈</h3>
+                    <div class="flow-chain" id="flow-chain-2">
+                        <div class="flow-node flow-green">
+                            <div class="flow-icon"><i class="fa-solid fa-satellite-dish"></i></div>
+                            <div class="flow-text">27 點分佈式<br>溫濕度監測</div>
+                            <div class="flow-pulse-green"></div>
+                        </div>
+                        <div class="flow-arrow flow-arrow-green"><div class="flow-arrow-line"></div><div class="flow-arrow-head"></div></div>
+                        <div class="flow-node flow-green">
+                            <div class="flow-icon"><i class="fa-solid fa-microchip"></i></div>
+                            <div class="flow-text">AI 即時分析<br>根因診斷</div>
+                        </div>
+                        <div class="flow-arrow flow-arrow-green"><div class="flow-arrow-line"></div><div class="flow-arrow-head"></div></div>
+                        <div class="flow-node flow-green">
+                            <div class="flow-icon"><i class="fa-solid fa-bell"></i></div>
+                            <div class="flow-text">自動告警<br>5 秒內通知</div>
+                        </div>
+                        <div class="flow-arrow flow-arrow-green"><div class="flow-arrow-line"></div><div class="flow-arrow-head"></div></div>
+                        <div class="flow-node flow-green">
+                            <div class="flow-icon"><i class="fa-solid fa-wrench"></i></div>
+                            <div class="flow-text">預防性維護<br>48hr 前預警</div>
+                        </div>
+                        <div class="flow-arrow flow-arrow-green"><div class="flow-arrow-line"></div><div class="flow-arrow-head"></div></div>
+                        <div class="flow-node flow-save">
+                            <div class="flow-icon"><i class="fa-solid fa-piggy-bank"></i></div>
+                            <div class="flow-text">節省 NT$700萬<br>+ 總年省 NT$2000萬</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Impact Cards -->
+                <div class="roi-section">
+                    <h3><i class="fa-solid fa-triangle-exclamation"></i> 溫濕度失控對高價硬體的具體影響</h3>
+                    <div class="roi-impact-grid">
+                        <div class="roi-card roi-card-red">
+                            <div class="roi-card-icon"><i class="fa-solid fa-microchip"></i></div>
+                            <h4>高價 GPU 卡</h4>
+                            <p class="roi-card-price">8 顆模組 = NT$700萬</p>
+                            <ul>
+                                <li>溫度 >83°C 觸發降頻，效能損失 15~30%</li>
+                                <li>每升高 1°C 環境溫度，GPU 壽命減少 10%</li>
+                                <li>HBM 記憶體接點過熱 → 靜默資料損壞（SDC）</li>
+                                <li>持續高溫 → 電容老化加速，保修失效</li>
+                                <li>液冷管路洩漏 → 單次事故損失 NT$1,000萬+</li>
+                            </ul>
+                            <div class="roi-card-stat">合理控溫可延長壽命 3→5 年，省 NT$700萬/模組</div>
+                        </div>
+                        <div class="roi-card roi-card-orange">
+                            <div class="roi-card-icon"><i class="fa-solid fa-memory"></i></div>
+                            <h4>128GB RAM 記憶體</h4>
+                            <p class="roi-card-price">單條 NT$12萬 | 伺服器 24 條 = NT$288萬</p>
+                            <ul>
+                                <li>濕度 <20% → 靜電擊穿風險 ↑ 50%</li>
+                                <li>濕度 >60% → 凝露腐蝕電路板</li>
+                                <li>高溫加速 DRAM 電子遷移，資料錯誤率 ↑</li>
+                                <li>ECC 錯誤頻繁 → 系統降速或當機</li>
+                            </ul>
+                            <div class="roi-card-stat">濕度控制 40~60% 可降低記憶體故障率 80%</div>
+                        </div>
+                        <div class="roi-card roi-card-purple">
+                            <div class="roi-card-icon"><i class="fa-solid fa-bolt"></i></div>
+                            <h4>高階 CPU</h4>
+                            <p class="roi-card-price">單顆 NT$7萬 | 雙路伺服器 = NT$14萬</p>
+                            <ul>
+                                <li>高溫觸發 CPU Throttling，時脈降低 10~20%</li>
+                                <li>熱循環疲勞 → 焊點微裂，隨機當機</li>
+                                <li>長期 >80°C → 晶片内部应力增加</li>
+                                <li>維修需整板更換，停機 2~5 天</li>
+                            </ul>
+                            <div class="roi-card-stat">控溫 18~25°C 可延長 CPU 壽命 2~3 年</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Animated ROI Numbers -->
+                <div class="roi-section">
+                    <h3><i class="fa-solid fa-chart-column"></i> ROI 效益數據（年度）</h3>
+                    <div class="roi-numbers-grid">
+                        <div class="roi-num-card">
+                            <div class="roi-num-ring">
+                                <svg viewBox="0 0 120 120">
+                                    <circle cx="60" cy="60" r="52" class="ring-bg"/>
+                                    <circle cx="60" cy="60" r="52" class="ring-fill" data-pct="96"/>
+                                </svg>
+                                <span class="ring-val">96%</span>
+                            </div>
+                            <div class="roi-num-info">
+                                <h5>故障預防率</h5>
+                                <p>AI 預測性維護可在故障前 48 小時預警，AWS 透過環境預測提前更換 1,200 顆 GPU</p>
+                            </div>
+                        </div>
+                        <div class="roi-num-card">
+                            <div class="roi-num-ring">
+                                <svg viewBox="0 0 120 120">
+                                    <circle cx="60" cy="60" r="52" class="ring-bg"/>
+                                    <circle cx="60" cy="60" r="52" class="ring-fill" data-pct="40"/>
+                                </svg>
+                                <span class="ring-val">↓40%</span>
+                            </div>
+                            <div class="roi-num-info">
+                                <h5>冷卻成本降低</h5>
+                                <p>DeepMind AI 優化 Google 機房冷卻，年省 US$6,500萬；溫度每升 1°C 省 US$10萬/年/MW</p>
+                            </div>
+                        </div>
+                        <div class="roi-num-card">
+                            <div class="roi-num-ring">
+                                <svg viewBox="0 0 120 120">
+                                    <circle cx="60" cy="60" r="52" class="ring-bg"/>
+                                    <circle cx="60" cy="60" r="52" class="ring-fill" data-pct="67"/>
+                                </svg>
+                                <span class="ring-val">↑67%</span>
+                            </div>
+                            <div class="roi-num-info">
+                                <h5>GPU 壽命延長</h5>
+                                <p>最佳溫濕度控制下 GPU 壽命從 3 年延至 5 年，Netflix 因此省 US$2,000萬硬體汰換費</p>
+                            </div>
+                        </div>
+                        <div class="roi-num-card">
+                            <div class="roi-num-ring">
+                                <svg viewBox="0 0 120 120">
+                                    <circle cx="60" cy="60" r="52" class="ring-bg"/>
+                                    <circle cx="60" cy="60" r="52" class="ring-fill" data-pct="85"/>
+                                </svg>
+                                <span class="ring-val">↓85%</span>
+                            </div>
+                            <div class="roi-num-info">
+                                <h5>靜電/腐蝕損害</h5>
+                                <p>Google 維持 45% RH ±5%，年省 US$1,000萬 ESD 相關故障；濕度 <20% 靜電風險 ↑ 5 倍</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cost vs Benefit Table -->
+                <div class="roi-section">
+                    <h3><i class="fa-solid fa-scale-balanced"></i> 投入 vs 產出 對照表</h3>
+                    <div class="roi-table-wrap">
+                        <table class="roi-table">
+                            <thead>
+                                <tr>
+                                    <th>項目</th>
+                                    <th>無監控（放任）</th>
+                                    <th>有監控（導入後）</th>
+                                    <th>差異 / 年度效益</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><i class="fa-solid fa-fire"></i> GPU 降頻損失</td>
+                                    <td class="td-red">15~30% 效能損失<br>訓練任務延遲 ↑ 30%</td>
+                                    <td class="td-green">降頻次數 ↓ 90%<br>效能穩定在 95%+</td>
+                                    <td class="td-gold">省 NT$2,000萬/年</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa-solid fa-skull"></i> 非計畫停機</td>
+                                    <td class="td-red">冷卻失效 → 37 分鐘即損 US$320萬<br>72 小時完全停機</td>
+                                    <td class="td-green">48hr 前預警<br>停機風險 ↓ 95%</td>
+                                    <td class="td-gold">避損 NT$5,700萬/次</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa-solid fa-battery-full"></i> 硬體壽命</td>
+                                    <td class="td-red">GPU 3 年汰換<br>CPU/RAM 故障率 ↑</td>
+                                    <td class="td-green">GPU 5 年使用<br>故障率 ↓ 60%</td>
+                                    <td class="td-gold">省 NT$700萬/模組</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa-solid fa-bolt"></i> 能源成本</td>
+                                    <td class="td-red">冷卻效率低<br>PUE 1.5~2.0</td>
+                                    <td class="td-green">精準控溫<br>PUE 1.1~1.3</td>
+                                    <td class="td-gold">省 NT$180萬/年</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa-solid fa-shield-halved"></i> 監控系統投入</td>
+                                    <td>—</td>
+                                    <td>27 感測器 + AI 平台<br>約 NT$43~80萬</td>
+                                    <td class="td-green">投資回收 9 天<br>年化 ROI 300%</td>
+                                </tr>
+                                <tr class="roi-total-row">
+                                    <td colspan="3"><strong>年度總效益（避損 + 節省）</strong></td>
+                                    <td class="td-gold roi-total-val">NT$2,000~7,000萬+</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Key Standards -->
+                <div class="roi-section">
+                    <h3><i class="fa-solid fa-book"></i> ASHRAE 標準與關鍵數據來源</h3>
+                    <div class="roi-refs-grid">
+                        <div class="roi-ref-card">
+                            <h5>ASHRAE TC 9.9 標準</h5>
+                            <ul>
+                                <li><strong>A1（傳統）</strong>：18~27°C / 40~60% RH</li>
+                                <li><strong>A2（AI 推理）</strong>：20~24°C / 35~55% RH</li>
+                                <li><strong>A2+（AI 訓練）</strong>：18~22°C / 30~50% RH</li>
+                            </ul>
+                        </div>
+                        <div class="roi-ref-card">
+                            <h5>關鍵事實數據</h5>
+                            <ul>
+                                <li>每升 1°C → GPU 壽命減 10%（Arrhenius 方程）</li>
+                                <li>H100 在 83°C 觸發降頻，效能損 15%</li>
+                                <li>冷卻失效 37 分鐘 → US$320萬損壞（Microsoft）</li>
+                                <li>DeepMind 優化 → 冷卻成本降 40%（Google）</li>
+                                <li>Amazon 環境優化 → 年省 US$6,500萬</li>
+                            </ul>
+                        </div>
+                        <div class="roi-ref-card">
+                            <h5>本系統監控能力</h5>
+                            <ul>
+                                <li>27 個分佈式溫濕度感測器（4F+2F）</li>
+                                <li>60 秒即時刷新 + 全站更新</li>
+                                <li>AI 自動根因診斷 + 趨勢預測</li>
+                                <li>Email 自動告警 + 48hr 預警</li>
+                                <li>歷史資料回溯 + CSV 匯出</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+    <!-- Chart Modal Overlay -->
+    <div id="chart-modal" class="chart-modal hidden" onclick="closeChartModal(event)">
+        <div class="chart-modal-inner">
+            <div class="chart-modal-header">
+                <span id="chart-modal-title"></span>
+                <button class="chart-modal-close" onclick="closeChartModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="chart-modal-body" class="chart-modal-body"></div>
+        </div>
+    </div>
+    <script src="app.js?v=20260828h"></script>
+</body>
+</html>

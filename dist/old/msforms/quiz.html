@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>測驗詳細 - MSForms Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-left">
+      <span class="nav-logo">MSForms</span>
+      <a href="index.html" class="nav-link">測驗總覽</a>
+      <a href="employees.html" class="nav-link">員工總覽</a>
+    </div>
+    <div class="nav-right">
+      <span id="clock" class="nav-clock"></span>
+      <button id="btn-dark-mode" class="btn-icon" title="切換深色模式">🌙</button>
+    </div>
+  </nav>
+
+  <main>
+    <div class="page-header">
+      <a href="index.html" class="btn btn-back-inline">← 返回總覽</a>
+      <h1 id="quiz-title">載入中...</h1>
+    </div>
+
+    <section class="summary-cards">
+      <div class="card card-accent">
+        <div class="card-icon">✅</div>
+        <div class="card-label">已交 / 必交</div>
+        <div class="card-value" id="val-submitted">-</div>
+      </div>
+      <div class="card card-accent">
+        <div class="card-icon">📊</div>
+        <div class="card-label">完成率</div>
+        <div class="card-value" id="val-completion">-</div>
+      </div>
+      <div class="card card-accent">
+        <div class="card-icon">🏆</div>
+        <div class="card-label">平均分數</div>
+        <div class="card-value" id="val-avg-score">-</div>
+      </div>
+      <div class="card card-accent">
+        <div class="card-icon">👥</div>
+        <div class="card-label">通過人數</div>
+        <div class="card-value" id="val-passed">-</div>
+      </div>
+    </section>
+
+    <section class="charts-row">
+      <div class="chart-container">
+        <h3>各部門參與人數</h3>
+        <canvas id="chart-dept"></canvas>
+      </div>
+      <div class="chart-container">
+        <h3>通過 vs 未通過</h3>
+        <canvas id="chart-pass-fail"></canvas>
+      </div>
+      <div class="chart-container">
+        <h3>分數分佈</h3>
+        <canvas id="chart-score-dist"></canvas>
+      </div>
+    </section>
+
+    <section class="charts-row">
+      <div class="chart-container wide">
+        <h3>各題答對率</h3>
+        <canvas id="chart-questions"></canvas>
+      </div>
+    </section>
+
+    <section class="quiz-table-section">
+      <div class="table-header">
+        <h2>已提交名單</h2>
+        <div class="table-controls">
+          <input type="text" id="search-input" placeholder="搜尋姓名/工號..." class="search-input">
+        </div>
+      </div>
+      <table id="response-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>姓名</th>
+            <th>部門</th>
+            <th>工號</th>
+            <th>提交時間</th>
+            <th>分數</th>
+            <th>結果</th>
+          </tr>
+        </thead>
+        <tbody id="response-tbody"></tbody>
+      </table>
+      <div id="table-empty" class="loading" style="display:none;">暫無回應</div>
+    </section>
+  </main>
+
+  <script src="js/quiz.js"></script>
+</body>
+</html>

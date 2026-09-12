@@ -1,0 +1,1016 @@
+[
+  {
+    "timestamp": "2026-08-30T08:06:03.798316",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈"
+  },
+  {
+    "timestamp": "2026-08-30T08:06:59.948043",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "系統告警狀態總體分佈"
+  },
+  {
+    "timestamp": "2026-08-30T08:07:08.022107",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈"
+  },
+  {
+    "timestamp": "2026-08-30T08:08:02.137204",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈"
+  },
+  {
+    "timestamp": "2026-08-30T08:09:45.261803",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "濕度 MoM (月對比)"
+  },
+  {
+    "timestamp": "2026-08-30T08:10:02.163444",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "濕度 YoY (年度同期)"
+  },
+  {
+    "timestamp": "2026-08-30T08:10:10.459605",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "區域溫濕度雷達圖"
+  },
+  {
+    "timestamp": "2026-08-30T08:10:18.727862",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈"
+  },
+  {
+    "timestamp": "2026-08-30T08:10:35.400743",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫濕度相關性散佈圖"
+  },
+  {
+    "timestamp": "2026-08-30T08:10:48.449377",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "區域溫濕度雷達圖"
+  },
+  {
+    "timestamp": "2026-08-30T08:11:28.299475",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫濕度相關性散佈圖"
+  },
+  {
+    "timestamp": "2026-08-30T08:11:40.935749",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "各區域年度溫度比較"
+  },
+  {
+    "timestamp": "2026-08-30T08:11:47.470158",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "各區域年度溫度比較"
+  },
+  {
+    "timestamp": "2026-08-30T08:12:01.625782",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "月度合規率"
+  },
+  {
+    "timestamp": "2026-08-30T08:12:18.765946",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "濕度 MoM (月對比)"
+  },
+  {
+    "timestamp": "2026-08-30T08:12:33.566035",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "濕度 YoY (年度同期)"
+  },
+  {
+    "timestamp": "2026-08-30T08:16:00.040410",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "radar chart"
+  },
+  {
+    "timestamp": "2026-08-30T08:16:03.773531",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "MoM temp"
+  },
+  {
+    "timestamp": "2026-08-30T08:16:06.056156",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "YoY temp"
+  },
+  {
+    "timestamp": "2026-08-30T08:16:09.280452",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "compliance"
+  },
+  {
+    "timestamp": "2026-08-30T08:16:12.126789",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "zone YoY"
+  },
+  {
+    "timestamp": "2026-08-30T08:21:05.596529",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "bar temp"
+  },
+  {
+    "timestamp": "2026-08-30T08:21:09.162944",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "bar humid"
+  },
+  {
+    "timestamp": "2026-08-30T08:21:12.432217",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "alarm pie"
+  },
+  {
+    "timestamp": "2026-08-30T08:21:16.746277",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "trend line"
+  },
+  {
+    "timestamp": "2026-08-30T08:21:19.067045",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "scatter"
+  },
+  {
+    "timestamp": "2026-08-30T08:21:22.322183",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "radar"
+  },
+  {
+    "timestamp": "2026-08-30T08:21:25.774623",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "alarm rank"
+  },
+  {
+    "timestamp": "2026-08-30T08:21:28.632657",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "boxplot"
+  },
+  {
+    "timestamp": "2026-08-30T08:21:31.599392",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "mom temp"
+  },
+  {
+    "timestamp": "2026-08-30T08:21:35.182118",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "mom humid"
+  },
+  {
+    "timestamp": "2026-08-30T08:21:37.914599",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "yoy temp"
+  },
+  {
+    "timestamp": "2026-08-30T08:21:41.077040",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "yoy humid"
+  },
+  {
+    "timestamp": "2026-08-30T08:21:45.250408",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "compliance"
+  },
+  {
+    "timestamp": "2026-08-30T08:21:55.632409",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "unknown"
+  },
+  {
+    "timestamp": "2026-08-30T08:25:45.451681",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "歷史溫濕度時序趨勢"
+  },
+  {
+    "timestamp": "2026-08-30T08:28:14.607326",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "系統告警狀態總體分佈"
+  },
+  {
+    "timestamp": "2026-08-30T08:28:26.804821",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時濕度分佈"
+  },
+  {
+    "timestamp": "2026-08-30T08:28:34.932860",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈"
+  },
+  {
+    "timestamp": "2026-08-30T08:28:43.152305",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "歷史溫濕度時序趨勢"
+  },
+  {
+    "timestamp": "2026-08-30T08:29:11.936415",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "區域溫濕度雷達圖"
+  },
+  {
+    "timestamp": "2026-08-30T08:29:30.110765",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫濕度相關性散佈圖"
+  },
+  {
+    "timestamp": "2026-08-30T08:29:40.018763",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫濕度相關性散佈圖"
+  },
+  {
+    "timestamp": "2026-08-30T08:30:04.040352",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫濕度相關性散佈圖"
+  },
+  {
+    "timestamp": "2026-08-30T08:30:22.557659",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫濕度相關性散佈圖"
+  },
+  {
+    "timestamp": "2026-08-30T08:30:37.419616",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫濕度相關性散佈圖"
+  },
+  {
+    "timestamp": "2026-08-30T09:04:03.082479",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈"
+  },
+  {
+    "timestamp": "2026-08-30T09:04:07.786906",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈"
+  },
+  {
+    "timestamp": "2026-08-30T09:04:36.993923",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈"
+  },
+  {
+    "timestamp": "2026-08-30T09:04:42.002767",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈"
+  },
+  {
+    "timestamp": "2026-08-30T09:05:28.495762",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈"
+  },
+  {
+    "timestamp": "2026-08-30T09:05:32.811518",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈"
+  },
+  {
+    "timestamp": "2026-08-30T09:09:21.516559",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈"
+  },
+  {
+    "timestamp": "2026-08-30T09:09:26.132033",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈"
+  },
+  {
+    "timestamp": "2026-08-30T09:10:25.527506",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈"
+  },
+  {
+    "timestamp": "2026-08-30T09:10:29.987067",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈"
+  },
+  {
+    "timestamp": "2026-08-30T09:11:00.167668",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈"
+  },
+  {
+    "timestamp": "2026-08-30T09:11:04.149501",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈"
+  },
+  {
+    "timestamp": "2026-08-30T09:11:41.965052",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈"
+  },
+  {
+    "timestamp": "2026-08-30T09:11:45.296065",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈"
+  },
+  {
+    "timestamp": "2026-08-30T09:11:49.250333",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "系統告警狀態總體分佈"
+  },
+  {
+    "timestamp": "2026-08-30T09:11:52.939933",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "系統告警狀態總體分佈"
+  },
+  {
+    "timestamp": "2026-08-30T09:11:56.345883",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "系統告警狀態總體分佈"
+  },
+  {
+    "timestamp": "2026-08-30T09:12:01.017098",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "告警代碼排行"
+  },
+  {
+    "timestamp": "2026-08-30T09:12:04.278505",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "告警代碼排行"
+  },
+  {
+    "timestamp": "2026-08-30T09:12:09.182540",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "告警代碼排行"
+  },
+  {
+    "timestamp": "2026-08-30T09:12:20.025677",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫度月环比分析"
+  },
+  {
+    "timestamp": "2026-08-30T09:12:24.621384",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫度月环比分析"
+  },
+  {
+    "timestamp": "2026-08-30T09:12:27.527713",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫度月环比分析"
+  },
+  {
+    "timestamp": "2026-08-30T09:13:24.019545",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈"
+  },
+  {
+    "timestamp": "2026-08-30T09:13:27.962768",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈"
+  },
+  {
+    "timestamp": "2026-08-30T09:13:32.015974",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈"
+  },
+  {
+    "timestamp": "2026-08-30T09:13:38.804329",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "系統告警狀態總體分佈"
+  },
+  {
+    "timestamp": "2026-08-30T09:13:45.661748",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "系統告警狀態總體分佈"
+  },
+  {
+    "timestamp": "2026-08-30T09:13:51.634731",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "系統告警狀態總體分佈"
+  },
+  {
+    "timestamp": "2026-08-30T09:13:55.553989",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "告警代碼排行"
+  },
+  {
+    "timestamp": "2026-08-30T09:13:59.568122",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "告警代碼排行"
+  },
+  {
+    "timestamp": "2026-08-30T09:14:03.503184",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "告警代碼排行"
+  },
+  {
+    "timestamp": "2026-08-30T09:14:09.335454",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫度月环比分析"
+  },
+  {
+    "timestamp": "2026-08-30T09:14:13.401036",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫度月环比分析"
+  },
+  {
+    "timestamp": "2026-08-30T09:14:17.049878",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫度月环比分析"
+  },
+  {
+    "timestamp": "2026-08-30T09:33:50.239142",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈"
+  },
+  {
+    "timestamp": "2026-08-30T09:33:50.771038",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈"
+  },
+  {
+    "timestamp": "2026-08-30T09:33:51.321722",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈"
+  },
+  {
+    "timestamp": "2026-08-30T09:33:51.860985",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "系統告警狀態總體分佈"
+  },
+  {
+    "timestamp": "2026-08-30T09:33:52.383000",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "系統告警狀態總體分佈"
+  },
+  {
+    "timestamp": "2026-08-30T09:33:52.891910",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "系統告警狀態總體分佈"
+  },
+  {
+    "timestamp": "2026-08-30T09:33:53.409659",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "告警代碼排行"
+  },
+  {
+    "timestamp": "2026-08-30T09:33:53.921497",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "告警代碼排行"
+  },
+  {
+    "timestamp": "2026-08-30T09:33:54.439120",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "告警代碼排行"
+  },
+  {
+    "timestamp": "2026-08-30T09:33:54.966947",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫度月环比分析"
+  },
+  {
+    "timestamp": "2026-08-30T09:33:55.503864",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫度月环比分析"
+  },
+  {
+    "timestamp": "2026-08-30T09:33:56.031813",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫度月环比分析"
+  },
+  {
+    "timestamp": "2026-08-31T11:52:19.979439",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈"
+  },
+  {
+    "timestamp": "2026-08-31T11:52:20.008473",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時濕度分佈"
+  },
+  {
+    "timestamp": "2026-08-31T11:52:20.029409",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "系統告警狀態總體分佈"
+  },
+  {
+    "timestamp": "2026-08-31T11:52:20.046131",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "歷史溫濕度時序趨勢"
+  },
+  {
+    "timestamp": "2026-08-31T11:52:20.070830",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫濕度相關性散佈圖"
+  },
+  {
+    "timestamp": "2026-08-31T11:52:20.103189",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "區域溫濕度雷達圖"
+  },
+  {
+    "timestamp": "2026-08-31T11:52:20.134366",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "告警代碼排行"
+  },
+  {
+    "timestamp": "2026-08-31T11:52:20.166246",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "各樓層溫度箱型圖"
+  },
+  {
+    "timestamp": "2026-08-31T11:52:20.182145",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫度 MoM (月對比)"
+  },
+  {
+    "timestamp": "2026-08-31T11:52:20.213611",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫度 YoY (年度同期)"
+  },
+  {
+    "timestamp": "2026-08-31T11:52:20.247473",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "月度合規率"
+  },
+  {
+    "timestamp": "2026-08-31T11:52:20.267582",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "各區域年度溫度比較"
+  },
+  {
+    "timestamp": "2026-08-31T11:54:38.191177",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈"
+  },
+  {
+    "timestamp": "2026-08-31T11:55:14.182748",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "test"
+  },
+  {
+    "timestamp": "2026-08-31T11:56:33.439160",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈"
+  },
+  {
+    "timestamp": "2026-08-31T11:57:00.746746",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈"
+  },
+  {
+    "timestamp": "2026-08-31T11:57:49.359219",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "test"
+  },
+  {
+    "timestamp": "2026-08-31T11:58:24.109809",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "test"
+  },
+  {
+    "timestamp": "2026-08-31T12:00:19.090798",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "test [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T12:02:30.419718",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "test [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T12:03:35.157285",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "test [Rule]"
+  },
+  {
+    "timestamp": "2026-08-31T12:08:27.183131",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "各樓層警報狀態分布 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T12:14:22.652680",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "各樓層警報狀態分布 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T12:17:31.552271",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "各樓層警報狀態分布 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T12:21:52.789988",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "各樓層警報狀態分布 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T12:24:37.411927",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "各樓層警報狀態分布 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T12:24:48.745604",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫度變化趨勢 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T12:24:53.700346",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "各區域綜合評分 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T12:24:58.688045",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫濕度相關性分析 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T12:26:36.839020",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "各樓層警報狀態分布 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T12:26:42.241954",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "各樓層溫度比較 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T12:26:47.914112",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "各樓層濕度比較 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T12:26:53.251961",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫度變化趨勢 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T12:26:58.267007",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "各區域綜合評分 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T12:27:03.661238",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫濕度相關性分析 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T12:38:20.342477",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "各樓層溫度比較 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T12:45:25.430447",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "各樓層溫度比較 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T12:45:27.445354",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "各樓層溫度比較 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T12:57:46.008163",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "各樓層警報狀態分布 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T12:57:51.034829",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "各樓層溫度比較 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T12:57:56.076078",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "各樓層濕度比較 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T12:58:00.997096",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫度變化趨勢 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T12:58:06.016884",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫濕度相關性分析 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:04:37.389532",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "各樓層警報狀態分布 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:04:44.703833",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "各樓層溫度比較 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:04:51.848606",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "各樓層濕度比較 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:04:58.786388",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫度變化趨勢 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:05:05.904152",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫濕度相關性分析 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:05:12.920377",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "各區域綜合評分 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:05:24.096255",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "報警排名 Top 5 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:05:31.283200",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫度分佈箱線圖 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:05:38.569019",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "月溫度變化 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:05:45.567928",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "月濕度變化 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:05:52.548982",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "年溫度比較 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:05:59.501054",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "年濕度比較 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:06:06.498713",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "合規率趨勢 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:06:13.784500",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "區域年度比較 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:31:12.498942",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "區域溫濕度雷達圖 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:31:15.509290",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "月度合規率 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:31:50.453349",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "區域溫濕度雷達圖 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:31:53.459335",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "月度合規率 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:35:46.443412",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "各樓層警報狀態分布 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:35:51.585199",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "各樓層溫度比較 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:35:57.341760",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "各樓層濕度比較 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:36:02.359128",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫度變化趨勢 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:36:07.433423",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫濕度相關性分析 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:36:12.438574",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "區域溫濕度雷達圖 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:36:17.514435",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "報警排名 Top 5 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:36:22.659764",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "溫度分佈箱線圖 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:36:27.674184",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "月溫度變化 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:36:32.683810",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "月濕度變化 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:36:37.621202",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "年溫度比較 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:36:42.647239",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "年濕度比較 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:36:47.914373",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "月度合規率 [LLM]"
+  },
+  {
+    "timestamp": "2026-08-31T13:36:52.932782",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "區域年度比較 [LLM]"
+  },
+  {
+    "timestamp": "2026-09-06T02:09:16.309553",
+    "action": "chart_analysis",
+    "endpoint": "/api/chart_analysis",
+    "details": "即時溫度分佈 [LLM]"
+  }
+]

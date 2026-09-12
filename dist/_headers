@@ -1,0 +1,13 @@
+# Netlify headers — copied to dist/ by Vite
+/*
+  Cross-Origin-Opener-Policy: same-origin-allow-popups
+  Referrer-Policy: strict-origin-when-cross-origin
+/videos/*.mp4
+  Content-Type: video/mp4
+  Cache-Control: public, max-age=31536000, immutable
+/arch/*.mp4
+  Content-Type: video/mp4
+  Cache-Control: public, max-age=31536000, immutable
+/*.mp4
+  Content-Type: video/mp4
+  Cache-Control: public, max-age=31536000, immutable

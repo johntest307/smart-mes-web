@@ -1,0 +1,7 @@
+[build]
+builder = "dockerfile"
+
+[deploy]
+startCommand = "python unified_backend.py"
+healthcheckPath = "/health"
+healthcheckTimeout = 300

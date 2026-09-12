@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>員工總覽 - MSForms Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-left">
+      <span class="nav-logo">MSForms</span>
+      <a href="index.html" class="nav-link">測驗總覽</a>
+      <a href="employees.html" class="nav-link active">員工總覽</a>
+    </div>
+    <div class="nav-right">
+      <span id="clock" class="nav-clock"></span>
+      <button id="btn-dark-mode" class="btn-icon" title="切換深色模式">🌙</button>
+      <button id="btn-refresh" class="btn-nav">重新整理</button>
+    </div>
+  </nav>
+
+  <main>
+    <section class="summary-cards">
+      <div class="card card-accent">
+        <div class="card-icon">👥</div>
+        <div class="card-label">總人數</div>
+        <div class="card-value" id="val-total-employees">-</div>
+      </div>
+      <div class="card card-accent">
+        <div class="card-icon">🏆</div>
+        <div class="card-label">全數通過</div>
+        <div class="card-value" id="val-all-passed">-</div>
+      </div>
+      <div class="card card-accent">
+        <div class="card-icon">⚠️</div>
+        <div class="card-label">有未通過</div>
+        <div class="card-value" id="val-has-failed">-</div>
+      </div>
+      <div class="card card-accent">
+        <div class="card-icon">📊</div>
+        <div class="card-label">平均完成率</div>
+        <div class="card-value" id="val-avg-completion">-</div>
+      </div>
+    </section>
+
+    <section class="charts-row">
+      <div class="chart-container wide">
+        <h3>員工完成率排行</h3>
+        <canvas id="chart-emp-completion"></canvas>
+      </div>
+    </section>
+
+    <section class="charts-row">
+      <div class="chart-container wide">
+        <h3>員工×測驗通過矩陣 (綠=通過 紅=未通過 灰=未交)</h3>
+        <div id="heatmap-container" class="heatmap-container"></div>
+      </div>
+    </section>
+
+    <section class="charts-row">
+      <div class="chart-container">
+        <h3>部門雷達圖</h3>
+        <canvas id="chart-radar"></canvas>
+      </div>
+      <div class="chart-container">
+        <h3>部門人數分佈</h3>
+        <canvas id="chart-emp-dept"></canvas>
+      </div>
+      <div class="chart-container">
+        <h3>部門排行榜</h3>
+        <div id="dept-ranking" class="ranking-list"></div>
+      </div>
+    </section>
+
+    <section class="quiz-table-section">
+      <div class="table-header">
+        <h2>員工名單</h2>
+        <div class="table-controls">
+          <input type="text" id="search-input" placeholder="搜尋姓名/工號..." class="search-input">
+          <select id="dept-filter" class="filter-select">
+            <option value="">所有部門</option>
+          </select>
+          <select id="status-filter" class="filter-select">
+            <option value="">所有狀態</option>
+            <option value="complete">全數通過</option>
+            <option value="failed">有未通過</option>
+            <option value="incomplete">尚未完成全部</option>
+          </select>
+        </div>
+      </div>
+      <table id="emp-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>姓名</th>
+            <th>工號</th>
+            <th>部門</th>
+            <th>已完成</th>
+            <th>完成率</th>
+            <th>通過/未通過</th>
+            <th>平均分</th>
+          </tr>
+        </thead>
+        <tbody id="emp-tbody"></tbody>
+      </table>
+      <div id="table-empty" class="loading" style="display:none;">找不到符合的員工</div>
+    </section>
+  </main>
+
+  <script src="js/employees.js"></script>
+</body>
+</html>

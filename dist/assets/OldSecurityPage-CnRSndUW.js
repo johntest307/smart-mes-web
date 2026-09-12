@@ -1,0 +1,1 @@
+import"./rolldown-runtime-Cyuzqnbw.js";import{i as e,t}from"./vendor-react--sCzYIHL.js";e();var n=t(),r=()=>(0,n.jsx)(`iframe`,{src:`/old/security.html`,title:`資安替代方案`,className:`w-full h-[calc(100vh-80px)] border-0`,loading:`lazy`});export{r as default};

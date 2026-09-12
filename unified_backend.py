@@ -35,7 +35,6 @@ def load_module_from_path(name, path):
     spec.loader.exec_module(mod)
     return mod
 
-@app.get("/")
 @app.get("/health")
 def health():
     return {

@@ -1,0 +1,51 @@
+# Smart MES Platform - Docker Compose
+# Runs backend (FastAPI) + frontend (nginx) as containers
+# Usage:
+#   docker compose up -d                Start both services
+#   docker compose up -d --build        Rebuild and start
+#   docker compose down                 Stop both services
+#   docker compose logs -f backend      View backend logs
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smart-mes-backend
+    ports:
+      - "${RAG_PORT:-9766}:9766"
+    env_file:
+      - python_rag/.env
+    environment:
+      - RAG_PORT=9766
+      - PYTHONUNBUFFERED=1
+    volumes:
+      # Persist chroma_db across container restarts
+      - chroma_data:/app/python_rag/chroma_db
+      # Mount data directory for document ingestion
+      - ./python_rag/data:/app/python_rag/data:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9766/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  frontend:
+    image: nginx:alpine
+    container_name: smart-mes-frontend
+    ports:
+      - "${FRONTEND_PORT:-5173}:80"
+    volumes:
+      # Serve built frontend (must run `npm run build` first)
+      - ./run/app/dist:/usr/share/nginx/html:ro
+      # Nginx config for SPA routing
+      - ./scripts/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  chroma_data:

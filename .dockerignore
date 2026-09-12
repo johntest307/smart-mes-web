@@ -1,0 +1,19 @@
+# Smart MES Platform - .dockerignore
+# Exclude files that should NOT be in the Docker build context
+
+node_modules/
+run/app/node_modules/
+run/app/dist/
+python_rag/.venv/
+python_rag/__pycache__/
+python_rag/**/__pycache__/
+python_rag/logs/
+python_rag/reports/
+python_rag/chroma_db/
+scripts/reports/
+.git/
+.env
+*.log
+*.pyc
+__pycache__/
+test_results/

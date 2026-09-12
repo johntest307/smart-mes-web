@@ -1,0 +1,88 @@
+IT 部門
+
+IT_ServerMaintenancePolicy.pdf
+伺服器正常運作時間的 SLA 目標是多少？
+完整備份（Full backup）多久執行一次？在什麼時間？
+資安修補程式須在釋出後幾小時內完成更新？
+IT_InformationSecurityPolicy.docx
+密碼最少需要幾個字元？多久必須更換一次？
+員工離職後，其存取權限必須在多長時間內撤銷？
+資料分類分為哪四個等級？
+IT_NetworkArchitectureOverview.md
+網路架構分為哪三層？
+生產環境 VLAN 的網段為何？
+遠端存取使用哪種驗證方式？
+IT_HelpdeskSupportGuide.txt
+P1（重大）事件的回應時間目標是多久？
+IT 協助台的分機號碼為何？
+升級流程（Escalation）有幾個層級？Level 3 由誰負責？
+IT_AssetInventory.xlsx
+IT 部門擁有哪些伺服器？資產編號是什麼？
+MacBook Pro 16 分配給哪位員工？哪個部門？
+AST-010（Dell Latitude 7340）的目前狀態為何？
+Finance 部門
+
+FIN_ExpenseReimbursementPolicy.pdf
+費用報銷必須在消費後幾天內提交？
+國內旅行每晚飯店補助上限是多少？
+每人每年招待費用上限是多少？
+FIN_BudgetPlanning.docx
+部門預算需在每年幾月幾號前提交？
+副總（VP）可以核准的上限金額是多少？
+預算差異連續兩個月超過 20% 需要採取什麼行動？
+FIN_FinancialStatementsGuide.md
+毛利（Gross Profit）的計算公式是什麼？
+現金流量表分為哪三個部分？
+資產負債表中的流動資產包含哪些項目？
+FIN_PaymentRequestProcess.txt
+標準付款條件是 Net 幾天？
+付款執行日為每週哪兩天？
+金額超過 NT$500,000 的付款申請需要誰核准？
+FIN_ChartOfAccounts.xlsx
+「薪資福利」費用的會計科目代碼是多少？
+存貨（Inventory）科目（1200）由哪個部門負責？
+流動負債包含哪些科目？
+Legal 部門
+
+LEG_ContractReviewGuidelines.pdf
+合約 NT$500,000 需要哪些人核准？
+已簽署合約須保存至到期後幾年？
+合約審查的八大重點中列出至少三項。
+LEG_IntellectualPropertyPolicy.docx
+員工離職後，保密義務持續幾年？
+公司擁有的智慧財產權涵蓋哪些類型？
+使用第三方程式碼前需要誰的核准？
+LEG_ComplianceGuide.md
+個人資料最多可保存幾年？
+GDPR 資料外洩須在幾小時內通報？
+送禮給公務員的規定為何？
+LEG_LitigationManagement.txt
+潛在訴訟須在幾小時內通報法務部？
+副總（VP）的和解權限上限是多少？
+和解金額超過多少需要董事會核准？
+LEG_ContractTemplates.xlsx
+共有幾種合約範本？分別是什麼類型？
+MSA（Master Service Agreement）最新版是哪一版？
+哪種合約類型由 IT 部門負責管理？
+HR 部門
+
+HR_EmployeeHandbook.pdf
+核心工時（Core Hours）是幾點到幾點？
+年度績效考核在幾月進行？
+績效評級分為哪四個等級？
+HR_LeavePolicy.docx
+第一年員工有幾天年假？
+產假有幾天（給薪）？
+連續 3 天以上的年假需提前幾天申請？
+HR_TrainingPolicy.md
+每人每年外部訓練補助上限是多少？
+學費補助計畫的留任義務是多久？
+新進人員教育訓練為期幾天？
+HR_SalaryInformation.txt
+每月薪資於幾號發放？
+員工滿幾歲以上每年強制健康檢查？
+薪資由哪三個部分組成？
+HR_EmployeeDirectory.xlsx
+人力資源總監（HR Director）是誰？分機號碼？
+財務經理 Lin Xiao-Yun 到職日期是？
+列出 IT 部門所有員工及其職稱。

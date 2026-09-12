@@ -1,0 +1,34 @@
+name: Keep Services Alive
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - name: BAPM Backend
+            url: https://smart-mes-bapm-backend.onrender.com/
+          - name: Repair Rate
+            url: https://smart-mes-repair-rate.onrender.com/
+          - name: Temp Humidity
+            url: https://smart-mes-temp-humidity.onrender.com/
+          - name: MVA Mock
+            url: https://smart-mes-mva-mock.onrender.com/
+          - name: MSForms
+            url: https://smart-mes-msforms.onrender.com/
+    steps:
+      - name: Ping ${{ matrix.service.name }}
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "${{ matrix.service.url }}" || echo "000")
+          echo "${{ matrix.service.name }}: HTTP $STATUS"
+          if [ "$STATUS" = "000" ]; then
+            echo "Service unreachable, retrying in 60s..."
+            sleep 60
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 60 "${{ matrix.service.url }}" || echo "000")
+            echo "Retry: HTTP $STATUS"
+          fi

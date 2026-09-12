@@ -1,0 +1,21 @@
+[build]
+  base = "run/app"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  VITE_SUPABASE_URL = "https://lgjzqjgvcmylrebhjgdy.supabase.co"
+  VITE_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxnanpxamd2Y215bHJlYmhqZ2R5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0NDY5NTUsImV4cCI6MjEwMjAyMjk1NX0.HxVyU1jic3Cgh-my2o1IH4lKlVZRpNW7uMuz2v4h-Nc"
+  VITE_RAG_API = "https://smart-mes-rag.onrender.com"
+  VITE_GOOGLE_CLIENT_ID = "226084644706-g1atks9g41iivnoskhobv7u5v2rh28l7.apps.googleusercontent.com"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cross-Origin-Opener-Policy = "same-origin-allow-popups"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

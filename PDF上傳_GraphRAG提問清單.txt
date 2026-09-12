@@ -1,0 +1,47 @@
+找到了！有 4 個 PDF 測試檔：
+
+PDF 測試檔路徑：
+
+python_rag/data/
+├── Finance/FIN_ExpenseReimbursementPolicy.pdf
+├── HR/HR_EmployeeHandbook.pdf
+├── IT/IT_ServerMaintenancePolicy.pdf
+└── Legal/LEG_ContractReviewGuidelines.pdf
+
+
+------------------------------
+
+以下是 4 個 PDF 上傳後的測試提問清單：
+
+以下是完全匹配 PDF 原文的測試問題（PDF 都是英文，問題也用英文才能精確匹配）：
+
+1. Finance — FIN_ExpenseReimbursementPolicy.pdf
+#	問題 (英文原文)
+1	What is the meal reimbursement limit for dinner?
+2	How many days do you have to submit an expense claim?
+3	What is the annual entertainment limit per employee?
+4	Who approves equipment purchases over NT$50,000?
+5	How many business days does it take for approved reports to be paid?
+2. HR — HR_EmployeeHandbook.pdf
+#	問題 (英文原文)
+1	What are the core hours when all employees must be present?
+2	How long is the probation period?
+3	What are the four performance ratings?
+4	What is the standard work week schedule?
+5	What behaviors are strictly prohibited?
+3. IT — IT_ServerMaintenancePolicy.pdf
+#	問題 (英文原文)
+1	What is the SLA response time for critical issues?
+2	How often are incremental backups taken?
+3	How long are daily backups retained?
+4	Within how many hours must security patches be applied?
+5	What is required for production server SSH access?
+4. Legal — LEG_ContractReviewGuidelines.pdf
+#	問題 (英文原文)
+1	What are the 8 key review points for contracts?
+2	Who approves contracts over NT$1,000,000?
+3	How long must contracts be retained after expiration?
+4	Where are original contracts kept?
+5	Do international contracts require additional approval?
+
+關鍵：PDF 是英文的，問題也必須用英文問，RAG 才能精確匹配。 去測試吧。

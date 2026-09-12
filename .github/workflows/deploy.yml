@@ -1,0 +1,131 @@
+name: Build → DB Setup → Pages Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: run/app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: run/app
+
+      - name: Build
+        run: npm run build
+        working-directory: run/app
+        env:
+          VITE_SUPABASE_URL: https://lgjzqjgvcmylrebhjgdy.supabase.co
+          VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxnanpxamd2Y215bHJlYmhqZ2R5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0NDY5NTUsImV4cCI6MjEwMjAyMjk1NX0.HxVyU1jic3Cgh-my2o1IH4lKlVZRpNW7uMuz2v4h-Nc
+
+      - name: Database Setup + Schema Cache Refresh
+        run: |
+          set -e
+          ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxnanpxamd2Y215bHJlYmhqZ2R5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0NDY5NTUsImV4cCI6MjEwMjAyMjk1NX0.HxVyU1jic3Cgh-my2o1IH4lKlVZRpNW7uMuz2v4h-Nc"
+          PROJECT="lgjzqjgvcmylrebhjgdy"
+          ACCESS_TOKEN="${{ secrets.SUPABASE_ACCESS_TOKEN }}"
+          DB_URL="${{ secrets.SUPABASE_DB_URL }}"
+          PSQL_BASE=()
+
+          # Try SUPABASE_DB_URL first (direct psql when IPv6 works)
+          if [ -n "$DB_URL" ]; then
+            echo "=== Trying SUPABASE_DB_URL ==="
+            export PGPASSWORD="${{ secrets.SUPABASE_DB_PASSWORD }}"
+            if psql -d "$DB_URL" -c "SELECT 1" -t 2>/dev/null; then
+              PSQL_BASE=(psql -d "$DB_URL")
+              echo "✓ Connected via SUPABASE_DB_URL"
+            else
+              echo "✗ SUPABASE_DB_URL failed"
+            fi
+          fi
+
+          # Execute SQL via psql or Management API
+          run_sql() {
+            local file=$1 label=$2
+            echo "=== $label ==="
+            if [ ${#PSQL_BASE[@]} -gt 0 ]; then
+              "${PSQL_BASE[@]}" -f "$file"
+            elif [ -n "$ACCESS_TOKEN" ]; then
+              resp=$(curl -s -X POST "https://api.supabase.com/v1/projects/$PROJECT/database/query" \
+                -H "Authorization: Bearer $ACCESS_TOKEN" \
+                -H "Content-Type: application/json" \
+                -d "$(jq -Rs '{query: .}' < "$file")")
+              echo "$resp"
+              if echo "$resp" | grep -q '"message"'; then
+                exit 1
+              fi
+            else
+              echo "ERROR: no database connection method available"
+              exit 1
+            fi
+          }
+
+          run_sql run/app/scripts/migrate-schema.sql "Create tables"
+          run_sql run/app/scripts/refresh-schema.sql "RLS + triggers + publication"
+          run_sql run/app/scripts/seed-data.sql "Seed data"
+
+          echo "=== NOTIFY pgrst ==="
+          if [ ${#PSQL_BASE[@]} -gt 0 ]; then
+            "${PSQL_BASE[@]}" -c "NOTIFY pgrst, 'reload schema'"
+          else
+            resp=$(curl -s -X POST "https://api.supabase.com/v1/projects/$PROJECT/database/query" \
+              -H "Authorization: Bearer $ACCESS_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d '{"query": "NOTIFY pgrst, '\''reload schema'\''"}')
+            echo "$resp"
+          fi
+          sleep 3
+
+          echo "=== Terminate PostgREST backends ==="
+          if [ ${#PSQL_BASE[@]} -gt 0 ]; then
+            "${PSQL_BASE[@]}" -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE application_name='postgrest'"
+          else
+            resp=$(curl -s -X POST "https://api.supabase.com/v1/projects/$PROJECT/database/query" \
+              -H "Authorization: Bearer $ACCESS_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d '{"query": "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE application_name='\''postgrest'\''"}')
+            echo "$resp"
+          fi
+
+          sleep 20
+          echo "=== REST API stations ==="
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            "https://$PROJECT.supabase.co/rest/v1/stations?select=id&limit=1" \
+            -H "apikey: $ANON_KEY")
+          echo "HTTP $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            echo "=== DIAG ==="
+            if [ ${#PSQL_BASE[@]} -gt 0 ]; then
+              "${PSQL_BASE[@]}" -c "SELECT table_name FROM information_schema.tables WHERE table_schema='public' ORDER BY table_name"
+              "${PSQL_BASE[@]}" -c "SELECT table_name, privilege_type FROM information_schema.role_table_grants WHERE table_schema='public' AND grantee='anon' ORDER BY table_name"
+              "${PSQL_BASE[@]}" -c "SELECT has_schema_privilege('anon', 'public', 'USAGE')"
+            else
+              curl -s -X POST "https://api.supabase.com/v1/projects/$PROJECT/database/query" \
+                -H "Authorization: Bearer $ACCESS_TOKEN" \
+                -H "Content-Type: application/json" \
+                -d '{"query": "SELECT table_name FROM information_schema.tables WHERE table_schema='\''public'\'' ORDER BY table_name"}' | jq .
+            fi
+            exit 1
+          fi
+
+      - name: Deploy to GitHub Pages
+        run: |
+          cd run/app/dist
+          git init
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git add .
+          git commit -m "deploy: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push --force origin HEAD:gh-pages
+
